@@ -26,6 +26,7 @@
 
   <!-- Main CSS File -->
   <link href="{{asset('assets/css/main.css')}}" rel="stylesheet">
+  <link href="{{asset('assets/css/custom.css')}}" rel="stylesheet">
   <style>
     .flags-wrapper {
       overflow: hidden;
@@ -106,23 +107,38 @@
   <header id="header" class="header d-flex align-items-center fixed-top">
     <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
 
-      <a href="index.html" class="logo d-flex align-items-center">
-        <!-- Uncomment the line below if you also wish to use an image logo -->
-        <!-- <img src="assets/img/logo.webp" alt=""> -->
-        <h1 class="sitename">VisaFly</h1>
+      <!-- Logo -->
+      <a href="index.html" class="logo d-flex align-items-center gap-2" style="text-decoration:none;">
+        <div style="width:38px;height:38px;background:#1B3A6B;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <img src="assets/img/logo.png" alt="VisaFly" style="width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1);">
+        </div>
+        <h5 class="sitename mb-0" style="font-size:20px;font-weight:800;color:#1B3A6B;letter-spacing:-0.3px;">
+          Visa<span style="color:#F5A623;">Fly</span>
+        </h5>
       </a>
 
+      <!-- Navigation -->
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="#hero" class="active">Acceuil</a></li>
+          <li><a href="#hero" class="active">Accueil</a></li>
           <li><a href="#about">À propos</a></li>
           <li><a href="#langues">Les Langues</a></li>
           <li><a href="#services">Nos services</a></li>
-          <li><a href="#portfolio">Nos realisation</a></li>
+          <li><a href="#portfolio">Réalisations</a></li>
           <li><a href="#team">Team</a></li>
           <li><a href="#contact">Contact</a></li>
-          <li><a href="{{ route('login') }}"  class="btn btn-outline-primary px-3 py-2 m-2">Se connecter</a></li>
-          <li><a href="{{ route('consultation') }}" class="btn btn-primary text-white px-3 py-2">Se consulter</a></li>
+          <li>
+            <a href="{{ route('login') }}" class="btn-nav-login">Se connecter</a>
+          </li>
+          <li>
+            <a href="{{ route('consultation') }}" class="btn-nav-consult">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;">
+                <path d="M22 2L11 13" stroke="#1B3A6B" stroke-width="2.2" stroke-linecap="round"/>
+                <path d="M22 2L15 22l-4-9-9-4 20-7z" stroke="#1B3A6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Se consulter
+            </a>
+          </li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>
@@ -140,10 +156,29 @@
         <div class="row align-items-center">
           <div class="col-lg-6">
             <div class="hero-content">
-              <h1 data-aos="fade-up" data-aos-delay="200">Visafly International Votre Visa vers le succès mondial</h1>
+              <div class="hero-badge" data-aos="fade-up" data-aos-delay="150">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
+                <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#F5A623"/>
+              </svg>
+              Agence de mobilité internationale
+            </div>
+
+              <h1 data-aos="fade-up" data-aos-delay="200">
+                Visafly International<br>
+                <span class="accent">Votre Visa</span> vers le succès mondial
+              </h1>
+
               <p data-aos="fade-up" data-aos-delay="300">Avec Visafly, concrétisez vos rêves d’études, d’emploi, de voyage ou d’affaires à l’étranger. Notre équipe vous accompagne pas à pas dans toutes vos démarches de visa, placement et mobilité internationale. Fiable, rapide et professionnelle, Visafly transforme vos ambitions en réalité.</p>
+
               <div class="hero-cta" data-aos="fade-up" data-aos-delay="400">
-                <a href="{{ route('consultation') }}" class="btn-primary">Se faire consulter</a>
+                <a href="{{ route('consultation') }}" class="btn-primary">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
+                    <path d="M22 2L11 13" stroke="#1B3A6B" stroke-width="2.2" stroke-linecap="round"/>
+                    <path d="M22 2L15 22l-4-9-9-4 20-7z" stroke="#1B3A6B" stroke-width="2.2"
+                          stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Se faire consulter
+                </a>
               </div>
               <div class="hero-stats" data-aos="fade-up" data-aos-delay="500">
                 <div class="stat-item">
@@ -203,15 +238,15 @@
 
               <div class="stats-row">
                 <div class="stat-item">
-                  <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="6" data-purecounter-duration="1"></div>
+                  <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="6" data-purecounter-duration="1" data-purecounter-suffix="+"></div>
                   <div class="stat-label">Années d'expérience</div>
                 </div>
                 <div class="stat-item">
-                  <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="100" data-purecounter-duration="1"></div>
+                  <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="100" data-purecounter-duration="1" data-purecounter-suffix="+"></div>
                   <div class="stat-label">Projets terminés</div>
                 </div>
                 <div class="stat-item">
-                  <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="240" data-purecounter-duration="1"></div>
+                  <div class="stat-number purecounter" data-purecounter-start="0" data-purecounter-end="240" data-purecounter-duration="1" data-purecounter-suffix="+"></div>
                   <div class="stat-label">Clients satisfaits</div>
                 </div>
               </div>
@@ -247,34 +282,86 @@
     <!-- Langues Section -->
     <section id="langues" class="services section">
 
-      <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <span class="subtitle">Les langues</span>
-        <h2>Ce que nous proposons</h2>
-        <p>Chez VisaFly, nous savons qu’un projet d’immigration ne s’improvise pas. Chaque parcours est unique, et chaque pays exige une stratégie bien définie en passant par les Tests de langues</p>
-      </div><!-- End Section Title -->
+        <h2>Nos tests de langues</h2>
+        <p>Chez VisaFly, nous savons qu'un projet d'immigration ne s'improvise pas. Chaque parcours est unique, et chaque pays exige une stratégie bien définie en passant par les tests de langues.</p>
+      </div>
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
+        <div class="row gy-4 justify-content-center">
 
-          <div class="row gy-5 justify-content-center">
-
-              <div class="col-lg-5 col-md-6 d-flex justify-content-center" data-aos="fade-up" data-aos-delay="200">
-                  <a href="tcf.html" class="btn btn-warning btn-lg px-5 py-4">
-                      <i class="bi bi-pencil-square me-2"></i>
-                      Commencer le TCF
-                  </a>
+          <!-- TCF -->
+          <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="150">
+            <a href="tcf.html" class="btn-lang btn-lang-or">
+              <div class="btn-lang-icon btn-lang-icon-or">
+                <i class="bi bi-pencil-square"></i>
               </div>
-
-              <div class="col-lg-5 col-md-6 d-flex justify-content-center" data-aos="fade-up" data-aos-delay="300">
-                  <a href="tef.html" class="btn btn-warning btn-lg px-5 py-4">
-                      <i class="bi bi-pencil-square me-2"></i>
-                      Commencer le TEF
-                  </a>
+              <div class="btn-lang-text">
+                <div class="btn-lang-flag">
+                  <img src="https://flagcdn.com/w40/fr.png" alt="France">
+                  <span>Français</span>
+                </div>
+                <strong>Commencer le TCF</strong>
+                <small>Test de Connaissance du Français</small>
               </div>
-
+            </a>
           </div>
 
+          <!-- TEF -->
+          <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            <a href="tef.html" class="btn-lang btn-lang-or">
+              <div class="btn-lang-icon btn-lang-icon-or">
+                <i class="bi bi-pencil-square"></i>
+              </div>
+              <div class="btn-lang-text">
+                <div class="btn-lang-flag">
+                  <img src="https://flagcdn.com/w40/ca.png" alt="Canada">
+                  <span>Français</span>
+                </div>
+                <strong>Commencer le TEF</strong>
+                <small>Test d'Évaluation du Français</small>
+              </div>
+            </a>
+          </div>
+
+          <!-- IELTS / Anglais -->
+          <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="250">
+            <a href="ielts.html" class="btn-lang btn-lang-marine">
+              <div class="btn-lang-icon btn-lang-icon-marine">
+                <i class="bi bi-translate"></i>
+              </div>
+              <div class="btn-lang-text">
+                <div class="btn-lang-flag">
+                  <img src="https://flagcdn.com/w40/gb.png" alt="UK">
+                  <span>Anglais</span>
+                </div>
+                <strong>Passer l'IELTS / TOEFL</strong>
+                <small>Test de langue anglaise</small>
+              </div>
+            </a>
+          </div>
+
+          <!-- TestDaF / Allemand -->
+          <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="300">
+            <a href="testdaf.html" class="btn-lang btn-lang-marine">
+              <div class="btn-lang-icon btn-lang-icon-marine">
+                <i class="bi bi-globe-europe-africa"></i>
+              </div>
+              <div class="btn-lang-text">
+                <div class="btn-lang-flag">
+                  <img src="https://flagcdn.com/w40/de.png" alt="Allemagne">
+                  <span>Allemand</span>
+                </div>
+                <strong>Passer le TestDaF / Goethe</strong>
+                <small>Test de langue allemande</small>
+              </div>
+            </a>
+          </div>
+
+        </div>
       </div>
+
     </section><!-- /Services Section -->
 
     <!-- Services Section -->
@@ -292,7 +379,7 @@
         <div class="row gy-5">
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="service-item">
+            <div class="service-item" data-num="01">
               <div class="service-icon">
                 <i class="bi bi-graph-up-arrow"></i>
               </div>
@@ -305,7 +392,7 @@
           </div><!-- End Service Item -->
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="service-item">
+            <div class="service-item" data-num="02">
               <div class="service-icon">
                 <i class="bi bi-palette"></i>
               </div>
@@ -318,7 +405,7 @@
           </div><!-- End Service Item -->
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item">
+            <div class="service-item" data-num="03">
               <div class="service-icon">
                 <i class="bi bi-code-slash"></i>
               </div>
@@ -331,7 +418,7 @@
           </div><!-- End Service Item -->
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="service-item">
+            <div class="service-item" data-num="04">
               <div class="service-icon">
                 <i class="bi bi-megaphone"></i>
               </div>
@@ -344,7 +431,7 @@
           </div><!-- End Service Item -->
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="service-item">
+            <div class="service-item" data-num="05">
               <div class="service-icon">
                 <i class="bi bi-people"></i>
               </div>
@@ -357,7 +444,7 @@
           </div><!-- End Service Item -->
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item">
+            <div class="service-item" data-num="06">
               <div class="service-icon">
                 <i class="bi bi-bar-chart"></i>
               </div>
@@ -370,7 +457,7 @@
           </div><!-- End Service Item -->
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item">
+            <div class="service-item" data-num="07">
               <div class="service-icon">
                 <i class="bi bi-bar-chart"></i>
               </div>
@@ -383,7 +470,7 @@
           </div><!-- End Service Item -->
 
           <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item">
+            <div class="service-item" data-num="08">
               <div class="service-icon">
                 <i class="bi bi-bar-chart"></i>
               </div>
@@ -413,25 +500,11 @@
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        <!-- <div class="row">
-          <div class="col-lg-6" data-aos="fade-right" data-aos-delay="200">
-            <div class="content">
-              <h2>Why Partner With Us</h2>
-              <p>We deliver exceptional results through proven expertise, cutting-edge innovation, and unwavering commitment to your success. Our comprehensive approach ensures sustainable growth and competitive advantage.</p>
-            </div>
-          </div>
-          <div class="col-lg-6" data-aos="fade-left" data-aos-delay="300">
-            <div class="image-wrapper">
-              <img src="assets/img/about/about-8.webp" alt="Professional team collaboration" class="img-fluid">
-            </div>
-          </div>
-        </div> -->
-
         <div class="features-grid" data-aos="fade-up" data-aos-delay="400">
           <div class="row g-5">
 
             <div class="col-lg-6" data-aos="fade-up" data-aos-delay="100">
-              <div class="feature-item">
+              <div class="feature-item" data-num="01">
                 <div class="icon-wrapper">
                   <i class="bi bi-lightbulb"></i>
                 </div>
@@ -443,7 +516,7 @@
             </div><!-- End Feature Item -->
 
             <div class="col-lg-6" data-aos="fade-up" data-aos-delay="200">
-              <div class="feature-item">
+              <div class="feature-item" data-num="02">
                 <div class="icon-wrapper">
                   <i class="bi bi-award"></i>
                 </div>
@@ -455,7 +528,7 @@
             </div><!-- End Feature Item -->
 
             <div class="col-lg-6" data-aos="fade-up" data-aos-delay="300">
-              <div class="feature-item">
+              <div class="feature-item" data-num="03">
                 <div class="icon-wrapper">
                   <i class="bi bi-headset"></i>
                 </div>
@@ -467,7 +540,7 @@
             </div><!-- End Feature Item -->
 
             <div class="col-lg-6" data-aos="fade-up" data-aos-delay="400">
-              <div class="feature-item">
+              <div class="feature-item" data-num="04">
                 <div class="icon-wrapper">
                   <i class="bi bi-graph-up-arrow"></i>
                 </div>
@@ -488,350 +561,189 @@
     <!-- Nos realisation -->
     <section id="portfolio" class="portfolio section">
 
-      <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
-        <span class="subtitle">Nos realisation</span>
-        <h2>Ce que nous avons realise</h2>
-        <p>Au fil des années, VisaFly a accompagné avec succès de nombreux candidats dans la concrétisation de leurs projets d’immigration, d’études et de voyage à l’étranger. Nos réalisations témoignent de notre engagement, de notre expertise et de la confiance que nos clients nous accordent à chaque étape de leur parcours.</p>
-      </div><!-- End Section Title -->
+        <span class="subtitle">Nos réalisations</span>
+        <h2>Ce que nous avons accompli</h2>
+        <p>Au fil des années, VisaFly a accompagné avec succès de nombreux candidats dans la concrétisation de leurs projets d'immigration, d'études et de voyage à l'étranger.</p>
+      </div>
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        <div class="isotope-layout" data-default-filter="*" data-layout="masonry" data-sort="original-order">
-          <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="200">
-            <li data-filter="*" class="filter-active">Tous</li>
-            <li data-filter=".filter-visa">Visa Obtenu</li>
-            <li data-filter=".filter-development">Salle de cour</li>
-            <li data-filter=".filter-strategy">Strategy</li>
-            <li data-filter=".filter-consulting">Consulting</li>
-          </ul><!-- End Portfolio Filters -->
+        <!-- Filtres -->
+        <ul class="portfolio-filters isotope-filters" data-aos="fade-up" data-aos-delay="200">
+          <li data-filter="*" class="filter-active">Tous</li>
+          <li data-filter=".filter-visa">Visa obtenu</li>
+          <li data-filter=".filter-etudes">Études à l'étranger</li>
+          <li data-filter=".filter-emploi">Emploi international</li>
+          <li data-filter=".filter-installation">Accompagnement</li>
+        </ul>
 
-          <div class="row gy-5 isotope-container" data-aos="fade-up" data-aos-delay="300">
+        <div class="row gy-4 isotope-container" data-aos="fade-up" data-aos-delay="300">
 
-            <div class="col-lg-12 portfolio-item isotope-item filter-visa">
-              <article class="portfolio-card">
-                <div class="row g-4">
-                  <div class="col-md-6">
-                    <div class="project-visual">
-                      <img src="assets/img/portfolio/Berlin.jpg" alt="Enterprise Digital Platform" class="img-fluid" loading="lazy">
-                      <div class="project-overlay">
-                        <div class="overlay-content">
-                          <a href="assets/img/portfolio/Ottawa.jpg" class="view-project glightbox" aria-label="View project image">
-                            <i class="bi bi-eye"></i>
-                          </a>
-                          <a href="#" class="project-link" aria-label="View project details">
-                            <i class="bi bi-arrow-up-right"></i>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="project-details">
-                      <div class="project-header">
-                        <span class="project-category">Digital Design</span>
-                        <time class="project-year">2024</time>
-                      </div>
-                      <h3 class="project-title">Enterprise Digital Platform</h3>
-                      <p class="project-description">Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium totam rem aperiam.</p>
-                      <div class="project-meta">
-                        <span class="client-name">Fortune 500 Company</span>
-                        <div class="project-scope">
-                          <span class="scope-item">UX Design</span>
-                          <span class="scope-item">Development</span>
-                          <span class="scope-item">Strategy</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+          <!-- Allemagne — Visa travail -->
+          <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-visa filter-emploi">
+            <div class="pf-card">
+              <div class="pf-img">
+                <img src="assets/img/portfolio/Berlin.jpg" alt="Berlin" loading="lazy">
+                <div class="pf-overlay">
+                  <a href="assets/img/portfolio/Berlin.jpg" class="glightbox pf-btn" title="Agrandir">
+                    <i class="bi bi-eye"></i>
+                  </a>
                 </div>
-              </article>
-            </div>
-
-            <div class="col-lg-12 portfolio-item isotope-item filter-development">
-              <article class="portfolio-card">
-                <div class="row g-4">
-                  <div class="col-md-6 order-md-2">
-                    <div class="project-visual">
-                      <img src="assets/img/portfolio/Ottawa.jpg" alt="SaaS Product Suite" class="img-fluid" loading="lazy">
-                      <div class="project-overlay">
-                        <div class="overlay-content">
-                          <a href="assets/img/portfolio/portfolio-3.webp" class="view-project glightbox" aria-label="View project image">
-                            <i class="bi bi-eye"></i>
-                          </a>
-                          <a href="#" class="project-link" aria-label="View project details">
-                            <i class="bi bi-arrow-up-right"></i>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 order-md-1">
-                    <div class="project-details">
-                      <div class="project-header">
-                        <span class="project-category">Development</span>
-                        <time class="project-year">2024</time>
-                      </div>
-                      <h3 class="project-title">SaaS Product Suite</h3>
-                      <p class="project-description">At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti.</p>
-                      <div class="project-meta">
-                        <span class="client-name">Tech Startup</span>
-                        <div class="project-scope">
-                          <span class="scope-item">Full Stack</span>
-                          <span class="scope-item">Cloud Architecture</span>
-                          <span class="scope-item">DevOps</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
+                <span class="pf-badge badge-visa">Visa obtenu</span>
+              </div>
+              <div class="pf-body">
+                <div class="pf-country">
+                  <img src="https://flagcdn.com/w40/de.png" alt="DE">
+                  <span>Allemagne — Berlin</span>
                 </div>
-              </article>
-            </div>
-
-            <div class="col-lg-12 portfolio-item isotope-item filter-strategy">
-              <article class="portfolio-card">
-                <div class="row g-4">
-                  <div class="col-md-6">
-                    <div class="project-visual">
-                      <img src="assets/img/portfolio/italie.jpg" alt="Brand Transformation" class="img-fluid" loading="lazy">
-                      <div class="project-overlay">
-                        <div class="overlay-content">
-                          <a href="assets/img/portfolio/Portugal.jpg" class="view-project glightbox" aria-label="View project image">
-                            <i class="bi bi-eye"></i>
-                          </a>
-                          <a href="#" class="project-link" aria-label="View project details">
-                            <i class="bi bi-arrow-up-right"></i>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="project-details">
-                      <div class="project-header">
-                        <span class="project-category">Strategy</span>
-                        <time class="project-year">2023</time>
-                      </div>
-                      <h3 class="project-title">Brand Transformation</h3>
-                      <p class="project-description">Excepteur sint occaecat cupidatat non proident sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-                      <div class="project-meta">
-                        <span class="client-name">Global Corporation</span>
-                        <div class="project-scope">
-                          <span class="scope-item">Brand Strategy</span>
-                          <span class="scope-item">Visual Identity</span>
-                          <span class="scope-item">Guidelines</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-
-            <div class="col-lg-12 portfolio-item isotope-item filter-consulting">
-              <article class="portfolio-card">
-                <div class="row g-4">
-                  <div class="col-md-6 order-md-2">
-                    <div class="project-visual">
-                      <img src="assets/img/portfolio/france.jpg" alt="Digital Transformation" class="img-fluid" loading="lazy">
-                      <div class="project-overlay">
-                        <div class="overlay-content">
-                          <a href="assets/img/portfolio/belgique.jpg" class="view-project glightbox" aria-label="View project image">
-                            <i class="bi bi-eye"></i>
-                          </a>
-                          <a href="#" class="project-link" aria-label="View project details">
-                            <i class="bi bi-arrow-up-right"></i>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 order-md-1">
-                    <div class="project-details">
-                      <div class="project-header">
-                        <span class="project-category">Consulting</span>
-                        <time class="project-year">2024</time>
-                      </div>
-                      <h3 class="project-title">Digital Transformation</h3>
-                      <p class="project-description">Lorem ipsum dolor sit amet consectetur adipiscing elit sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                      <div class="project-meta">
-                        <span class="client-name">Healthcare Provider</span>
-                        <div class="project-scope">
-                          <span class="scope-item">Process Optimization</span>
-                          <span class="scope-item">Technology Audit</span>
-                          <span class="scope-item">Implementation</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-
-            <div class="col-lg-12 portfolio-item isotope-item filter-design">
-              <article class="portfolio-card">
-                <div class="row g-4">
-                  <div class="col-md-6">
-                    <div class="project-visual">
-                      <img src="assets/img/portfolio/belgique.jpg" alt="E-commerce Experience" class="img-fluid" loading="lazy">
-                      <div class="project-overlay">
-                        <div class="overlay-content">
-                          <a href="assets/img/portfolio/belgique.jpg" class="view-project glightbox" aria-label="View project image">
-                            <i class="bi bi-eye"></i>
-                          </a>
-                          <a href="#" class="project-link" aria-label="View project details">
-                            <i class="bi bi-arrow-up-right"></i>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6">
-                    <div class="project-details">
-                      <div class="project-header">
-                        <span class="project-category">Digital Design</span>
-                        <time class="project-year">2024</time>
-                      </div>
-                      <h3 class="project-title">E-commerce Experience</h3>
-                      <p class="project-description">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur excepteur sint.</p>
-                      <div class="project-meta">
-                        <span class="client-name">Retail Brand</span>
-                        <div class="project-scope">
-                          <span class="scope-item">User Experience</span>
-                          <span class="scope-item">Interface Design</span>
-                          <span class="scope-item">Conversion Optimization</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-
-            <div class="col-lg-12 portfolio-item isotope-item filter-development">
-              <article class="portfolio-card">
-                <div class="row g-4">
-                  <div class="col-md-6 order-md-2">
-                    <div class="project-visual">
-                      <img src="assets/img/portfolio/newyork.jpg" alt="Mobile Application" class="img-fluid" loading="lazy">
-                      <div class="project-overlay">
-                        <div class="overlay-content">
-                          <a href="assets/img/portfolio/newyork.jpg" class="view-project glightbox" aria-label="View project image">
-                            <i class="bi bi-eye"></i>
-                          </a>
-                          <a href="#" class="project-link" aria-label="View project details">
-                            <i class="bi bi-arrow-up-right"></i>
-                          </a>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                  <div class="col-md-6 order-md-1">
-                    <div class="project-details">
-                      <div class="project-header">
-                        <span class="project-category">Development</span>
-                        <time class="project-year">2023</time>
-                      </div>
-                      <h3 class="project-title">Mobile Application</h3>
-                      <p class="project-description">Ut enim ad minim veniam quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat duis aute.</p>
-                      <div class="project-meta">
-                        <span class="client-name">Financial Services</span>
-                        <div class="project-scope">
-                          <span class="scope-item">iOS Development</span>
-                          <span class="scope-item">Android Development</span>
-                          <span class="scope-item">API Integration</span>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </article>
-            </div>
-
-          </div><!-- End Portfolio Items Container -->
-
-        </div>
-
-        <div class="portfolio-conclusion" data-aos="fade-up" data-aos-delay="400">
-          <div class="conclusion-content">
-            <h4>Nos Destinations</h4>
-            <p>Faire de Visafly International la référence africaine en matière de mobilité, d'emploi et d'études à l'étranger, en connectant les talents africains aux meilleures opportunités mondiales.</p>
-
-            <!-- Défilement des drapeaux -->
-            <div class="flags-wrapper my-4">
-              <div class="flags-track">
-                <!-- Drapeaux originaux -->
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/fr.png" alt="France" title="France">
-                  <span>France</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/ca.png" alt="Canada" title="Canada">
-                  <span>Canada</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/de.png" alt="Allemagne" title="Allemagne">
-                  <span>Allemagne</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/gb.png" alt="Royaume-Uni" title="Royaume-Uni">
-                  <span>Royaume-Uni</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/us.png" alt="États-Unis" title="États-Unis">
-                  <span>États-Unis</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/be.png" alt="Belgique" title="Belgique">
-                  <span>Belgique</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/pt.png" alt="Portugal" title="Portugal">
-                  <span>Portugal</span>
-                </div>
-                <!-- Duplication pour boucle infinie -->
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/fr.png" alt="France" title="France">
-                  <span>France</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/ca.png" alt="Canada" title="Canada">
-                  <span>Canada</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/de.png" alt="Allemagne" title="Allemagne">
-                  <span>Allemagne</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/gb.png" alt="Royaume-Uni" title="Royaume-Uni">
-                  <span>Royaume-Uni</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/us.png" alt="États-Unis" title="États-Unis">
-                  <span>États-Unis</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/be.png" alt="Belgique" title="Belgique">
-                  <span>Belgique</span>
-                </div>
-                <div class="flag-item">
-                  <img src="https://flagcdn.com/w80/pt.png" alt="Portugal" title="Portugal">
-                  <span>Portugal</span>
+                <h3>Visa de travail obtenu en 6 semaines</h3>
+                <p>Ingénieur informatique, dossier complet et déposé avec succès auprès du consulat allemand.</p>
+                <div class="pf-tags">
+                  <span class="pf-tag tag-visa">Visa travail</span>
+                  <span class="pf-tag tag-emploi">Emploi</span>
                 </div>
               </div>
             </div>
+          </div>
 
-            <div class="conclusion-actions">
-              <a href="#contact" class="primary-action">
-                Démarrer une conversation
-                <i class="bi bi-arrow-right"></i>
-              </a>
+          <!-- Canada — Études -->
+          <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-etudes filter-visa">
+            <div class="pf-card">
+              <div class="pf-img">
+                <img src="assets/img/portfolio/Ottawa.jpg" alt="Ottawa" loading="lazy">
+                <div class="pf-overlay">
+                  <a href="assets/img/portfolio/Ottawa.jpg" class="glightbox pf-btn" title="Agrandir">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                </div>
+                <span class="pf-badge badge-etudes">Études</span>
+              </div>
+              <div class="pf-body">
+                <div class="pf-country">
+                  <img src="https://flagcdn.com/w40/ca.png" alt="CA">
+                  <span>Canada — Ottawa</span>
+                </div>
+                <h3>Admission universitaire + visa étudiant</h3>
+                <p>Accompagnement complet pour l'admission à l'Université d'Ottawa et obtention du permis d'études.</p>
+                <div class="pf-tags">
+                  <span class="pf-tag tag-etudes">Études</span>
+                  <span class="pf-tag tag-visa">Visa étudiant</span>
+                </div>
+              </div>
             </div>
           </div>
+
+          <!-- France — Visa famille -->
+          <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-visa filter-installation">
+            <div class="pf-card">
+              <div class="pf-img">
+                <img src="assets/img/portfolio/france.jpg" alt="Paris" loading="lazy">
+                <div class="pf-overlay">
+                  <a href="assets/img/portfolio/france.jpg" class="glightbox pf-btn" title="Agrandir">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                </div>
+                <span class="pf-badge badge-visa">Visa obtenu</span>
+              </div>
+              <div class="pf-body">
+                <div class="pf-country">
+                  <img src="https://flagcdn.com/w40/fr.png" alt="FR">
+                  <span>France — Paris</span>
+                </div>
+                <h3>Visa long séjour — Regroupement familial</h3>
+                <p>Dossier de regroupement familial accepté en première présentation avec accompagnement VisaFly.</p>
+                <div class="pf-tags">
+                  <span class="pf-tag tag-visa">Visa famille</span>
+                  <span class="pf-tag tag-accomp">Accompagnement</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Belgique — Emploi -->
+          <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-emploi filter-visa">
+            <div class="pf-card">
+              <div class="pf-img">
+                <img src="assets/img/portfolio/belgique.jpg" alt="Bruxelles" loading="lazy">
+                <div class="pf-overlay">
+                  <a href="assets/img/portfolio/belgique.jpg" class="glightbox pf-btn" title="Agrandir">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                </div>
+                <span class="pf-badge badge-emploi">Emploi</span>
+              </div>
+              <div class="pf-body">
+                <div class="pf-country">
+                  <img src="https://flagcdn.com/w40/be.png" alt="BE">
+                  <span>Belgique — Bruxelles</span>
+                </div>
+                <h3>Placement professionnel CDI — Bruxelles</h3>
+                <p>Mise en relation avec un employeur belge et accompagnement pour le permis de travail.</p>
+                <div class="pf-tags">
+                  <span class="pf-tag tag-emploi">Emploi</span>
+                  <span class="pf-tag tag-visa">Permis travail</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Portugal — Installation -->
+          <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-installation filter-visa">
+            <div class="pf-card">
+              <div class="pf-img">
+                <img src="assets/img/portfolio/Portugal.jpg" alt="Lisbonne" loading="lazy">
+                <div class="pf-overlay">
+                  <a href="assets/img/portfolio/Portugal.jpg" class="glightbox pf-btn" title="Agrandir">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                </div>
+                <span class="pf-badge badge-install">Installation</span>
+              </div>
+              <div class="pf-body">
+                <div class="pf-country">
+                  <img src="https://flagcdn.com/w40/pt.png" alt="PT">
+                  <span>Portugal — Lisbonne</span>
+                </div>
+                <h3>Accompagnement jusqu'à l'installation</h3>
+                <p>Suivi complet depuis la demande de visa jusqu'à la recherche de logement et l'intégration.</p>
+                <div class="pf-tags">
+                  <span class="pf-tag tag-accomp">Installation</span>
+                  <span class="pf-tag tag-visa">Visa</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- USA — Business -->
+          <div class="col-lg-4 col-md-6 portfolio-item isotope-item filter-visa filter-emploi">
+            <div class="pf-card">
+              <div class="pf-img">
+                <img src="assets/img/portfolio/newyork.jpg" alt="New York" loading="lazy">
+                <div class="pf-overlay">
+                  <a href="assets/img/portfolio/newyork.jpg" class="glightbox pf-btn" title="Agrandir">
+                    <i class="bi bi-eye"></i>
+                  </a>
+                </div>
+                <span class="pf-badge badge-business">Business</span>
+              </div>
+              <div class="pf-body">
+                <div class="pf-country">
+                  <img src="https://flagcdn.com/w40/us.png" alt="US">
+                  <span>États-Unis — New York</span>
+                </div>
+                <h3>Visa business B1/B2 — Mission commerciale</h3>
+                <p>Visa d'affaires obtenu pour une délégation d'entrepreneurs camerounais à New York.</p>
+                <div class="pf-tags">
+                  <span class="pf-tag tag-visa">Visa business</span>
+                  <span class="pf-tag tag-emploi">Commerce</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
         </div>
-
       </div>
-
     </section><!-- /Portfolio Section -->
 
     <!-- Team Section -->
@@ -851,7 +763,8 @@
           <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="200">
             <div class="team-member">
               <div class="member-img">
-                <img src="assets/img/person/person-f-8.webp" class="img-fluid" alt="Sarah Johnson" loading="lazy">
+                <img src="assets/img/person/person-f-8.webp" class="img-fluid" alt="Modi DARRYL">
+                <span class="team-role-badge">CEO</span>
               </div>
               <div class="member-info">
                 <h4>Modi DARRYL</h4>
@@ -869,7 +782,8 @@
           <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="250">
             <div class="team-member">
               <div class="member-img">
-                <img src="assets/img/person/person-m-12.webp" class="img-fluid" alt="Michael Chen" loading="lazy">
+                <img src="assets/img/person/person-f-8.webp" class="img-fluid" alt="NDJOCK ROGER">
+                <span class="team-role-badge">CEO</span>
               </div>
               <div class="member-info">
                 <h4>NDJOCK ROGER</h4>
@@ -887,7 +801,8 @@
           <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="300">
             <div class="team-member">
               <div class="member-img">
-                <img src="assets/img/person/person-f-3.webp" class="img-fluid" alt="Emily Rodriguez" loading="lazy">
+                <img src="assets/img/person/person-f-8.webp" class="img-fluid" alt="KEWOU CHRISTIAN">
+                <span class="team-role-badge">Tech</span>
               </div>
               <div class="member-info">
                 <h4>KEWOU CHRISTIAN</h4>
@@ -905,7 +820,8 @@
           <div class="col-lg-3 col-md-6" data-aos="fade-up" data-aos-delay="350">
             <div class="team-member">
               <div class="member-img">
-                <img src="assets/img/person/person-m-7.webp" class="img-fluid" alt="David Thompson" loading="lazy">
+                <img src="assets/img/person/person-f-8.webp" class="img-fluid" alt="TANEYO ALIANCE">
+                <span class="team-role-badge">Admin</span>
               </div>
               <div class="member-info">
                 <h4>TANEYO ALIANCE</h4>
@@ -929,171 +845,293 @@
     <!-- Testimonials Section -->
     <section id="testimonials" class="testimonials section">
 
-      <!-- Section Title -->
       <div class="container section-title" data-aos="fade-up">
         <span class="subtitle">Nos locaux</span>
         <h2>Nos locaux</h2>
-        <p>Nos locaux reflètent notre engagement envers l’innovation et le professionnalisme. Situés au cœur de la ville, ils offrent un cadre moderne et convivial, propice à la créativité et à la collaboration. Les espaces de travail lumineux, les salles de réunion équipées et les zones de détente témoignent de notre volonté de créer un environnement où chaque membre de l’équipe peut s’épanouir. </p>
-      </div><!-- End Section Title -->
+        <p>Nos locaux reflètent notre engagement envers le professionnalisme. Situés au cœur de Yaoundé, ils offrent un cadre moderne et convivial, propice à l'accompagnement de vos projets internationaux.</p>
+      </div>
 
       <div class="container" data-aos="fade-up" data-aos-delay="100">
 
-        <div id="carouselExampleAutoplaying" class="carousel slide" data-bs-ride="carousel">
-          <div class="carousel-inner">
-
-            <!-- Slide 1 : images 1, 2, 3 -->
-            <div class="carousel-item active">
-              <div class="row g-2">
-                <div class="col-4">
-                  <img src="assets/img/locaux/locaux1.jpeg" class="d-block w-100 rounded" alt="Local 1" style="height: 350px; object-fit: cover;">
-                </div>
-                <div class="col-4">
-                  <img src="assets/img/locaux/locaux2.jpeg" class="d-block w-100 rounded" alt="Local 2" style="height: 350px; object-fit: cover;">
-                </div>
-                <div class="col-4">
-                  <img src="assets/img/locaux/locaux3.jpeg" class="d-block w-100 rounded" alt="Local 3" style="height: 350px; object-fit: cover;">
-                </div>
-              </div>
+        <!-- Stats locaux -->
+        <div class="locaux-stats-bar" data-aos="fade-up" data-aos-delay="150">
+          <div class="lstat-item">
+            <div class="lstat-icon"><i class="bi bi-building"></i></div>
+            <div class="lstat-info">
+              <span class="lstat-num">1<sup>er</sup></span>
+              <span class="lstat-label">Agence à Jouvence</span>
             </div>
-
-            <div class="carousel-item">
-              <div class="row g-2">
-                <div class="col-4">
-                  <img src="assets/img/locaux/locaux4.jpeg" class="d-block w-100 rounded" alt="Local 4" style="height: 350px; object-fit: cover;">
-                </div>
-                <div class="col-4">
-                  <img src="assets/img/locaux/locaux5.jpeg" class="d-block w-100 rounded" alt="Local 5" style="height: 350px; object-fit: cover;">
-                </div>
-                <div class="col-4">
-                  <img src="assets/img/locaux/locaux6.jpeg" class="d-block w-100 rounded" alt="Local 6" style="height: 350px; object-fit: cover;">
-                </div>
-              </div>
+          </div>
+          <div class="lstat-item">
+            <div class="lstat-icon"><i class="bi bi-people"></i></div>
+            <div class="lstat-info">
+              <span class="lstat-num">5<sup>+</sup></span>
+              <span class="lstat-label">Conseillers dédiés</span>
             </div>
+          </div>
+          <div class="lstat-item">
+            <div class="lstat-icon"><i class="bi bi-clock"></i></div>
+            <div class="lstat-info">
+              <span class="lstat-num">6j/7</span>
+              <span class="lstat-label">Disponibilité</span>
+            </div>
+          </div>
+          <div class="lstat-item">
+            <div class="lstat-icon"><i class="bi bi-calendar-check"></i></div>
+            <div class="lstat-info">
+              <span class="lstat-num">RDV</span>
+              <span class="lstat-label">Sur rendez-vous</span>
+            </div>
+          </div>
+        </div>
 
+        <!-- Carrousel avec badge flottant -->
+        <div class="locaux-carousel-wrap" data-aos="fade-up" data-aos-delay="200">
+
+          <!-- Badge "Agence ouverte" -->
+          <div class="locaux-open-badge">
+            <span class="open-dot"></span>
+            <div>
+              <strong>Agence ouverte</strong>
+              <span>Jouvence, Yaoundé</span>
+            </div>
           </div>
 
-          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="prev">
-            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Previous</span>
-          </button>
-          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleAutoplaying" data-bs-slide="next">
-            <span class="carousel-control-next-icon" aria-hidden="true"></span>
-            <span class="visually-hidden">Next</span>
-          </button>
+          <div id="locauxCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4000">
+            <div class="carousel-inner">
 
+              <div class="carousel-item active">
+                <div class="row g-2">
+                  <div class="col-4 position-relative">
+                    <img src="assets/img/locaux/locaux1.jpeg" class="d-block w-100 locaux-img" alt="Salle d'accueil">
+                    <span class="img-room-label">Salle d'accueil</span>
+                  </div>
+                  <div class="col-4 position-relative">
+                    <img src="assets/img/locaux/locaux2.jpeg" class="d-block w-100 locaux-img" alt="Bureau conseil">
+                    <span class="img-room-label">Bureau conseil</span>
+                  </div>
+                  <div class="col-4 position-relative">
+                    <img src="assets/img/locaux/locaux3.jpeg" class="d-block w-100 locaux-img" alt="Espace client">
+                    <span class="img-room-label">Espace client</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="carousel-item">
+                <div class="row g-2">
+                  <div class="col-4 position-relative">
+                    <img src="assets/img/locaux/locaux4.jpeg" class="d-block w-100 locaux-img" alt="Salle de réunion">
+                    <span class="img-room-label">Salle de réunion</span>
+                  </div>
+                  <div class="col-4 position-relative">
+                    <img src="assets/img/locaux/locaux5.jpeg" class="d-block w-100 locaux-img" alt="Espace détente">
+                    <span class="img-room-label">Espace détente</span>
+                  </div>
+                  <div class="col-4 position-relative">
+                    <img src="assets/img/locaux/locaux6.jpeg" class="d-block w-100 locaux-img" alt="Entrée agence">
+                    <span class="img-room-label">Entrée agence</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Nav personnalisée -->
+            <button class="locaux-btn locaux-btn-prev" type="button"
+                    data-bs-target="#locauxCarousel" data-bs-slide="prev">
+              <i class="bi bi-chevron-left"></i>
+            </button>
+            <button class="locaux-btn locaux-btn-next" type="button"
+                    data-bs-target="#locauxCarousel" data-bs-slide="next">
+              <i class="bi bi-chevron-right"></i>
+            </button>
+
+            <!-- Indicateurs -->
+            <div class="locaux-indicators">
+              <button type="button" data-bs-target="#locauxCarousel"
+                      data-bs-slide-to="0" class="locaux-dot active"></button>
+              <button type="button" data-bs-target="#locauxCarousel"
+                      data-bs-slide-to="1" class="locaux-dot"></button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Barre adresse -->
+        <div class="locaux-address-bar" data-aos="fade-up" data-aos-delay="300">
+          <div class="addr-item">
+            <div class="addr-icon"><i class="bi bi-geo-alt-fill"></i></div>
+            <div><strong>Adresse</strong><span>Jouvence, Yaoundé, Cameroun</span></div>
+          </div>
+          <div class="addr-sep"></div>
+          <div class="addr-item">
+            <div class="addr-icon"><i class="bi bi-telephone-fill"></i></div>
+            <div><strong>Téléphone</strong><span>+237 651 350 338</span></div>
+          </div>
+          <div class="addr-sep"></div>
+          <div class="addr-item">
+            <div class="addr-icon"><i class="bi bi-envelope-fill"></i></div>
+            <div><strong>Email</strong><span>visaflypro@gmail.com</span></div>
+          </div>
+          <div class="addr-sep"></div>
+          <div class="addr-item">
+            <div class="addr-icon"><i class="bi bi-clock-fill"></i></div>
+            <div><strong>Horaires</strong><span>Lun–Sam : 8h–18h</span></div>
+          </div>
         </div>
 
       </div>
-
     </section><!-- /Testimonials Section -->
 
     <!-- Contact Section -->
     <section id="contact" class="contact section light-background">
-      <!-- Section Title -->
+
       <div class="container section-title" data-aos="fade-up">
         <span class="subtitle">Contact</span>
-        <h2>Let's Connect</h2>
-        <p>Notre équipe est à votre écoute pour répondre à toutes vos questions et vous accompagner dans votre projet d’immigration ou de voyage.Contactez VisaFly dès aujourd’hui pour obtenir des conseils personnalisés et débuter votre démarche en toute confiance.</p>
-      </div><!-- End Section Title -->
+        <h2>Contactez-nous</h2>
+        <p>Notre équipe est à votre écoute pour répondre à toutes vos questions et vous accompagner dans votre projet d'immigration ou de voyage.</p>
+      </div>
 
       <div class="container">
-        <div class="row gy-4">
-          <div class="col-lg-5">
+        <div class="row gy-4 align-items-start">
 
-            <div class="info-item">
-              <div class="info-icon">
-                <i class="bi bi-chat-dots"></i>
+          <!-- ── Colonne gauche ── -->
+          <div class="col-lg-4">
+
+            <!-- Carte bleue principale -->
+            <div class="contact-info-card">
+              <h3>Connectons-nous</h3>
+              <div class="contact-gold-bar"></div>
+              <p>Nous sommes ici pour discuter de votre projet international et vous accompagner vers la réussite.</p>
+            </div>
+
+            <!-- Items contact -->
+            <div class="contact-items-list">
+              <div class="contact-ci">
+                <div class="contact-ci-icon"><i class="bi bi-envelope-fill"></i></div>
+                <div>
+                  <span class="contact-ci-label">Email</span>
+                  <span class="contact-ci-value">visaflypro@gmail.com</span>
+                </div>
               </div>
-              <div class="info-content">
-                <h4>Connectons-nous</h4>
-                <p>Nous sommes ici pour discuter de votre vision et explorer comment nous pouvons la concrétiser ensemble.</p>
+              <div class="contact-ci">
+                <div class="contact-ci-icon"><i class="bi bi-telephone-fill"></i></div>
+                <div>
+                  <span class="contact-ci-label">Téléphone</span>
+                  <span class="contact-ci-value">+237 651 350 338</span>
+                </div>
+              </div>
+              <div class="contact-ci">
+                <div class="contact-ci-icon"><i class="bi bi-geo-alt-fill"></i></div>
+                <div>
+                  <span class="contact-ci-label">Adresse</span>
+                  <span class="contact-ci-value">Jouvence, Yaoundé, Cameroun</span>
+                </div>
+              </div>
+              <div class="contact-ci">
+                <div class="contact-ci-icon"><i class="bi bi-clock-fill"></i></div>
+                <div>
+                  <span class="contact-ci-label">Horaires</span>
+                  <span class="contact-ci-value">Lun–Sam : 8h00 – 18h00</span>
+                </div>
               </div>
             </div>
 
-            <div class="contact-details">
-
-              <div class="detail-item">
-                <div class="detail-icon">
-                  <i class="bi bi-envelope-open"></i>
-                </div>
-                <div class="detail-content">
-                  <span class="detail-label">Envoyez-nous un e-mail</span>
-                  <span class="detail-value">visaflypro@gmail.com</span>
-                </div>
-              </div>
-
-              <div class="detail-item">
-                <div class="detail-icon">
-                  <i class="bi bi-telephone-outbound"></i>
-                </div>
-                <div class="detail-content">
-                  <span class="detail-label">Appelez-nous</span>
-                  <span class="detail-value">+237 651 350 338</span>
-                </div>
-              </div>
-
-              <div class="detail-item">
-                <div class="detail-icon">
-                  <i class="bi bi-geo-alt-fill"></i>
-                </div>
-                <div class="detail-content">
-                  <span class="detail-label">Visitez nous</span>
-                  <span class="detail-value">Jouvence<br>Yaounde ,Cameroun</span>
-                </div>
-              </div>
-
+            <!-- Réseaux sociaux -->
+            <div class="contact-socials">
+              <a href="#" class="contact-soc"><i class="bi bi-facebook"></i></a>
+              <a href="#" class="contact-soc"><i class="bi bi-instagram"></i></a>
+              <a href="#" class="contact-soc"><i class="bi bi-linkedin"></i></a>
+              <a href="#" class="contact-soc contact-soc-wa"><i class="bi bi-whatsapp"></i></a>
             </div>
 
           </div>
 
-          <div class="col-lg-7">
-            <div class="form-wrapper">
-              <div class="form-header">
-                <h3>Envoyez-nous un message</h3>
+          <!-- ── Colonne droite — Formulaire ── -->
+          <div class="col-lg-8">
+            <div class="contact-form-card">
+              <h3>Envoyez-nous un message</h3>
+              <p class="contact-form-sub">Nous vous répondrons dans les 24 heures.</p>
+
+              <!-- Badge WhatsApp -->
+              <div class="contact-wa-badge">
+                <span class="contact-wa-dot"></span>
+                <div>
+                  <strong>Réponse rapide sur WhatsApp</strong>
+                  <span>+237 651 350 338 — disponible 6j/7</span>
+                </div>
               </div>
 
               <form action="forms/contact.php" method="post" class="php-email-form">
 
-                <div class="row">
+                <div class="row g-3 mb-3">
                   <div class="col-md-6">
-                    <div class="form-group">
-                      <label>Nom</label>
-                      <input type="text" name="name" required="">
+                    <div class="contact-fg">
+                      <label>Nom complet *</label>
+                      <input type="text" name="name" placeholder="Jean Dupont" required>
                     </div>
                   </div>
                   <div class="col-md-6">
-                    <div class="form-group">
-                      <label> Address Email</label>
-                      <input type="email" name="email" required="">
+                    <div class="contact-fg">
+                      <label>Email *</label>
+                      <input type="email" name="email" placeholder="jean@email.com" required>
                     </div>
                   </div>
                 </div>
 
-                <div class="form-group">
-                  <label>Objet</label>
-                  <input type="text" name="subject" required="">
+                <div class="row g-3 mb-3">
+                  <div class="col-md-6">
+                    <div class="contact-fg">
+                      <label>Destination</label>
+                      <select name="destination">
+                        <option value="">-- Choisir un pays --</option>
+                        <option>France</option>
+                        <option>Canada</option>
+                        <option>Allemagne</option>
+                        <option>Royaume-Uni</option>
+                        <option>États-Unis</option>
+                        <option>Belgique</option>
+                        <option>Portugal</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="col-md-6">
+                    <div class="contact-fg">
+                      <label>Type de demande</label>
+                      <select name="type">
+                        <option value="">-- Sélectionner --</option>
+                        <option>Visa & Immigration</option>
+                        <option>Études à l'étranger</option>
+                        <option>Emploi international</option>
+                        <option>Assurance voyage</option>
+                        <option>Autre</option>
+                      </select>
+                    </div>
+                  </div>
                 </div>
 
-                <div class="form-group">
-                  <label for="projectMessage">Message</label>
-                  <textarea name="message" id="projectMessage" rows="5" required=""></textarea>
+                <div class="contact-fg mb-3">
+                  <label>Objet *</label>
+                  <input type="text" name="subject" placeholder="Ex: Demande de consultation visa France" required>
+                </div>
+
+                <div class="contact-fg mb-3">
+                  <label>Message *</label>
+                  <textarea name="message" rows="5" placeholder="Décrivez votre projet et vos besoins..." required></textarea>
                 </div>
 
                 <div class="my-3">
                   <div class="loading">Loading</div>
                   <div class="error-message"></div>
-                  <div class="sent-message">Your message has been sent. Thank you!</div>
+                  <div class="sent-message">Votre message a été envoyé. Merci !</div>
                 </div>
 
-                <button type="submit" class="submit-btn">
-                  <span>Envoyer</span>
-                  <i class="bi bi-arrow-right"></i>
+                <button type="submit" class="contact-btn-send">
+                  Envoyer le message
+                  <i class="bi bi-send-fill"></i>
                 </button>
 
               </form>
-
             </div>
-
           </div>
 
         </div>
@@ -1105,68 +1143,142 @@
 
   <footer id="footer" class="footer dark-background">
 
-    <div class="container footer-top">
-      <div class="row gy-4">
-        <div class="col-lg-5 col-md-12 footer-about">
-          <a href="index.html" class="logo d-flex align-items-center">
-            <span class="sitename">VisaFly</span>
-          </a>
-          <p> Nous ne vous vendons pas un rêve, nous construisons votre avenir.</p>
-          <div class="social-links d-flex mt-4">
-            <a href=""><i class="bi bi-twitter-x"></i></a>
-            <a href=""><i class="bi bi-facebook"></i></a>
-            <a href=""><i class="bi bi-instagram"></i></a>
-            <a href=""><i class="bi bi-linkedin"></i></a>
+    <!-- Top bar logo + newsletter -->
+    <div class="footer-top-bar">
+      <div class="container d-flex align-items-center justify-content-between flex-wrap gap-3">
+
+        <div class="footer-logo-wrap d-flex align-items-center gap-2">
+          <div class="footer-logo-icon">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+              <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#F5A623"/>
+              <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#F5A623" stroke-width="1.8" stroke-linecap="round"/>
+            </svg>
+          </div>
+          <div>
+            <div class="footer-brand">Visa<span>Fly</span></div>
+            <div class="footer-tagline">Votre partenaire mobilité internationale</div>
           </div>
         </div>
 
-        <div class="col-lg-2 col-6 footer-links">
-          <h4>Liens utiles</h4>
-          <ul>
-            <li><a href="#">Acceuil</a></li>
-            <li><a href="#">À propos de nous</a></li>
-            <li><a href="#">Services</a></li>
-            <li><a href="#">Conditions d'utilisation</a></li>
-            <li><a href="#">Politique de confidentialité</a></li>
-          </ul>
-        </div>
-
-        <div class="col-lg-2 col-6 footer-links">
-          <h4>Nos services</h4>
-          <ul>
-            <li><a href="#">Web Design</a></li>
-            <li><a href="#">Web Development</a></li>
-            <li><a href="#">Product Management</a></li>
-            <li><a href="#">Marketing</a></li>
-            <li><a href="#">Graphic Design</a></li>
-          </ul>
-        </div>
-
-        <div class="col-lg-3 col-md-12 footer-contact text-center text-md-start">
-          <h4>Contact Us</h4>
-          <p>A108 Adam Street</p>
-          <p>New York, NY 535022</p>
-          <p>United States</p>
-          <p class="mt-4"><strong>Phone:</strong> <span>+1 5589 55488 55</span></p>
-          <p><strong>Email:</strong> <span>info@example.com</span></p>
+        <div class="footer-newsletter">
+          <input type="email" placeholder="Votre email pour nos actualités">
+          <button type="button">S'abonner</button>
         </div>
 
       </div>
     </div>
 
-    <div class="container copyright text-center mt-4">
-      <p>© <span>Copyright</span> <strong class="px-1 sitename">VisaFly</strong> <span>All Rights Reserved</span></p>
-      <div class="credits">
-        <!-- All the links in the footer should remain intact. -->
-        <!-- You can delete the links only if you've purchased the pro version. -->
-        <!-- Licensing information: https://bootstrapmade.com/license/ -->
-        <!-- Purchase the pro version with working PHP/AJAX contact form: [buy-url] -->
-        Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a>
+    <!-- Grille principale -->
+    <div class="container footer-top">
+      <div class="row gy-4">
+
+        <!-- À propos -->
+        <div class="col-lg-4 col-md-12 footer-about">
+          <p>VisaFly International est votre agence de mobilité mondiale. Nous accompagnons les talents africains vers leurs opportunités d'études, d'emploi et d'affaires à l'étranger.</p>
+          <p class="footer-quote">« Nous ne vous vendons pas un rêve,<br>nous construisons votre avenir. »</p>
+          <div class="social-links d-flex mt-3 gap-2">
+            <a href="#" class="footer-social-btn">
+              <i class="bi bi-facebook"></i>
+            </a>
+            <a href="#" class="footer-social-btn">
+              <i class="bi bi-instagram"></i>
+            </a>
+            <a href="#" class="footer-social-btn">
+              <i class="bi bi-linkedin"></i>
+            </a>
+            <a href="#" class="footer-social-btn footer-social-wa">
+              <i class="bi bi-whatsapp"></i>
+            </a>
+          </div>
+        </div>
+
+        <!-- Liens utiles -->
+        <div class="col-lg-2 col-6 footer-links">
+          <h4>Liens utiles</h4>
+          <ul>
+            <li><a href="#hero">Accueil</a></li>
+            <li><a href="#about">À propos</a></li>
+            <li><a href="#services">Nos services</a></li>
+            <li><a href="#portfolio">Réalisations</a></li>
+            <li><a href="#team">Notre équipe</a></li>
+            <li><a href="#contact">Contact</a></li>
+          </ul>
+        </div>
+
+        <!-- Services -->
+        <div class="col-lg-2 col-6 footer-links">
+          <h4>Nos services</h4>
+          <ul>
+            <li><a href="#">Visa & Immigration</a></li>
+            <li><a href="#">Études à l'étranger</a></li>
+            <li><a href="#">Emploi international</a></li>
+            <li><a href="#">Assurance voyage</a></li>
+            <li><a href="#">Billets d'avion</a></li>
+            <li><a href="#">Import — Export</a></li>
+          </ul>
+        </div>
+
+        <!-- Contact -->
+        <div class="col-lg-4 col-md-12 footer-contact-col">
+          <h4>Nous contacter</h4>
+          <div class="footer-contact-items">
+            <div class="footer-ci">
+              <div class="footer-ci-icon"><i class="bi bi-geo-alt-fill"></i></div>
+              <div>
+                <span class="footer-ci-label">Adresse</span>
+                <span class="footer-ci-val">Jouvence, Yaoundé, Cameroun</span>
+              </div>
+            </div>
+            <div class="footer-ci">
+              <div class="footer-ci-icon"><i class="bi bi-telephone-fill"></i></div>
+              <div>
+                <span class="footer-ci-label">Téléphone</span>
+                <span class="footer-ci-val">+237 651 350 338</span>
+              </div>
+            </div>
+            <div class="footer-ci">
+              <div class="footer-ci-icon"><i class="bi bi-envelope-fill"></i></div>
+              <div>
+                <span class="footer-ci-label">Email</span>
+                <span class="footer-ci-val">visaflypro@gmail.com</span>
+              </div>
+            </div>
+            <div class="footer-ci">
+              <div class="footer-ci-icon"><i class="bi bi-clock-fill"></i></div>
+              <div>
+                <span class="footer-ci-label">Horaires</span>
+                <span class="footer-ci-val">Lun–Sam : 8h–18h</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Bottom bar -->
+    <div class="container footer-bottom">
+      <div class="footer-copy">
+        © 2025 <strong>VisaFly International</strong> — Tous droits réservés
+      </div>
+      <div class="footer-dest-flags">
+        <span>Destinations :</span>
+        <img src="https://flagcdn.com/w40/fr.png" alt="France" title="France">
+        <img src="https://flagcdn.com/w40/ca.png" alt="Canada" title="Canada">
+        <img src="https://flagcdn.com/w40/de.png" alt="Allemagne" title="Allemagne">
+        <img src="https://flagcdn.com/w40/gb.png" alt="Royaume-Uni" title="Royaume-Uni">
+        <img src="https://flagcdn.com/w40/us.png" alt="États-Unis" title="États-Unis">
+        <img src="https://flagcdn.com/w40/be.png" alt="Belgique" title="Belgique">
+        <img src="https://flagcdn.com/w40/pt.png" alt="Portugal" title="Portugal">
+      </div>
+      <div class="footer-legal">
+        <a href="#">Politique de confidentialité</a>
+        <span>·</span>
+        <a href="#">CGU</a>
       </div>
     </div>
 
   </footer>
-
   <!-- Scroll Top -->
   <a href="#" id="scroll-top" class="scroll-top d-flex align-items-center justify-content-center"><i class="bi bi-arrow-up-short"></i></a>
 

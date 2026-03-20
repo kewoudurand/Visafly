@@ -15,28 +15,46 @@ class ConsultationController extends Controller
     public function create()
     {
         [$nationalities, $countries] = Cache::remember('countries_data', now()->addHours(24), function () {
-            $response = Http::get('https://restcountries.com/v3.1/all?fields=name,demonyms');
 
-            if (!$response->successful()) {
-                return [collect(), collect()];
+            try {
+                // Timeout réduit à 5 secondes
+                $response = Http::timeout(5)
+                                ->get('https://restcountries.com/v3.1/all?fields=name,demonyms');
+
+                if ($response->successful()) {
+                    $data = $response->json();
+
+                    $nationalities = collect($data)
+                        ->map(fn($c) => $c['demonyms']['fra']['m']
+                                    ?? $c['demonyms']['eng']['m']
+                                    ?? $c['name']['common']
+                                    ?? null)
+                        ->filter()->unique()->sort()->values();
+
+                    $countries = collect($data)
+                        ->map(fn($c) => $c['name']['common'] ?? null)
+                        ->filter()->unique()->sort()->values();
+
+                    return [$nationalities, $countries];
+                }
+            } catch (\Exception $e) {
+                // L'API est indisponible → fallback liste locale
             }
 
-            $data = $response->json();
-
-            $nationalities = collect($data)
-                ->map(fn($c) => $c['demonyms']['fra']['m'] ?? $c['demonyms']['eng']['m'] ?? $c['name']['common'] ?? null)
-                ->filter()->unique()->sort()->values();
-
-            $countries = collect($data)
-                ->map(fn($c) => $c['name']['common'] ?? null)
-                ->filter()->unique()->sort()->values();
-
-            return [$nationalities, $countries];
+            // ── Fallback local ──
+            return [
+                collect(['Camerounais', 'Français', 'Canadien', 'Allemand',
+                        'Belge', 'Portugais', 'Sénégalais', 'Ivoirien',
+                        'Congolais', 'Malien', 'Burkinabè'])->sort()->values(),
+                collect(['Cameroun', 'France', 'Canada', 'Allemagne',
+                        'Belgique', 'Portugal', 'Sénégal', 'Côte d\'Ivoire',
+                        'Congo', 'Mali', 'Burkina Faso'])->sort()->values(),
+            ];
         });
 
         return view('users.consultation', compact('nationalities', 'countries'));
     }
-    /**
+        /**
      * Enregistre la consultation (POST).
      */
     public function store(Request $request)
