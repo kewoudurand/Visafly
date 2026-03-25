@@ -104,47 +104,7 @@
 
 <body class="index-page">
 
-  <header id="header" class="header d-flex align-items-center fixed-top">
-    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-
-      <!-- Logo -->
-      <a href="index.html" class="logo d-flex align-items-center gap-2" style="text-decoration:none;">
-        <div style="width:38px;height:38px;background:#1B3A6B;border-radius:9px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
-          <img src="assets/img/logo.png" alt="VisaFly" style="width:24px;height:24px;object-fit:contain;filter:brightness(0) invert(1);">
-        </div>
-        <h5 class="sitename mb-0" style="font-size:20px;font-weight:800;color:#1B3A6B;letter-spacing:-0.3px;">
-          Visa<span style="color:#F5A623;">Fly</span>
-        </h5>
-      </a>
-
-      <!-- Navigation -->
-      <nav id="navmenu" class="navmenu">
-        <ul>
-          <li><a href="#hero" class="active">Accueil</a></li>
-          <li><a href="#about">À propos</a></li>
-          <li><a href="#langues">Les Langues</a></li>
-          <li><a href="#services">Nos services</a></li>
-          <li><a href="#portfolio">Réalisations</a></li>
-          <li><a href="#team">Team</a></li>
-          <li><a href="#contact">Contact</a></li>
-          <li>
-            <a href="{{ route('login') }}" class="btn-nav-login">Se connecter</a>
-          </li>
-          <li>
-            <a href="{{ route('consultation') }}" class="btn-nav-consult">
-              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="flex-shrink:0;">
-                <path d="M22 2L11 13" stroke="#1B3A6B" stroke-width="2.2" stroke-linecap="round"/>
-                <path d="M22 2L15 22l-4-9-9-4 20-7z" stroke="#1B3A6B" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              Se consulter
-            </a>
-          </li>
-        </ul>
-        <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-      </nav>
-
-    </div>
-  </header>
+ @include('partials.navbar')
 
   <main class="main">
 
@@ -293,7 +253,7 @@
 
           <!-- TCF -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="150">
-            <a href="tcf.html" class="btn-lang btn-lang-or">
+            <a href="{{ route('tcf.index') }}" class="btn-lang btn-lang-or">
               <div class="btn-lang-icon btn-lang-icon-or">
                 <i class="bi bi-pencil-square"></i>
               </div>

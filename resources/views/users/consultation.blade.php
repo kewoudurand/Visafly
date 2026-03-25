@@ -1,4 +1,4 @@
-@extends('layouts/dashboard')
+@extends('layouts/consultation')
 
 
 @section('space-work')

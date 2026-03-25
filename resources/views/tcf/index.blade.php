@@ -1,247 +1,92 @@
+{{-- resources/views/tcf/index.blade.php --}}
 @extends('layouts.app')
 
-@section('title', 'Préparation au TCF')
-
-@push('styles')
-<style>
-    .tcf-hero {
-        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-        color: #fff;
-        padding: 60px 0 40px;
-        text-align: center;
-    }
-
-    .tcf-hero h1 {
-        font-size: 2.5rem;
-        font-weight: 800;
-        margin-bottom: 10px;
-    }
-
-    .tcf-hero p {
-        font-size: 1.1rem;
-        opacity: 0.9;
-        max-width: 600px;
-        margin: 0 auto;
-    }
-
-    .tcf-badge {
-        display: inline-block;
-        background: rgba(255,255,255,0.2);
-        border: 1px solid rgba(255,255,255,0.4);
-        color: #fff;
-        padding: 5px 16px;
-        border-radius: 50px;
-        font-size: 13px;
-        font-weight: 600;
-        margin-bottom: 20px;
-        letter-spacing: 1px;
-        text-transform: uppercase;
-    }
-
-    .epreuve-card {
-        border: none;
-        border-radius: 16px;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.08);
-        transition: all 0.3s ease;
-        height: 100%;
-        overflow: hidden;
-    }
-
-    .epreuve-card:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 12px 40px rgba(0,0,0,0.15);
-    }
-
-    .epreuve-card .card-header {
-        padding: 28px 24px 20px;
-        border-bottom: none;
-    }
-
-    .epreuve-icon {
-        width: 64px;
-        height: 64px;
-        border-radius: 16px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 28px;
-        color: #fff;
-        margin-bottom: 16px;
-    }
-
-    .epreuve-card .card-body {
-        padding: 0 24px 24px;
-    }
-
-    .epreuve-meta span {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        font-size: 13px;
-        color: #6c757d;
-        margin-right: 16px;
-    }
-
-    .conseil-list {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-
-    .conseil-list li {
-        font-size: 13px;
-        color: #555;
-        padding: 4px 0;
-        display: flex;
-        align-items: center;
-        gap: 8px;
-    }
-
-    .conseil-list li::before {
-        content: '✓';
-        font-weight: 700;
-        color: #28a745;
-        flex-shrink: 0;
-    }
-
-    .btn-commencer {
-        border-radius: 50px;
-        padding: 10px 28px;
-        font-weight: 600;
-        font-size: 14px;
-        letter-spacing: 0.3px;
-        transition: all 0.3s;
-    }
-
-    .optionnel-badge {
-        font-size: 11px;
-        font-weight: 600;
-        padding: 3px 10px;
-        border-radius: 50px;
-        text-transform: uppercase;
-        letter-spacing: 0.5px;
-    }
-
-    .info-bandeau {
-        background: #f8f9ff;
-        border-left: 4px solid #6777ef;
-        border-radius: 0 8px 8px 0;
-        padding: 16px 20px;
-        margin-bottom: 40px;
-    }
-</style>
-@endpush
+@section('title', 'TCF — Préparation VisaFly')
 
 @section('content')
+<div class="container py-4">
 
-{{-- Hero --}}
-<section class="tcf-hero">
-    <div class="container">
-        <div class="tcf-badge">🎓 Préparation officielle</div>
-        <h1>Test de Connaissance du Français</h1>
-        <p>Choisissez l'épreuve que vous souhaitez préparer et entraînez-vous avec nos exercices.</p>
+  {{-- En-tête --}}
+  <div class="text-center mb-4">
+    <h2 class="fw-bold" style="color:#1B3A6B;">Commencez votre préparation</h2>
+    <p class="text-muted">Choisissez une série, sélectionnez la discipline et commencez à vous exercer.</p>
+  </div>
+
+  {{-- Alertes --}}
+  @if(session('error'))
+    <div class="alert alert-warning d-flex align-items-center gap-2 rounded-3 mb-4">
+      <i class="bi bi-exclamation-triangle-fill"></i>
+      {{ session('error') }}
     </div>
-</section>
+  @endif
 
-<section class="py-5">
-    <div class="container">
-
-        {{-- Bandeau info --}}
-        <div class="info-bandeau">
-            <div class="d-flex align-items-start gap-3">
-                <i class="bi bi-info-circle-fill text-primary fs-5 mt-1"></i>
-                <div>
-                    <strong>Le TCF comporte 3 épreuves obligatoires</strong> (Compréhension Écrite, Compréhension Orale, Maîtrise des Structures) 
-                    et <strong>2 épreuves facultatives</strong> (Expression Écrite et Orale) selon votre objectif 
-                    <em>(TCF Québec, TCF DAP, TCF ANF…)</em>.
-                </div>
-            </div>
+  {{-- Bandeau abonnement si non abonné --}}
+  @if(!$aAbonnement)
+    <div class="alert mb-4 rounded-3 d-flex align-items-center justify-content-between flex-wrap gap-3"
+         style="background:rgba(245,166,35,.1);border:1px solid rgba(245,166,35,.4);">
+      <div class="d-flex align-items-center gap-3">
+        <div style="width:40px;height:40px;background:#F5A623;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+          <i class="bi bi-star-fill text-white"></i>
         </div>
-
-        {{-- Titre section --}}
-        <div class="text-center mb-5">
-            <h2 class="fw-bold">Sélectionnez une épreuve</h2>
-            <p class="text-muted">Cliquez sur l'épreuve de votre choix pour commencer votre entraînement</p>
+        <div>
+          <div class="fw-semibold" style="color:#633806;">
+            {{ $passagesGratuits >= 2 ? 'Limite gratuite atteinte' : "Vous avez {$passagesGratuits}/2 épreuves gratuites utilisées" }}
+          </div>
+          <small style="color:#854F0B;">Abonnez-vous pour accéder à toutes les séries — 5 000 XAF / mois</small>
         </div>
-
-        {{-- Cartes des épreuves --}}
-        <div class="row g-4">
-            @foreach($epreuves as $index => $epreuve)
-            <div class="col-lg-4 col-md-6">
-                <div class="epreuve-card card">
-                    <div class="card-header bg-white">
-
-                        {{-- Badge optionnel --}}
-                        @if(in_array($epreuve['slug'], ['expression-ecrite', 'expression-orale']))
-                            <span class="optionnel-badge bg-warning text-dark mb-2 d-inline-block">
-                                Facultative
-                            </span>
-                        @elseif($epreuve['slug'] === 'maitrise-structures')
-                            <span class="optionnel-badge bg-secondary text-white mb-2 d-inline-block">
-                                Optionnelle
-                            </span>
-                        @else
-                            <span class="optionnel-badge bg-success text-white mb-2 d-inline-block">
-                                Obligatoire
-                            </span>
-                        @endif
-
-                        {{-- Icône --}}
-                        <div class="epreuve-icon bg-{{ $epreuve['couleur'] }}">
-                            <i class="bi {{ $epreuve['icon'] }}"></i>
-                        </div>
-
-                        {{-- Titre --}}
-                        <h5 class="fw-bold mb-1">{{ $epreuve['titre'] }}</h5>
-
-                        {{-- Méta --}}
-                        <div class="epreuve-meta mt-2">
-                            <span><i class="bi bi-clock"></i> {{ $epreuve['duree'] }}</span>
-                            <span><i class="bi bi-list-check"></i> {{ $epreuve['questions'] }}</span>
-                        </div>
-                    </div>
-
-                    <div class="card-body">
-                        {{-- Description --}}
-                        <p class="text-muted small mb-3">{{ $epreuve['description'] }}</p>
-
-                        {{-- Conseils --}}
-                        <p class="fw-semibold small mb-2">💡 Conseils :</p>
-                        <ul class="conseil-list mb-4">
-                            @foreach($epreuve['conseils'] as $conseil)
-                                <li>{{ $conseil }}</li>
-                            @endforeach
-                        </ul>
-
-                        {{-- Bouton --}}
-                        <a href="{{ route('tcf.epreuve', $epreuve['slug']) }}"
-                           class="btn btn-{{ $epreuve['couleur'] }} btn-commencer w-100">
-                            <i class="bi bi-play-fill me-1"></i>
-                            Commencer l'entraînement
-                        </a>
-                    </div>
-                </div>
-            </div>
-            @endforeach
-        </div>
-
-        {{-- Légende --}}
-        <div class="d-flex flex-wrap gap-3 justify-content-center mt-5">
-            <span class="d-flex align-items-center gap-2">
-                <span class="optionnel-badge bg-success text-white">Obligatoire</span>
-                Requise pour tous les types de TCF
-            </span>
-            <span class="d-flex align-items-center gap-2">
-                <span class="optionnel-badge bg-warning text-dark">Facultative</span>
-                Selon votre objectif (Québec, DAP, etc.)
-            </span>
-            <span class="d-flex align-items-center gap-2">
-                <span class="optionnel-badge bg-secondary text-white">Optionnelle</span>
-                Disponible selon le centre
-            </span>
-        </div>
-
+      </div>
+      <a href="{{ route('tcf.abonnement') }}" class="btn btn-warning fw-semibold px-4"
+         style="border-radius:20px;color:#1B3A6B;">
+        <i class="bi bi-unlock me-1"></i> S'abonner
+      </a>
     </div>
-</section>
+  @else
+    <div class="alert d-flex align-items-center gap-2 mb-4 rounded-3"
+         style="background:rgba(28,200,138,.08);border:1px solid rgba(28,200,138,.3);color:#0f6e56;">
+      <i class="bi bi-patch-check-fill"></i>
+      <span>Abonnement actif — Accès illimité à toutes les séries.</span>
+    </div>
+  @endif
 
+  {{-- Grille des séries --}}
+  <div class="row g-3">
+    @foreach($series as $serie)
+      @php
+        $accessible = $serie->gratuit
+          ? ($aAbonnement || $passagesGratuits < 2)
+          : $aAbonnement;
+      @endphp
+
+      <div class="col-md-6">
+        @if($accessible)
+          <a href="{{ route('tcf.disciplines', $serie) }}"
+             class="d-flex align-items-center justify-content-between text-decoration-none p-4 rounded-3 fw-semibold"
+             style="background:#1B3A6B;color:#fff;transition:all .2s;"
+             onmouseover="this.style.background='#152d54'"
+             onmouseout="this.style.background='#1B3A6B'">
+            <span>{{ $serie->nom }}</span>
+            <div class="d-flex align-items-center gap-2">
+              @if($serie->gratuit && !$aAbonnement)
+                <span class="badge" style="background:#F5A623;color:#1B3A6B;font-size:10px;">Gratuit</span>
+              @endif
+              <i class="bi bi-arrow-right-circle"></i>
+            </div>
+          </a>
+        @else
+          <div class="d-flex align-items-center justify-content-between p-4 rounded-3 fw-semibold"
+               style="background:#f0f0f0;color:#999;border:1px solid #e0e0e0;cursor:not-allowed;">
+            <span>{{ $serie->nom }}</span>
+            <div class="d-flex align-items-center gap-2">
+              @if($serie->gratuit && $passagesGratuits >= 2)
+                <span class="badge bg-secondary" style="font-size:10px;">Limite atteinte</span>
+              @endif
+              <i class="bi bi-lock-fill"></i>
+            </div>
+          </div>
+        @endif
+      </div>
+    @endforeach
+  </div>
+
+</div>
 @endsection
