@@ -60,7 +60,7 @@
 
       @guest
         {{-- Non connecté --}}
-        <a href="{{ route('register') }}" class="vf-btn-register">
+        <a href="{{ route('auth.register.show') }}" class="vf-btn-register">
           Créer un compte
         </a>
         <a href="{{ route('login') }}" class="vf-btn-login">
@@ -84,7 +84,7 @@
                    class="vf-avatar-img">
             @else
               <div class="vf-avatar-initials">
-                {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->name, strpos(Auth::user()->name, ' ') + 1, 1)) }}
+                {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}{{ strtoupper(substr(Auth::user()->first_name, strpos(Auth::user()->last_name, ' ') + 1, 1)) }}
               </div>
             @endif
           </button>
@@ -97,25 +97,25 @@
                   <img src="{{ asset('storage/'.Auth::user()->avatar) }}" alt="">
                 @else
                   <div class="vf-avatar-initials lg">
-                    {{ strtoupper(substr(Auth::user()->name, 0, 1)) }}
+                    {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}
                   </div>
                 @endif
               </div>
               <div>
-                <div class="vf-profile-name">{{ Auth::user()->name }}</div>
+                <div class="vf-profile-name">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
                 <div class="vf-profile-email">{{ Auth::user()->email }}</div>
               </div>
             </div>
 
             <div class="vf-dropdown-sep"></div>
 
-            <a href="#" class="vf-profile-item">
+            <a href="{{ route('dashboard.espace') }}" class="vf-profile-item">
               <i class="bi bi-person-circle"></i> Mon profil
             </a>
             <a href="{{ route('tcf.index') }}" class="vf-profile-item">
               <i class="bi bi-journal-check"></i> Mes épreuves TCF
             </a>
-            <a href="{{ route('consultation') }}" class="vf-profile-item">
+            <a href="{{ route('consultations.create') }}" class="vf-profile-item">
               <i class="bi bi-calendar-check"></i> Mes consultations
             </a>
             <a href="#" class="vf-profile-item">

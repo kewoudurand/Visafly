@@ -407,7 +407,7 @@
       <li><a href="{{ url('/#contact') }}">Contact</a></li>
     </ul>
 
-    <a href="{{ route('register') }}" class="vf-btn-register vf-nav-links">
+    <a href="{{ route('auth.register.show') }}" class="vf-btn-register vf-nav-links">
       <i class="bi bi-person-plus me-1"></i> Créer un compte
     </a>
 
@@ -513,7 +513,7 @@
         {{-- Lien inscription --}}
         <div class="register-link">
           Pas encore de compte ?
-          <a href="{{ route('register') }}">Créer un compte</a>
+          <a href="{{ route('auth.register.show') }}">Créer un compte</a>
         </div>
 
       </div>

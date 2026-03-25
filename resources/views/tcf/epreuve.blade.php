@@ -169,7 +169,10 @@
     {{ $passage->discipline->nom }}
   </span>
 
-  <form method="GET" action="{{ route('tcf.terminer', $passage) }}"
+  <form method="GET" action="{{ route('tcf.epreuve.terminer', [
+    'serie'      => $passage->discipline->serie->code,
+    'discipline' => $passage->discipline->code,
+]); }}"
         onsubmit="return confirm('Terminer l\'épreuve ?')">
     <button type="submit" class="btn-fin">Fin</button>
   </form>
@@ -201,7 +204,10 @@
     @endif
 
     {{-- Question + options --}}
-    <form method="POST" action="{{ route('tcf.repondre', $passage) }}" id="formReponse">
+    <form method="POST" action="{{ route('tcf.epreuve.repondre', [
+    'serie'      => $passage->discipline->serie->code,
+    'discipline' => $passage->discipline->code,
+]) }}" id="formReponse">
       @csrf
       <input type="hidden" name="question_id" value="{{ $question->id }}">
       <input type="hidden" name="numero" value="{{ $numero }}">
@@ -237,7 +243,12 @@
           $answered = $qId && in_array($qId, $questionsRepondues);
           $current  = $i == $numero;
         @endphp
-        <a href="{{ route('tcf.epreuve', ['passage' => $passage->id, 'question' => $i]) }}"
+        <a href="{{ route('tcf.epreuve.show', [
+            'serie'      => $passage->discipline->serie->code,
+            'discipline' => $passage->discipline->code,
+            'question'   => $i,
+            'passage'    => $passage->id
+        ]) }}"
            class="gnum {{ $current ? 'current' : ($answered ? 'answered' : '') }}">
           {{ $i }}
         </a>
@@ -250,7 +261,12 @@
 {{-- ── Footer nav ── --}}
 <div class="exam-footer">
   @if($numero > 1)
-    <a href="{{ route('tcf.epreuve', ['passage' => $passage->id, 'question' => $numero - 1]) }}"
+            <a href="{{ route('tcf.epreuve.show', [
+            'serie'      => $passage->discipline->serie->code,
+            'discipline' => $passage->discipline->code,
+            'question'   => $i,
+            'passage'    => $passage->id
+        ]) }}"
        class="btn-nav btn-prev">← Précédent</a>
   @else
     <span></span>
@@ -269,18 +285,18 @@
 </div>
 
 <script>
-// ═══════════════════════════════════════
-//  TIMERS — basés sur l'heure serveur
-// ═══════════════════════════════════════
+  // ═══════════════════════════════════════
+  //  TIMERS — basés sur l'heure serveur
+  // ═══════════════════════════════════════
 
-// Timestamps passés depuis PHP
-const debutTimestamp = {{ $debutTimestamp }};  // timestamp UNIX du début
-const dureeMax       = {{ $dureeMax }};         // secondes totales (ex: 3600)
-const autoSoumit     = false;
+  // Timestamps passés depuis PHP
+  const debutTimestamp = {{ $debutTimestamp }};  // timestamp UNIX du début
+  const dureeMax       = {{ $dureeMax }};         // secondes totales (ex: 3600)
+  const autoSoumit     = false;
 
-// Temps restant question (reset à chaque page)
-let secsQuestion = 60;
-let soumis = false;
+  // Temps restant question (reset à chaque page)
+  let secsQuestion = 60;
+  let soumis = false;
 
 function pad(n) { return String(Math.floor(n)).padStart(2, '0'); }
 

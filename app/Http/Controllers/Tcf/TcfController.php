@@ -54,10 +54,15 @@ class TcfController extends Controller
     }
 
     // ── DÉMARRER une épreuve ──
-    public function demarrer(Request $request, TcfDiscipline $discipline)
+    public function demarrer(Request $request, TcfSerie $serie,TcfDiscipline $discipline)
     {
         $user = Auth::user();
         $serie = $discipline->serie;
+        // Sécurité : vérifier cohérence
+        if ($discipline->serie_id !== $serie->id) {
+            abort(404);
+        }
+
 
         // Vérif abonnement ou gratuit
         if (!$serie->gratuit && !TcfAbonnement::userActif($user->id)) {
@@ -85,7 +90,9 @@ class TcfController extends Controller
             'statut'        => 'en_cours',
         ]);
 
-        return redirect()->route('tcf.epreuve', [
+        return redirect()->route('tcf.epreuve.show', [
+            'serie'      => $serie->code,
+            'discipline' => $discipline->code,
             'passage'  => $passage->id,
             'question' => 1,
         ]);

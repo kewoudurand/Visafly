@@ -14,19 +14,20 @@ class TcfEpreuveController extends Controller
 {
     // ✅ Pas de __construct() — middleware dans routes/web.php
 
-    public function show(TcfPassage $passage, int $question = 1)
+    public function show(Request $request, $serie, $discipline, $question = 1)
     {
+        $passage = TcfPassage::findOrFail($request->query('passage'));
+        $question = max(1, (int) $question);
         $this->autoriser($passage);
 
-        // ✅ Calcul basé sur debut_at en base — toujours cohérent
         $debut        = $passage->debut_at->timestamp;
         $maintenant   = now()->timestamp;
         $dureeMax     = (int) ($passage->discipline->duree_minutes * 60);
         $tempsEcoule  = (int) ($maintenant - $debut);
-        $tempsRestant = (int) max(0, $dureeMax - $tempsEcoule);
+        $tempsRestant = max(0, $dureeMax - $tempsEcoule);
 
         if ($tempsRestant <= 0) {
-            return redirect()->route('tcf.terminer', $passage->id);
+            return redirect()->route('tcf.epreuve.terminer', $passage->id);
         }
 
         $questions = $passage->discipline->questions()->with('reponses')->get();
@@ -36,13 +37,8 @@ class TcfEpreuveController extends Controller
             return back()->with('error', 'Cette discipline ne contient pas encore de questions.');
         }
 
-        $numero           = max(1, min($question, $totalQ));
-        $questionCourante = $questions->firstWhere('numero', $numero);
-
-        if (!$questionCourante) {
-            $questionCourante = $questions->first();
-            $numero           = $questionCourante->numero;
-        }
+        $numero           = min(max(1, $question), $totalQ);
+        $questionCourante = $questions->firstWhere('numero', $numero) ?? $questions->first();
 
         $reponsesDonnees    = $passage->passageReponses->pluck('reponse_id', 'question_id')->toArray();
         $questionsRepondues = array_keys($reponsesDonnees);
@@ -54,8 +50,8 @@ class TcfEpreuveController extends Controller
             'totalQ'             => $totalQ,
             'numero'             => $numero,
             'tempsRestant'       => $tempsRestant,
-            'debutTimestamp'     => $debut,      // ✅ nouveau
-            'dureeMax'           => $dureeMax,   // ✅ nouveau
+            'debutTimestamp'     => $debut,
+            'dureeMax'           => $dureeMax,
             'reponsesDonnees'    => $reponsesDonnees,
             'questionsRepondues' => $questionsRepondues,
         ]);

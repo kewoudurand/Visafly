@@ -37,7 +37,7 @@
                     </div>
                 </div>
                 <div class="card-body wizard clearfix">
-                    <form id="wizard_with_validation" method="POST" action="{{ route('consultation.store') }}">
+                    <form id="wizard_with_validation" method="POST" action="{{ route('consultations.store') }}">
                         @csrf
 
                         <button type="submit" id="realSubmit" style="display:none;"></button>

@@ -6,51 +6,68 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\ConsultationController;
 use App\Http\Controllers\Tcf\TcfController;
 use App\Http\Controllers\Tcf\TcfEpreuveController;
-
+use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('index');
-});
+/*
+|--------------------------------------------------------------------------
+| Routes publiques
+|--------------------------------------------------------------------------
+*/
 
-Route::get('/register', [RegisterController::class, 'show'])->name('register');
-Route::post('/register', [RegisterController::class, 'register'])->name('register.post');
+// Page d'accueil
+Route::get('/', fn() => view('index'))->name('home');
+
+// Authentification
+Route::get('/register', [RegisterController::class, 'show'])->name('auth.register.show');
+Route::post('/register', [RegisterController::class, 'register'])->name('auth.register.store');
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('/consultation', [ConsultationController::class, 'create'])->name('consultation');
-Route::post('/consultation', [ConsultationController::class, 'store'])->name('consultation.store');
+// Consultation publique
+Route::get('/consultations', [ConsultationController::class, 'create'])->name('consultations.create');
+Route::post('/consultations', [ConsultationController::class, 'store'])->name('consultations.store');
 
 
+/*
+|--------------------------------------------------------------------------
+| Routes protégées par auth
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
 
-Route::prefix('tcf')->name('tcf.')->middleware(['auth'])->group(function () {
+    // Dashboard utilisateur
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/espace', [DashboardController::class, 'dashboard'])->name('dashboard.espace');
 
-    Route::get('/',                              [TcfController::class, 'index'])       ->name('index');
-    Route::get('/serie/{serie}',                 [TcfController::class, 'disciplines']) ->name('disciplines');
-    Route::post('/demarrer/{discipline}',        [TcfController::class, 'demarrer'])    ->name('demarrer');
-    // Route::get('/examen/tcf/{serie:code}/{discipline:code}/{question?}', [TcfEpreuveController::class, 'show'])     ->name('epreuve');
-    Route::get('/passage/{passage}/{question?}', [TcfEpreuveController::class, 'show'])->whereNumber('question')     ->name('epreuve');
-    Route::post('/passage/{passage}/repondre',   [TcfEpreuveController::class, 'repondre']) ->name('repondre');
-    Route::get('/passage/{passage}/terminer',    [TcfEpreuveController::class, 'terminer']) ->name('terminer');
-    Route::get('/passage/{passage}/resultat',    [TcfEpreuveController::class, 'resultat']) ->name('resultat');
+    /*
+    |--------------------------------------------------------------------------
+    | Routes TCF
+    |--------------------------------------------------------------------------
+    */
+    Route::prefix('tcf')->name('tcf.')->middleware(['auth'])->group(function () {
 
-    // ✅ Route abonnement ajoutée
-    Route::get('/abonnement', [TcfController::class, 'abonnement'])->name('abonnement');
+        // Pages publiques pour utilisateurs connectés
+        Route::get('/', [TcfController::class, 'index'])->name('index');
+        Route::get('/abonnement', [TcfController::class, 'abonnement'])->name('abonnement');
+        Route::get('/{serie:code}', [TcfController::class, 'disciplines'])->name('disciplines');
 
-});
-Route::middleware(['role:admin'])->group(function () {
-    // Pour l’admin :
-    Route::get('/admin/dashboard', [AdminController::class, 'dashboard'])->name('admin.dashboard');
-    Route::get('/admin/User', [AdminController::class, 'user'])->name('admin.userAdd');
-    Route::delete('/admin/User/{id}', [AdminController::class, 'deleteUser'])->name('admin.user.destroy');
-    Route::get('/admin/consultations/{id}', [AdminController::class, 'showConsultation'])->name('admin.seeUser');
-    Route::delete('/admin/consultations/{id}', [AdminController::class, 'deleteConsultation'])->name('admin.delete');
-    Route::post('/admin/consultations/{id}/statut', [AdminController::class, 'finish'])->name('admin.statut');
-    Route::get('/admin/consultations/{id}/pdf', [AdminController::class, 'consultationPdf'])->name('admin.consultations.pdf');
-});
+        // Démarrer une épreuve (nécessite permission)
+        Route::post('/{serie:code}/{discipline:code}/demarrer', [TcfController::class, 'demarrer'])
+            ->middleware('permission:pass test')
+            ->name('demarrer');
 
-Route::middleware(['role:user'])->group(function () {
-    // routes réservées à la secrétaire
+        // Gestion épreuve TCF (nécessite permission)
+        Route::middleware('permission:pass test')->group(function () {
+            Route::get('/examen/{serie:code}/{discipline:code}/{question?}', [TcfEpreuveController::class, 'show'])->name('epreuve.show');
+            Route::post('/examen/{serie:code}/{discipline:code}/repondre', [TcfEpreuveController::class, 'repondre'])
+                ->name('epreuve.repondre');
+            Route::get('/examen/{serie:code}/{discipline:code}/terminer', [TcfEpreuveController::class, 'terminer'])
+                ->name('epreuve.terminer');
+            Route::get('/examen/{serie:code}/{discipline:code}/resultats', [TcfEpreuveController::class, 'resultat'])
+                ->name('epreuve.resultat');
+        });
+    });
 });

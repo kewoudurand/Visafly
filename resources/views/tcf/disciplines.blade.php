@@ -30,7 +30,7 @@
       {{-- Carte cliquable --}}
       <div class="card h-100 border rounded-3 text-center p-3 discipline-card"
            style="cursor:pointer;transition:all .2s;border:1px solid #e0e0e0 !important;"
-           onclick="confirmerDiscipline({{ $discipline->id }}, '{{ $discipline->nom }}', {{ $discipline->duree_minutes }}, {{ $discipline->nb_questions }}, '{{ $discipline->type_questions }}')">
+           onclick="confirmerDiscipline('{{ $serie->code }}','{{ $discipline->code }}','{{ $discipline->nom }}','{{ $discipline->duree_minutes }}','{{ $discipline->nb_questions }}','{{ $discipline->type_questions }}')">
 
         {{-- Icône --}}
         <div class="d-flex justify-content-center mb-3">
@@ -132,17 +132,35 @@
 
 @push('scripts')
 <script>
-  function confirmerDiscipline(id, nom, duree, nbQ, type) {
-    const taches = type === 'qcm' ? nbQ + ' questions' : nbQ + ' tâches';
+function confirmerDiscipline(
+    serieCode,
+    disciplineCode,
+    nom,
+    duree,
+    nbQ,
+    type
+) {
+
+    const taches = type === 'qcm'
+        ? nbQ + ' questions'
+        : nbQ + ' tâches';
+
     document.getElementById('modal-desc').innerHTML =
-      `Vous êtes sur le point de débuter un test de <strong>${nom}</strong> type examen TCF Canada.<br>
-      Il comporte <strong>${taches}</strong> et dure <strong>${duree} minutes</strong> exactement.`;
+        `Vous êtes sur le point de débuter un test de <strong>${nom}</strong> type examen TCF Canada.<br>
+        Il comporte <strong>${taches}</strong> et dure <strong>${duree} minutes</strong> exactement.`;
+
+    const url = "{{ route('tcf.demarrer', ['serie' => '__SERIE__', 'discipline' => '__DISC__']) }}";
 
     document.getElementById('formDemarrer').action =
-      `{{ url('/tcf/demarrer') }}/${id}`;
+        url.replace('__SERIE__', serieCode)
+          .replace('__DISC__', disciplineCode);
 
-    new bootstrap.Modal(document.getElementById('modalConfirm')).show();
-  }
+    const modal = new bootstrap.Modal(
+        document.getElementById('modalConfirm')
+    );
+
+    modal.show();
+}
 </script>
 @endpush
 

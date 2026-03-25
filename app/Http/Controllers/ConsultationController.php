@@ -18,8 +18,7 @@ class ConsultationController extends Controller
 
             try {
                 // Timeout réduit à 5 secondes
-                $response = Http::timeout(5)
-                                ->get('https://restcountries.com/v3.1/all?fields=name,demonyms');
+                $response = Http::timeout(5)->get('https://restcountries.com/v3.1/all?fields=name,demonyms');
 
                 if ($response->successful()) {
                     $data = $response->json();

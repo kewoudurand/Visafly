@@ -131,7 +131,7 @@
               <p data-aos="fade-up" data-aos-delay="300">Avec Visafly, concrétisez vos rêves d’études, d’emploi, de voyage ou d’affaires à l’étranger. Notre équipe vous accompagne pas à pas dans toutes vos démarches de visa, placement et mobilité internationale. Fiable, rapide et professionnelle, Visafly transforme vos ambitions en réalité.</p>
 
               <div class="hero-cta" data-aos="fade-up" data-aos-delay="400">
-                <a href="{{ route('consultation') }}" class="btn-primary">
+                <a href="{{ route('consultations.create') }}" class="btn-primary">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="none">
                     <path d="M22 2L11 13" stroke="#1B3A6B" stroke-width="2.2" stroke-linecap="round"/>
                     <path d="M22 2L15 22l-4-9-9-4 20-7z" stroke="#1B3A6B" stroke-width="2.2"

@@ -3,35 +3,73 @@
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
-
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 
 class RolePermissionSeeder extends Seeder
 {
-    public function run()
+    public function run(): void
     {
+        // Réinitialiser le cache des permissions
+        app()[\Spatie\Permission\PermissionRegistrar::class]
+            ->forgetCachedPermissions();
+
+        // ── Toutes les permissions ──
         $permissions = [
-            'manage users',
-            'create test',
-            'pass test',
-            'book consultation',
-            'apply program'
+            // Plateforme
+            'manage platform', 'manage users', 'assign roles', 'view analytics',
+            // Tests
+            'create test', 'edit test', 'publish test', 'pass test', 'view result',
+            // Consultation
+            'book consultation', 'manage consultation', 'conduct consultation',
+            // Immigration
+            'create program', 'apply program', 'review application', 'approve application',
         ];
 
-        foreach ($permissions as $permission) {
-            Permission::firstOrCreate(['name'=>$permission]);
+        foreach ($permissions as $p) {
+            Permission::firstOrCreate(['name' => $p, 'guard_name' => 'web']);
         }
 
-        $admin = Role::firstOrCreate(['name'=>'admin']);
-        $student = Role::firstOrCreate(['name'=>'student']);
+        // ── Rôles + permissions ──
+        $superAdmin = Role::firstOrCreate(['name' => 'super-admin']);
+        $admin      = Role::firstOrCreate(['name' => 'admin']);
+        $instructor = Role::firstOrCreate(['name' => 'instructor']);
+        $consultant = Role::firstOrCreate(['name' => 'consultant']);
+        $student    = Role::firstOrCreate(['name' => 'student']);
+        $partner    = Role::firstOrCreate(['name' => 'partner']);
+        $user    = Role::firstOrCreate(['name' => 'user']);
 
-        $admin->givePermissionTo(Permission::all());
+        $superAdmin->givePermissionTo(Permission::all());
+
+        $admin->givePermissionTo([
+            'manage users', 'view analytics',
+            'create test', 'edit test', 'publish test', 'view result',
+            'manage consultation',
+        ]);
+
+        $instructor->givePermissionTo([
+            'create test', 'edit test', 'publish test', 'view result',
+        ]);
+
+        $consultant->givePermissionTo([
+            'manage consultation', 'conduct consultation',
+            'review application',
+        ]);
 
         $student->givePermissionTo([
-            'pass test',
+            'pass test', 'view result',
             'book consultation',
-            'apply program'
+            'apply program',
+        ]);
+
+        $partner->givePermissionTo([
+            'create program', 'review application', 'approve application',
+        ]);
+
+        $user->givePermissionTo([
+            'pass test',
+            'view result',
+            'book consultation',
         ]);
     }
 }
