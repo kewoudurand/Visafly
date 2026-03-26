@@ -11,7 +11,9 @@ class TcfAbonnement extends Model
     protected $fillable = ['user_id','forfait','montant','devise','debut_at','fin_at','actif','reference_paiement'];
     protected $casts = ['debut_at' => 'datetime', 'fin_at' => 'datetime', 'actif' => 'boolean'];
 
-    public function user() { return $this->belongsTo(User::class); }
+    public function user() { 
+        return $this->belongsTo(User::class , 'user_id');
+    }
 
     public static function userActif(int $userId): bool
     {
@@ -20,4 +22,6 @@ class TcfAbonnement extends Model
             ->where('fin_at', '>=', now())
             ->exists();
     }
+
+    
 }

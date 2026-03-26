@@ -187,7 +187,7 @@
           <!-- Boutons CTA -->
           <div class="nav-cta-group">
             <a href="{{ route('login') }}" class="btn-nav-login">Se connecter</a>
-            <a href="{{ route('consultation') }}" class="btn-nav-consult">
+            <a href="{{ route('consultations.create') }}" class="btn-nav-consult">
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
                 <path d="M22 2L11 13" stroke="#1B3A6B" stroke-width="2.2" stroke-linecap="round"/>
                 <path d="M22 2L15 22l-4-9-9-4 20-7z" stroke="#1B3A6B" stroke-width="2.2"

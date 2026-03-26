@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use App\Models\TcfAbonnement;
 
 class User extends Authenticatable
 {
@@ -22,4 +23,16 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function abonnements()
+    {
+        return $this->hasMany(TcfAbonnement::class, 'user_id');
+    }
+
+    public function abonnementActif()
+    {
+        return $this->hasOne(TcfAbonnement::class, 'user_id')
+            ->where('actif', true)
+            ->where('fin_at', '>=', now())
+            ->latest();
+    }
 }

@@ -109,7 +109,7 @@
 
             <div class="vf-dropdown-sep"></div>
 
-            <a href="{{ route('dashboard.espace') }}" class="vf-profile-item">
+            <a href="{{ route('admin.users.index') }}" class="vf-profile-item">
               <i class="bi bi-person-circle"></i> Mon profil
             </a>
             <a href="{{ route('tcf.index') }}" class="vf-profile-item">

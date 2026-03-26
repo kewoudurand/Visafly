@@ -8,6 +8,9 @@ use App\Http\Controllers\Tcf\TcfController;
 use App\Http\Controllers\Tcf\TcfEpreuveController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RolePermissionController;
+use App\Http\Controllers\Admin\AbonnementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -69,5 +72,29 @@ Route::middleware('auth')->group(function () {
             Route::get('/examen/{serie:code}/{discipline:code}/resultats', [TcfEpreuveController::class, 'resultat'])
                 ->name('epreuve.resultat');
         });
+    });
+
+    Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+
+        // ── Utilisateurs ──
+        Route::resource('users', UserController::class);
+        Route::post('/users/{user}/change-role',
+            [UserController::class, 'changeRole'])->name('users.change-role');
+        Route::post('/users/{user}/abonnement',
+            [UserController::class, 'toggleAbonnement'])->name('users.toggle-abonnement');
+
+        // ── Rôles ──
+        Route::get('/roles',           [RolePermissionController::class, 'rolesIndex'])  ->name('roles.index');
+        Route::post('/roles',          [RolePermissionController::class, 'rolesStore'])  ->name('roles.store');
+        Route::put('/roles/{role}',    [RolePermissionController::class, 'rolesUpdate']) ->name('roles.update');
+        Route::delete('/roles/{role}', [RolePermissionController::class, 'rolesDestroy'])->name('roles.destroy');
+
+        // ── Permissions ──
+        Route::get('/permissions',              [RolePermissionController::class, 'permissionsIndex'])  ->name('permissions.index');
+        Route::post('/permissions',             [RolePermissionController::class, 'permissionsStore'])  ->name('permissions.store');
+        Route::delete('/permissions/{permission}', [RolePermissionController::class, 'permissionsDestroy'])->name('permissions.destroy');
+
+        // ── Abonnements ──
+        Route::get('/abonnements', [AbonnementController::class, 'index'])->name('abonnements.index');
     });
 });
