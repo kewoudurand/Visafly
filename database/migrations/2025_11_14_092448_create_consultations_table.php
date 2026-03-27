@@ -45,7 +45,6 @@ return new class extends Migration
                 $table->text('message')->nullable();
 
                 $table->boolean('need_consultation')->default(false);
-                $table->boolean('status')->default(0);
 
                 $table->timestamps();
             });

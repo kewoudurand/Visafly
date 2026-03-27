@@ -34,66 +34,109 @@
       </div>
 
       <!-- Navigation -->
-      <nav style="padding:.75rem 0;">
+    <nav style="padding:.75rem 0;">
 
         <a href="{{ route('dashboard.index') }}"
-           style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
-                  color:{{ request()->routeIs('dashboard') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
-                  background:{{ request()->routeIs('dashboard') ? 'rgba(245,166,35,.12)' : 'transparent' }};
-                  text-decoration:none;border-left:{{ request()->routeIs('dashboard') ? '3px solid #F5A623' : '3px solid transparent' }};">
-          <i class="bi bi-speedometer2"></i> Tableau de bord
-        </a>
+            style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                    color:{{ request()->routeIs('dashboard') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                    background:{{ request()->routeIs('dashboard') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                    text-decoration:none;
+                    border-left:{{ request()->routeIs('dashboard') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                <i class="bi bi-speedometer2"></i> Tableau de bord
+          </a>
 
-        @can('pass test')
-        <a href="{{ route('tcf.index') }}"
-           style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
-                  color:{{ request()->routeIs('tcf.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
-                  background:{{ request()->routeIs('tcf.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
-                  text-decoration:none;border-left:{{ request()->routeIs('tcf.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
-          <i class="bi bi-journal-check"></i> Mes épreuves
-        </a>
-        @endcan
+            @can('pass test')
+            <a href="{{ route('tcf.index') }}"
+            style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                    color:{{ request()->routeIs('tcf.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                    background:{{ request()->routeIs('tcf.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                    text-decoration:none;
+                    border-left:{{ request()->routeIs('tcf.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                <i class="bi bi-journal-check"></i> Mes épreuves
+            </a>
+            @endcan
 
-        @can('book consultation')
-        <a href="{{ route('consultations.create') }}"
-           style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
-                  color:rgba(255,255,255,.7);text-decoration:none;border-left:3px solid transparent;">
-          <i class="bi bi-calendar-check"></i> Consultations
-        </a>
-        @endcan
+            @can('book consultation')
+                <a href="{{ route('consultations.create') }}"
+                style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                        color:{{ request()->routeIs('consultation*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                        background:{{ request()->routeIs('consultation*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                        text-decoration:none;
+                        border-left:{{ request()->routeIs('consultation*') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                    <i class="bi bi-calendar-check"></i> Consultations
+                </a>
+            @endcan
 
-        @can('manage users')
-        <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.3);
-                    text-transform:uppercase;letter-spacing:.8px;padding:12px 18px 4px;">
-          Administration
-        </div>
-        <a href="#"
-           style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
-                  color:rgba(255,255,255,.7);text-decoration:none;border-left:3px solid transparent;">
-          <i class="bi bi-people"></i> Utilisateurs
-        </a>
-        @endcan
+            {{-- ── SECTION ADMINISTRATION ── --}}
+            @canany(['manage users', 'assign roles', 'manage platform', 'view analytics'])
+            <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.3);
+                        text-transform:uppercase;letter-spacing:.8px;padding:16px 18px 6px;">
+                Administration
+            </div>
+            @endcanany
 
-        @can('view analytics')
-        <a href="#"
-           style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
-                  color:rgba(255,255,255,.7);text-decoration:none;border-left:3px solid transparent;">
-          <i class="bi bi-bar-chart-line"></i> Analytics
-        </a>
-        @endcan
+            @can('manage users')
+            <a href="{{ route('admin.users.index') }}"
+            style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                    color:{{ request()->routeIs('admin.users.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                    background:{{ request()->routeIs('admin.users.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                    text-decoration:none;
+                    border-left:{{ request()->routeIs('admin.users.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                <i class="bi bi-people"></i> Utilisateurs
+            </a>
+            @endcan
 
-        <div style="margin-top:1rem;border-top:1px solid rgba(255,255,255,.1);padding-top:.75rem;">
-          <form method="POST" action="{{ route('logout') }}">
-            @csrf
-            <button type="submit"
-                    style="display:flex;align-items:center;gap:10px;padding:10px 18px;
-                           font-size:13px;color:rgba(226,75,74,.8);background:none;
-                           border:none;cursor:pointer;width:100%;border-left:3px solid transparent;">
-              <i class="bi bi-box-arrow-right"></i> Déconnexion
-            </button>
-          </form>
-        </div>
-      </nav>
+            @can('assign roles')
+            <a href="{{ route('admin.roles.index') }}"
+            style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                    color:{{ request()->routeIs('admin.roles.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                    background:{{ request()->routeIs('admin.roles.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                    text-decoration:none;
+                    border-left:{{ request()->routeIs('admin.roles.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                <i class="bi bi-shield-lock"></i> Rôles & Permissions
+            </a>
+            @endcan
+
+            @can('manage users')
+            <a href="{{ route('admin.abonnements.index') }}"
+            style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                    color:{{ request()->routeIs('admin.abonnements.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                    background:{{ request()->routeIs('admin.abonnements.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                    text-decoration:none;
+                    border-left:{{ request()->routeIs('admin.abonnements.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                <i class="bi bi-credit-card"></i> Abonnements
+            </a>
+            @endcan
+
+            @can('view analytics')
+            <a href="#"
+            style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                    color:rgba(255,255,255,.7);text-decoration:none;border-left:3px solid transparent;">
+                <i class="bi bi-bar-chart-line"></i> Analytics
+            </a>
+            @endcan
+
+            @can('manage consultation')
+              <a href="{{ route('admin.consultations.index') }}"style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                    color:rgba(255,255,255,.7);text-decoration:none;border-left:3px solid transparent;">
+                  <i class="bi bi-calendar-check"></i> Consultations
+              </a>
+            @endcan
+
+            {{-- Déconnexion --}}
+            <div style="margin-top:1rem;border-top:1px solid rgba(255,255,255,.1);padding-top:.75rem;">
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit"
+                            style="display:flex;align-items:center;gap:10px;padding:10px 18px;
+                                font-size:13px;color:rgba(226,75,74,.8);background:none;
+                                border:none;cursor:pointer;width:100%;border-left:3px solid transparent;">
+                        <i class="bi bi-box-arrow-right"></i> Déconnexion
+                    </button>
+                </form>
+            </div>
+        </ul>
+    </nav>
     </aside>
 
     <!-- Contenu principal -->

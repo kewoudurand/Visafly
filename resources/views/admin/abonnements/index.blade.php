@@ -88,11 +88,11 @@
                         <div style="width:32px;height:32px;border-radius:50%;background:#1B3A6B;
                                     display:flex;align-items:center;justify-content:center;
                                     font-size:11px;font-weight:700;color:#F5A623;flex-shrink:0;">
-                            {{ strtoupper(substr($abo->user->name ?? '?', 0, 2)) }}
+                            {{ strtoupper(substr($abo->user->first_name ?? '?', 0, 2)) }}
                         </div>
                         <div>
                             <div style="font-size:13px;font-weight:600;color:#1B3A6B;">
-                                {{ $abo->user->name ?? 'Supprimé' }}
+                                {{ $abo->user->first_name ?? 'Supprimé' }} {{ $abo->user->last_name ?? '' }}
                             </div>
                             <div style="font-size:11px;color:#888;">{{ $abo->user->email ?? '' }}</div>
                         </div>

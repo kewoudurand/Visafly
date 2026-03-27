@@ -23,6 +23,10 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+    public function consultations()
+    {
+        return $this->hasMany(Consultation::class);
+    }
     public function abonnements()
     {
         return $this->hasMany(TcfAbonnement::class, 'user_id');
