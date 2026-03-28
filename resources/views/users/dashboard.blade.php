@@ -146,7 +146,7 @@
         <div style="font-size:14px;font-weight:700;color:#1B3A6B;">
           <i class="bi bi-journal-check me-2" style="color:#F5A623;"></i>Mes épreuves TCF
         </div>
-        <a href="{{ route('tcf.index') }}"
+        <a href="{{ route('langues.index') }}"
            style="font-size:12px;color:#F5A623;font-weight:600;text-decoration:none;">
           Toutes les séries →
         </a>
@@ -178,7 +178,7 @@
         <i class="bi bi-journal" style="font-size:28px;display:block;margin-bottom:8px;"></i>
         <span style="font-size:13px;">Vous n'avez pas encore passé d'épreuve.</span>
         <div style="margin-top:10px;">
-          <a href="{{ route('tcf.index') }}"
+          <a href="{{ route('langues.index') }}"
              style="font-size:13px;color:#F5A623;font-weight:600;text-decoration:none;">
             Commencer une épreuve →
           </a>
@@ -239,7 +239,7 @@
       <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;
                   letter-spacing:.6px;margin-bottom:14px;">Accès rapides</div>
       <div style="display:flex;flex-direction:column;gap:8px;">
-        <a href="{{ route('tcf.index') }}" class="quick-btn">
+        <a href="{{ route('langues.index') }}" class="quick-btn">
           <div class="quick-btn-icon" style="background:rgba(27,58,107,.08);">
             <i class="bi bi-book" style="color:#1B3A6B;"></i>
           </div>

@@ -253,7 +253,7 @@
 
           <!-- TCF -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="150">
-            <a href="{{ route('tcf.index') }}" class="btn-lang btn-lang-or">
+            <a href="{{ route('langues.index') }}" class="btn-lang btn-lang-or">
               <div class="btn-lang-icon btn-lang-icon-or">
                 <i class="bi bi-pencil-square"></i>
               </div>

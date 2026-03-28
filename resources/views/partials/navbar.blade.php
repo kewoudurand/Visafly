@@ -11,7 +11,7 @@
 {{-- ══ BARRE D'ANNONCE ══ --}}
 <div class="vf-announce-bar">
   <span>🎯 Nouveau : Préparez dès maintenant votre TCF/TEF sur VisaFly ! Profitez de nos séries d'entraînement complètes.</span>
-  <a href="{{ route('tcf.index') }}">Commencer →</a>
+  <a href="{{ route('langues.index') }}">Commencer →</a>
 </div>
 
 {{-- ══ HEADER ══ --}}
@@ -32,17 +32,25 @@
     {{-- ══ LIENS HORIZONTAUX (public) ══ --}}
     <nav class="vf-nav">
       <ul class="vf-nav-list">
-        <li><a href="{{ url('/') }}"          class="{{ request()->is('/') ? 'active' : '' }}">Accueil</a></li>
+        <li><a href="{{ url('/') }}"class="{{ request()->is('/') ? 'active' : '' }}">Accueil</a></li>
         <li><a href="{{ url('/#about') }}">À propos</a></li>
-        <li class="has-dropdown">
-          <a href="#">Nos langues <i class="bi bi-chevron-down"></i></a>
-          <div class="vf-dropdown">
-            <a href="{{ route('tcf.index') }}"><i class="bi bi-book me-2" style="font-size:14px;"></i>TCF Canada</a>
-            <a href="{{ route('tcf.index') }}"><i class="bi bi-book me-2" style="font-size:14px;"></i>TEF Canada</a>
-            <a href="#"><i class="bi bi-mic me-2" style="font-size:14px;"></i>IELTS</a>
-            <a href="#"><i class="bi bi-translate me-2" style="font-size:14px;"></i>TestDaF / Goethe</a>
-          </div>
-        </li>
+            <li class="has-dropdown">
+              <a href="#">Nos langues <i class="bi bi-chevron-down"></i></a>
+              <div class="vf-dropdown">
+                <a href="{{ route('langues.series', 'tcf') }}">
+                  <i class="bi bi-pencil-square me-2"></i>TCF Canada
+                </a>
+                <a href="{{ route('langues.series', 'tef') }}">
+                  <i class="bi bi-pencil-square me-2"></i>TEF Canada
+                </a>
+                <a href="{{ route('langues.series', 'ielts') }}">
+                  <i class="bi bi-translate me-2"></i>IELTS
+                </a>
+                <a href="{{ route('langues.series', 'goethe') }}">
+                  <i class="bi bi-globe me-2"></i>Goethe-Zertifikat
+                </a>
+              </div>
+            </li>
         <li><a href="{{ url('/#services') }}">Nos services</a></li>
         <li><a href="{{ url('/#contact') }}">Contact</a></li>
       </ul>
@@ -75,10 +83,10 @@
         {{-- Avatar + dropdown --}}
         <div class="vf-profile-menu">
 
-          <button class="vf-avatar-btn" id="profileToggle" title="{{ Auth::user()->name }}">
+          <button class="vf-avatar-btn" id="profileToggle" title="{{ Auth::user()->first_name }}">
             @if(Auth::user()->avatar)
               <img src="{{ asset('storage/'.Auth::user()->avatar) }}"
-                   alt="{{ Auth::user()->name }}" class="vf-avatar-img">
+                   alt="{{ Auth::user()->first_name }}" class="vf-avatar-img">
             @else
               {{-- Initiales depuis name (ex: "Admin VisaFly" → "AV") --}}
               <div class="vf-avatar-initials">
@@ -133,7 +141,7 @@
                 : 'Mon espace' }}
           </a>
             @can('pass test')
-            <a href="{{ route('tcf.index') }}" class="vf-dd-item">
+            <a href="{{ route('langues.index') }}" class="vf-dd-item">
               <i class="bi bi-journal-check"></i> Mes épreuves TCF
             </a>
             @endcan

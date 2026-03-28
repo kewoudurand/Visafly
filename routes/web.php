@@ -12,8 +12,10 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RolePermissionController;
 use App\Http\Controllers\Admin\AbonnementController;
-use App\Http\Controllers\Admin\ConsultationAdminController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\LangueEpreuveController;
+use App\Http\Controllers\Admin\LangueController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,7 +28,7 @@ Route::get('/', fn() => view('index'))->name('home');
 
 // Authentification
 Route::get('/register', [RegisterController::class, 'show'])->name('auth.register.show');
-Route::post('/register', [RegisterController::class, 'register'])->name('auth.register.store');
+Route::post('/register', [RegisterController::class, 'register'])->name('register.store');
 
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
@@ -35,12 +37,11 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 // Consultation publique
 Route::get('/consultations', [UserConsultationController::class, 'create'])->name('consultations.create');
 Route::post('/consultations', [UserConsultationController::class, 'store'])->name('consultations.store');
-
-
-// ─── CÔTÉ USER (public + connecté) ───────────────────────
-// Route::get('/consultation',       [UserConsultationController::class, 'create'])->name('consultation');
-// Route::post('/consultation',      [UserConsultationController::class, 'store'])->name('consultation.store');
 Route::get('/consultation/merci', [UserConsultationController::class, 'merci'])->name('consultation.merci');
+
+        Route::get('/abonnement', [TcfController::class, 'abonnement'])->name('tcf.abonnement');
+        Route::get('/langues',                      [LangueEpreuveController::class, 'index'])->name('langues.index');
+Route::get('/langues/{code}/series',[LangueEpreuveController::class, 'series'])->name('langues.series');
  
  
 // ─── CÔTÉ ADMIN ──────────────────────────────────────────
@@ -84,13 +85,8 @@ Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () 
 });
 
 
-/*
-|--------------------------------------------------------------------------
-| Routes protégées par auth
-|--------------------------------------------------------------------------
-*/
 Route::middleware('auth')->group(function () {
-    
+
     Route::get('/profil',             [ProfileController::class, 'edit'])          ->name('profil.edit');
     Route::post('/profil',            [ProfileController::class, 'update'])        ->name('profil.update');
     Route::post('/profil/password',   [ProfileController::class, 'updatePassword'])->name('profil.password');
@@ -103,70 +99,15 @@ Route::middleware('auth')->group(function () {
     Route::get('/espace', [DashboardController::class, 'dashboard'])->name('dashboard.espace');
     Route::get('/espace', [UserConsultationController::class, 'index'])->name('dashboard');
 
-    /*
-    |--------------------------------------------------------------------------
-    | Routes TCF
-    |--------------------------------------------------------------------------
-    */
-    Route::prefix('tcf')->name('tcf.')->middleware(['auth'])->group(function () {
+    Route::get('/langues/{code}/series/{serie}/disciplines',[LangueEpreuveController::class, 'disciplines'])->name('langues.disciplines');
+    Route::get('/langues/{code}/series/{serie}/disciplines/{discipline}/epreuve',[LangueEpreuveController::class, 'epreuve'])->name('langues.epreuve');
+    Route::post('/langues/{code}/series/{serie}/disciplines/{discipline}/soumettre',[LangueEpreuveController::class, 'soumettre'])->name('langues.epreuve.soumettre');
 
-        // Pages publiques pour utilisateurs connectés
-        Route::get('/', [TcfController::class, 'index'])->name('index');
-        Route::get('/abonnement', [TcfController::class, 'abonnement'])->name('abonnement');
-        Route::get('/{serie:code}', [TcfController::class, 'disciplines'])->name('disciplines');
 
-        // Démarrer une épreuve (nécessite permission)
-        Route::post('/{serie:code}/{discipline:code}/demarrer', [TcfController::class, 'demarrer'])
-            ->middleware('permission:pass test')
-            ->name('demarrer');
-
-        // Gestion épreuve TCF (nécessite permission)
-        Route::middleware('permission:pass test')->group(function () {
-            Route::get('/examen/{serie:code}/{discipline:code}/{question?}', [TcfEpreuveController::class, 'show'])->name('epreuve.show');
-            Route::post('/examen/{serie:code}/{discipline:code}/repondre', [TcfEpreuveController::class, 'repondre'])
-                ->name('epreuve.repondre');
-            Route::get('/examen/{serie:code}/{discipline:code}/terminer', [TcfEpreuveController::class, 'terminer'])
-                ->name('epreuve.terminer');
-            Route::get('/examen/{serie:code}/{discipline:code}/resultats', [TcfEpreuveController::class, 'resultat'])
-                ->name('epreuve.resultat');
-        });
-    });
 
     Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
-    // Route::get('/consultations',[ConsultationController::class, 'index'])->name('consultations.index');
-    // Route::get('/consultations/{consultation}',
-    //     [ConsultationController::class, 'show'])->name('consultations.show');
- 
-    // Route::post('/consultations/{consultation}/approuver',
-    //     [ConsultationController::class, 'approuver'])->name('consultations.approuver');
- 
-    // Route::post('/consultations/{consultation}/decliner',
-    //     [ConsultationController::class, 'decliner'])->name('consultations.decliner');
- 
-    // Route::post('/consultations/{consultation}/en-cours',
-    //     [ConsultationController::class, 'enCours'])->name('consultations.en-cours');
- 
-    // Route::post('/consultations/{consultation}/terminer',
-    //     [ConsultationController::class, 'terminer'])->name('consultations.terminer');
- 
-    // Route::post('/consultations/{consultation}/assigner',
-    //     [ConsultationController::class, 'assigner'])->name('consultations.assigner');
- 
-    // Route::post('/consultations/{consultation}/note',
-    //     [ConsultationController::class, 'note'])->name('consultations.note');
- 
-    // Route::post('/consultations/{consultation}/lien-visio',
-    //     [ConsultationController::class, 'lienVisio'])->name('consultations.lien-visio');
- 
-    // Route::post('/consultations/{consultation}/toggle-urgent',
-    //     [ConsultationController::class, 'toggleUrgent'])->name('consultations.toggle-urgent');
- 
-    // Route::delete('/consultations/{consultation}',
-    //     [ConsultationController::class, 'destroy'])->name('consultations.destroy');
- 
-    // Route::get('/consultations/export',
-    //     [ConsultationController::class, 'export'])->name('consultations.export');
+        Route::get('/admin/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
         // ── Utilisateurs ──
         Route::resource('users', UserController::class);
@@ -187,5 +128,22 @@ Route::middleware('auth')->group(function () {
 
         // ── Abonnements ──
         Route::get('/abonnements', [AbonnementController::class, 'index'])->name('abonnements.index');
+
+            Route::get('/langues', [LangueController::class, 'index'])          ->name('langues.index');
+    Route::get('/langues/{langue}',[LangueController::class, 'show'])           ->name('langues.show');
+ 
+    Route::get('/langues/disciplines/{discipline}/series/create',
+                                                              [LangueController::class, 'createSerie'])    ->name('series.create');
+    Route::post('/langues/disciplines/{discipline}/series',   [LangueController::class, 'storeSerie'])     ->name('series.store');
+    Route::get('/langues/series/{serie}',                     [LangueController::class, 'showSerie'])      ->name('series.show');
+    Route::get('/langues/series/{serie}/edit',                [LangueController::class, 'editSerie'])      ->name('series.edit');
+    Route::put('/langues/series/{serie}',                     [LangueController::class, 'updateSerie'])    ->name('series.update');
+    Route::delete('/langues/series/{serie}',                  [LangueController::class, 'destroySerie'])   ->name('series.destroy');
+ 
+    Route::get('/langues/series/{serie}/questions/create',    [LangueController::class, 'createQuestion']) ->name('questions.create');
+    Route::post('/langues/series/{serie}/questions',          [LangueController::class, 'storeQuestion'])  ->name('questions.store');
+    Route::get('/langues/questions/{question}/edit',          [LangueController::class, 'editQuestion'])   ->name('questions.edit');
+    Route::put('/langues/questions/{question}',               [LangueController::class, 'updateQuestion']) ->name('questions.update');
+    Route::delete('/langues/questions/{question}',            [LangueController::class, 'destroyQuestion'])->name('questions.destroy');
     });
 });

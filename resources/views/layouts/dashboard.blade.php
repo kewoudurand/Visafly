@@ -46,7 +46,7 @@
           </a>
 
             @can('pass test')
-            <a href="{{ route('tcf.index') }}"
+            <a href="{{ route('langues.index') }}"
             style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
                     color:{{ request()->routeIs('tcf.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
                     background:{{ request()->routeIs('tcf.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
@@ -86,6 +86,17 @@
             </a>
             @endcan
 
+            @can('create test')
+              <a href="{{ route('admin.langues.index') }}"
+                style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                        color:{{ request()->routeIs('admin.langues.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                        background:{{ request()->routeIs('admin.langues.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                        text-decoration:none;
+                        border-left:{{ request()->routeIs('admin.langues.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                  <i class="bi bi-translate"></i> Gestion langues
+              </a>
+            @endcan
+
             @can('assign roles')
             <a href="{{ route('admin.roles.index') }}"
             style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
@@ -109,9 +120,12 @@
             @endcan
 
             @can('view analytics')
-            <a href="#"
-            style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
-                    color:rgba(255,255,255,.7);text-decoration:none;border-left:3px solid transparent;">
+            <a href="{{ route('admin.analytics.index') }}"
+              style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                      color:{{ request()->routeIs('admin.analytics.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                      background:{{ request()->routeIs('admin.analytics.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                      text-decoration:none;
+                      border-left:{{ request()->routeIs('admin.analytics.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
                 <i class="bi bi-bar-chart-line"></i> Analytics
             </a>
             @endcan
