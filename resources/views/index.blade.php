@@ -253,7 +253,7 @@
 
           <!-- TCF -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="150">
-            <a href="{{ route('langues.index') }}" class="btn-lang btn-lang-or">
+            <a href="{{ route('langues.series', 'tcf') }}" class="btn-lang btn-lang-or">
               <div class="btn-lang-icon btn-lang-icon-or">
                 <i class="bi bi-pencil-square"></i>
               </div>
@@ -270,7 +270,7 @@
 
           <!-- TEF -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <a href="tef.html" class="btn-lang btn-lang-or">
+            <a href="{{ route('langues.series', 'tef') }}" class="btn-lang btn-lang-or">
               <div class="btn-lang-icon btn-lang-icon-or">
                 <i class="bi bi-pencil-square"></i>
               </div>
@@ -287,7 +287,7 @@
 
           <!-- IELTS / Anglais -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="250">
-            <a href="ielts.html" class="btn-lang btn-lang-marine">
+            <a href="{{ route('langues.series', 'ielts') }}" class="btn-lang btn-lang-marine">
               <div class="btn-lang-icon btn-lang-icon-marine">
                 <i class="bi bi-translate"></i>
               </div>
@@ -304,7 +304,7 @@
 
           <!-- TestDaF / Allemand -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <a href="testdaf.html" class="btn-lang btn-lang-marine">
+            <a href="{{ route('langues.series', 'goethe') }}" class="btn-lang btn-lang-marine">
               <div class="btn-lang-icon btn-lang-icon-marine">
                 <i class="bi bi-globe-europe-africa"></i>
               </div>

@@ -172,12 +172,16 @@ class UserController extends Controller
 
         $request->validate(['role' => 'required|exists:roles,name']);
 
-        $user->syncRoles([$request->role]);
+        $user->load('roles', 'permissions');
+        $abonnement = TcfAbonnement::where('user_id', $user->id)
+            ->where('actif', true)
+            ->where('fin_at', '>=', now())
+            ->latest()->first();
 
-        return response()->json([
-            'success' => true,
-            'message' => "Rôle changé en {$request->role}",
-        ]);
+        $historique = TcfAbonnement::where('user_id', $user->id)
+            ->latest()->get();
+
+        return view('admin.users.show', compact('user', 'abonnement', 'historique'));
     }
 
     // ── Activer / Désactiver un abonnement manuel ──

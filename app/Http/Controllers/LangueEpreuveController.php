@@ -20,7 +20,8 @@ class LangueEpreuveController extends Controller
     // ═══════════════════════════════════════
     public function index()
     {
-        return view('langues.index');
+        
+        return view('langues.series');
     }
 
     // ═══════════════════════════════════════

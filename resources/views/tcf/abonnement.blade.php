@@ -13,27 +13,7 @@
 <body style="background:#f8f9fb;">
 
   {{-- Navbar --}}
-  <header id="header" class="header d-flex align-items-center fixed-top">
-    <div class="container-fluid container-xl position-relative d-flex align-items-center justify-content-between">
-      <a href="{{ url('/') }}" class="logo d-flex align-items-center gap-2" style="text-decoration:none;">
-        <div style="width:34px;height:34px;background:#1B3A6B;border-radius:8px;display:flex;align-items:center;justify-content:center;">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
-            <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#F5A623"/>
-            <path d="M2 17l10 5 10-5M2 12l10 5 10-5" stroke="#F5A623" stroke-width="1.8" stroke-linecap="round"/>
-          </svg>
-        </div>
-        <h5 class="mb-0" style="font-size:19px;font-weight:800;color:#1B3A6B;letter-spacing:-.3px;">
-          Visa<span style="color:#F5A623;">Fly</span>
-        </h5>
-      </a>
-      <nav class="navmenu">
-        <ul>
-          <li><a href="{{ url('/') }}">Accueil</a></li>
-          <li><a href="{{ route('tcf.index') }}" style="color:#F5A623;font-weight:600;">TCF</a></li>
-        </ul>
-      </nav>
-    </div>
-  </header>
+  @include('partials.navbar')
 
   {{-- Contenu --}}
   <main style="padding-top:90px;padding-bottom:60px;min-height:100vh;">
@@ -123,7 +103,7 @@
 
       {{-- Retour --}}
       <div class="text-center">
-        <a href="{{ route('tcf.index') }}"
+        <a href="{{ url('/') }}"
            class="btn btn-outline-secondary rounded-pill px-4">
           <i class="bi bi-arrow-left me-1"></i> Retour aux séries
         </a>

@@ -30,12 +30,12 @@ class LangueController extends Controller
     public function index()
     {
         $this->check();
-
-        $langues = Langue::with(['disciplines.series' => function ($q) {
-            $q->withCount('questions');
-        }])->orderBy('ordre')->get();
-
-        return view('index', compact('langues'));
+ 
+        $langues = Langue::with([
+            'disciplines.series' => fn($q) => $q->withCount('questions'),
+        ])->orderBy('ordre')->get();
+ 
+        return view('admin.langues.index', compact('langues'));
     }
 
     // ════════════════════════════════════════
@@ -89,7 +89,7 @@ class LangueController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.langues.series.show', $serie)
+            ->route('admin.series.show', $serie)
             ->with('success', "Série « {$serie->titre} » créée avec succès.");
     }
 
@@ -109,8 +109,9 @@ class LangueController extends Controller
     public function editSerie(LangueSerie $serie)
     {
         $this->check();
+        $langues = Langue::orderBy('ordre')->get();
         $serie->load('discipline.langue');
-        return view('admin.langues.series.edit', compact('serie'));
+        return view('admin.langues.series.edit', compact('serie', 'langues'));
     }
 
     public function updateSerie(Request $request, LangueSerie $serie)
@@ -237,7 +238,7 @@ class LangueController extends Controller
         ]);
 
         return redirect()
-            ->route('admin.langues.series.show', $serie)
+            ->route('admin.series.show', $serie)
             ->with('success', 'Question ajoutée avec succès.');
     }
 

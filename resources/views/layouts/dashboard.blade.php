@@ -25,7 +25,15 @@
         <div style="width:52px;height:52px;border-radius:50%;background:rgba(245,166,35,.2);
                     border:2px solid #F5A623;display:flex;align-items:center;justify-content:center;
                     margin:0 auto 10px;font-size:18px;font-weight:700;color:#F5A623;">
-          {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}
+                        <div class="vf-profile-head-avatar">
+                @if(Auth::user()->avatar)
+                  <img src="{{ asset('storage/'.Auth::user()->avatar) }}" alt="">
+                @else
+                  <div class="vf-avatar-initials lg">
+                    {{ strtoupper(substr(Auth::user()->first_name, 0, 1)) }}
+                  </div>
+                @endif
+              </div>
         </div>
         <div style="font-size:13px;font-weight:600;color:#fff;">{{ Auth::user()->first_name }} {{ Auth::user()->last_name }}</div>
         <div style="font-size:10px;color:rgba(255,255,255,.5);margin-top:2px;">
@@ -46,7 +54,7 @@
           </a>
 
             @can('pass test')
-            <a href="{{ route('langues.index') }}"
+            <a href="{{ route('langues.series','tcf') }}"
             style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
                     color:{{ request()->routeIs('tcf.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
                     background:{{ request()->routeIs('tcf.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};

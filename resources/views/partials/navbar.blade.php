@@ -154,7 +154,7 @@
 
             <div class="vf-dd-sep"></div>
 
-            <a href="#" class="vf-dd-item">
+            <a href="{{route('profil.edit')}}" class="vf-dd-item">
               <i class="bi bi-gear"></i> Paramètres
             </a>
 

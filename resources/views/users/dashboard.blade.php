@@ -47,10 +47,10 @@
 
 {{-- Alertes session --}}
 @if(session('success'))
-<div class="alert rounded-3 d-flex align-items-center gap-2 mb-3"
-     style="background:rgba(28,200,138,.08);border:1px solid rgba(28,200,138,.3);color:#0f6e56;">
-  <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
-</div>
+  <div class="alert rounded-3 d-flex align-items-center gap-2 mb-3"
+      style="background:rgba(28,200,138,.08);border:1px solid rgba(28,200,138,.3);color:#0f6e56;">
+    <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
+  </div>
 @endif
 
 {{-- ══ STATS ══ --}}

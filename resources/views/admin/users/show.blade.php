@@ -1,6 +1,6 @@
 {{-- resources/views/admin/users/show.blade.php --}}
 @extends('layouts.dashboard')
-@section('title', 'Profil — '.$user->name)
+@section('title', 'Profil '.$user->name)
 
 @section('content')
 
