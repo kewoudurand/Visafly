@@ -117,14 +117,26 @@
             @endcan
 
             @can('manage users')
-            <a href="{{ route('admin.abonnements.index') }}"
-            style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
-                    color:{{ request()->routeIs('admin.abonnements.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
-                    background:{{ request()->routeIs('admin.abonnements.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
-                    text-decoration:none;
-                    border-left:{{ request()->routeIs('admin.abonnements.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
-                <i class="bi bi-credit-card"></i> Abonnements
-            </a>
+              <a href="{{ route('admin.abonnements.plans.index') }}"
+                style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                        color:{{ request()->routeIs('admin.abonnements.plans.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                        background:{{ request()->routeIs('admin.abonnements.plans.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                        text-decoration:none;
+                        border-left:{{ request()->routeIs('admin.abonnements.plans.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                  <i class="bi bi-credit-card"></i> Plans abonnement
+              </a>
+            @endcan
+
+
+            @can('view analytics')
+              <a href="{{ route('admin.analytics.langues') }}"
+                style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                        color:{{ request()->routeIs('admin.analytics.langues') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                        background:{{ request()->routeIs('admin.analytics.langues') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                        text-decoration:none;
+                        border-left:{{ request()->routeIs('admin.analytics.langues') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                  <i class="bi bi-translate"></i> Analytics langues
+              </a>
             @endcan
 
             @can('view analytics')

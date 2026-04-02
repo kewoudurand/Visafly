@@ -1,11 +1,9 @@
 {{--
-  resources/views/partials/navbar.blade.php
-  @include('partials.navbar')
-
-  ✅  NAVBAR HORIZONTALE UNIQUEMENT
-  ✅  La sidebar verticale reste dans layouts/dashboard.blade.php
-  ✅  Connecté  → avatar + cloche + dropdown profil
-  ✅  Non conn. → boutons Créer un compte + Se connecter
+  resources/views/partials/navbar.blade.php - VERSION CORRIGÉE
+  ✅ Responsive mobile CORRECT
+  ✅ Bouton S'inscrire visible sur mobile
+  ✅ Menu hamburger adapté à l'écran
+  ✅ Tous les éléments accessibles
 --}}
 
 {{-- ══ BARRE D'ANNONCE ══ --}}
@@ -30,27 +28,27 @@
     </a>
 
     {{-- ══ LIENS HORIZONTAUX (public) ══ --}}
-    <nav class="vf-nav">
+    <nav class="vf-nav" id="vf-nav-menu">
       <ul class="vf-nav-list">
-        <li><a href="{{ url('/') }}"class="{{ request()->is('/') ? 'active' : '' }}">Accueil</a></li>
+        <li><a href="{{ url('/') }}" class="{{ request()->is('/') ? 'active' : '' }}">Accueil</a></li>
         <li><a href="{{ url('/#about') }}">À propos</a></li>
-            <li class="has-dropdown">
-              <a href="#">Nos langues <i class="bi bi-chevron-down"></i></a>
-              <div class="vf-dropdown">
-                <a href="{{ route('langues.series', 'tcf') }}">
-                  <i class="bi bi-pencil-square me-2"></i>TCF Canada
-                </a>
-                <a href="{{ route('langues.series', 'tef') }}">
-                  <i class="bi bi-pencil-square me-2"></i>TEF Canada
-                </a>
-                <a href="{{ route('langues.series', 'ielts') }}">
-                  <i class="bi bi-translate me-2"></i>IELTS
-                </a>
-                <a href="{{ route('langues.series', 'goethe') }}">
-                  <i class="bi bi-globe me-2"></i>Goethe-Zertifikat
-                </a>
-              </div>
-            </li>
+        <li class="has-dropdown">
+          <a href="#">Nos langues <i class="bi bi-chevron-down"></i></a>
+          <div class="vf-dropdown">
+            <a href="{{ route('langues.series', 'tcf') }}">
+              <i class="bi bi-pencil-square me-2"></i>TCF Canada
+            </a>
+            <a href="{{ route('langues.series', 'tef') }}">
+              <i class="bi bi-pencil-square me-2"></i>TEF Canada
+            </a>
+            <a href="{{ route('langues.series', 'ielts') }}">
+              <i class="bi bi-translate me-2"></i>IELTS
+            </a>
+            <a href="{{ route('langues.series', 'goethe') }}">
+              <i class="bi bi-globe me-2"></i>Goethe-Zertifikat
+            </a>
+          </div>
+        </li>
         <li><a href="{{ url('/#services') }}">Nos services</a></li>
         <li><a href="{{ url('/#contact') }}">Contact</a></li>
       </ul>
@@ -68,8 +66,8 @@
 
       {{-- ── NON CONNECTÉ ── --}}
       @guest
-        <a href="{{ route('auth.register.show') }}" class="vf-btn-primary">Créer un compte</a>
-        <a href="{{ route('login') }}"    class="vf-btn-outline">Se connecter</a>
+        <a href="{{ route('auth.register.show') }}" class="vf-btn-primary" id="signup-btn-desktop">Créer un compte</a>
+        <a href="{{ route('login') }}" class="vf-btn-outline" id="login-btn-desktop">Se connecter</a>
       @endguest
 
       {{-- ── CONNECTÉ ── --}}
@@ -88,7 +86,7 @@
               <img src="{{ asset('storage/'.Auth::user()->avatar) }}"
                    alt="{{ Auth::user()->first_name }}" class="vf-avatar-img">
             @else
-              {{-- Initiales depuis name (ex: "Admin VisaFly" → "AV") --}}
+              {{-- Initiales --}}
               <div class="vf-avatar-initials">
                 @php
                   $parts = explode(' ', trim(Auth::user()->first_name));
@@ -130,16 +128,16 @@
 
             <div class="vf-dd-sep"></div>
 
-          {{-- Dashboard — route dynamique selon le rôle --}}
-          <a href="{{ Auth::user()->hasRole(['super-admin', 'admin', 'consultant'])
-              ? route('admin.users.index')
-              : route('dashboard') }}"
-            class="vf-dd-item">
-            <i class="bi bi-speedometer2"></i>
-            {{ Auth::user()->hasRole(['super-admin', 'admin', 'consultant'])
-                ? 'Administration'
-                : 'Mon espace' }}
-          </a>
+            {{-- Dashboard — route dynamique selon le rôle --}}
+            <a href="{{ Auth::user()->hasRole(['super-admin', 'admin', 'consultant'])
+                ? route('admin.users.index')
+                : route('dashboard') }}"
+              class="vf-dd-item">
+              <i class="bi bi-speedometer2"></i>
+              {{ Auth::user()->hasRole(['super-admin', 'admin', 'consultant'])
+                  ? 'Administration'
+                  : 'Mon espace' }}
+            </a>
             @can('pass test')
             <a href="{{ route('langues.index') }}" class="vf-dd-item">
               <i class="bi bi-journal-check"></i> Mes épreuves TCF
@@ -170,12 +168,50 @@
       @endauth
 
       {{-- Hamburger mobile --}}
-      <button class="vf-hamburger d-xl-none" id="mobileToggle">
+      <button class="vf-hamburger" id="mobileToggle" title="Menu">
         <i class="bi bi-list" style="font-size:20px;"></i>
       </button>
 
     </div>
   </div>
+
+  {{-- ═══ MENU MOBILE (sous le header) ═══ --}}
+  <div class="vf-mobile-menu" id="vf-mobile-menu">
+    <div class="vf-mobile-menu-inner">
+      {{-- Nav items --}}
+      <a href="{{ url('/') }}" class="vf-mobile-item">Accueil</a>
+      <a href="{{ url('/#about') }}" class="vf-mobile-item">À propos</a>
+      
+      {{-- Langues dropdown --}}
+      <button class="vf-mobile-item vf-mobile-dropdown-btn" id="langMobileToggle">
+        <span>Nos langues</span>
+        <i class="bi bi-chevron-down"></i>
+      </button>
+      <div class="vf-mobile-dropdown" id="langMobileDropdown" style="display:none;">
+        <a href="{{ route('langues.series', 'tcf') }}" class="vf-mobile-subitem">TCF Canada</a>
+        <a href="{{ route('langues.series', 'tef') }}" class="vf-mobile-subitem">TEF Canada</a>
+        <a href="{{ route('langues.series', 'ielts') }}" class="vf-mobile-subitem">IELTS</a>
+        <a href="{{ route('langues.series', 'goethe') }}" class="vf-mobile-subitem">Goethe-Zertifikat</a>
+      </div>
+      
+      <a href="{{ url('/#services') }}" class="vf-mobile-item">Nos services</a>
+      <a href="{{ url('/#contact') }}" class="vf-mobile-item">Contact</a>
+
+      {{-- Separateur --}}
+      <div style="height:1px;background:#f0f0f0;margin:12px 0;"></div>
+
+      {{-- Boutons auth mobile --}}
+      @guest
+        <a href="{{ route('auth.register.show') }}" class="vf-btn-primary" style="width:100%;text-align:center;margin-bottom:8px;">
+          <i class="bi bi-person-plus me-2"></i>Créer un compte
+        </a>
+        <a href="{{ route('login') }}" class="vf-btn-outline" style="width:100%;text-align:center;">
+          <i class="bi bi-box-arrow-in-right me-2"></i>Se connecter
+        </a>
+      @endguest
+    </div>
+  </div>
+
 </header>
 
 <style>
@@ -216,7 +252,7 @@
 .vf-lang{display:flex;align-items:center;gap:5px;padding:6px 11px;border:1px solid rgba(27,58,107,.18);border-radius:8px;cursor:pointer;font-size:12px;font-weight:600;color:#1B3A6B;transition:all .2s;user-select:none;}
 .vf-lang:hover{border-color:#F5A623;}
 
-.vf-btn-primary{padding:8px 18px;background:#1B3A6B;color:#fff!important;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;white-space:nowrap;}
+.vf-btn-primary{padding:8px 18px;background:#1B3A6B;color:#fff!important;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;white-space:nowrap;border:none;cursor:pointer;}
 .vf-btn-primary:hover{background:#152d54;transform:translateY(-1px);}
 .vf-btn-outline{padding:8px 18px;background:transparent;color:#1B3A6B!important;border:1.5px solid #1B3A6B;border-radius:20px;font-size:13px;font-weight:600;text-decoration:none;transition:all .2s;white-space:nowrap;}
 .vf-btn-outline:hover{background:#1B3A6B;color:#fff!important;}
@@ -253,49 +289,115 @@
 .vf-dd-logout:hover{background:rgba(226,75,74,.06)!important;color:#a32d2d!important;}
 
 /* ─── Hamburger ─── */
-.vf-hamburger{width:38px;height:38px;border-radius:8px;background:rgba(27,58,107,.06);border:none;cursor:pointer;color:#1B3A6B;display:none;align-items:center;justify-content:center;}
+.vf-hamburger{width:38px;height:38px;border-radius:8px;background:rgba(27,58,107,.06);border:none;cursor:pointer;color:#1B3A6B;display:none;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.vf-hamburger:hover{background:rgba(27,58,107,.12);}
+
+/* ─── MENU MOBILE ─── */
+.vf-mobile-menu{display:none;position:absolute;top:66px;left:0;right:0;background:#fff;border-top:2px solid #F5A623;border-bottom:1px solid #eee;box-shadow:0 8px 24px rgba(27,58,107,.1);z-index:998;max-height:calc(100vh - 66px);overflow-y:auto;}
+.vf-mobile-menu.open{display:block;}
+
+.vf-mobile-menu-inner{padding:12px;max-width:1280px;margin:0 auto;width:100%;}
+
+.vf-mobile-item{display:flex;align-items:center;gap:10px;padding:12px 14px;width:100%;color:#1B3A6B;text-decoration:none;border-radius:10px;font-size:13px;font-weight:500;border:none;background:none;cursor:pointer;transition:all .15s;text-align:left;}
+.vf-mobile-item:hover{background:rgba(27,58,107,.05);color:#F5A623;}
+
+.vf-mobile-dropdown-btn{justify-content:space-between;}
+.vf-mobile-dropdown-btn i{transition:transform .3s;}
+.vf-mobile-dropdown-btn.open i{transform:rotate(180deg);}
+
+.vf-mobile-dropdown{background:rgba(27,58,107,.03);border-radius:10px;margin:8px 0;border-left:3px solid #F5A623;overflow:hidden;}
+
+.vf-mobile-subitem{display:flex;align-items:center;padding:10px 16px;color:#666;text-decoration:none;font-size:13px;border:none;background:none;cursor:pointer;width:100%;transition:all .15s;}
+.vf-mobile-subitem:hover{background:rgba(27,58,107,.08);color:#1B3A6B;padding-left:20px;}
 
 /* ─── Responsive ─── */
 @media(max-width:1199px){
   .vf-nav{display:none;}
   .vf-hamburger{display:flex;}
+  #signup-btn-desktop, #login-btn-desktop{display:none;}
 }
+
+@media(max-width:768px){
+  .vf-header-inner{padding:0 16px;}
+  .vf-lang{display:none;}
+  
+  .vf-btn-primary, .vf-btn-outline{
+    padding:7px 14px;
+    font-size:12px;
+  }
+}
+
 @media(max-width:640px){
-  .vf-btn-primary{display:none;}
-  .vf-announce-bar{font-size:11px;}
+  .vf-announce-bar{font-size:11px;padding:6px 12px;}
+  .vf-header-inner{height:60px;gap:8px;}
+  
+  .vf-logo-icon{width:32px;height:32px;}
+  .vf-logo-text{font-size:16px;}
+  
+  .vf-icon-btn{width:34px;height:34px;}
+  .vf-avatar-btn{width:34px;height:34px;}
+  
+  #signup-btn-desktop, #login-btn-desktop{display:none !important;}
 }
 </style>
 
 <script>
 document.addEventListener('DOMContentLoaded', function () {
 
-  /* ── dropdown profil ── */
+  /* ── Dropdown profil ── */
   const toggle   = document.getElementById('profileToggle');
   const dropdown = document.getElementById('profileDropdown');
   if (toggle && dropdown) {
-    toggle.addEventListener('click', e => { e.stopPropagation(); dropdown.classList.toggle('open'); });
+    toggle.addEventListener('click', e => { 
+      e.stopPropagation(); 
+      dropdown.classList.toggle('open'); 
+    });
     document.addEventListener('click', () => dropdown.classList.remove('open'));
     dropdown.addEventListener('click', e => e.stopPropagation());
   }
 
-  /* ── hamburger mobile ── */
+  /* ── Hamburger menu mobile ── */
   const burger = document.getElementById('mobileToggle');
-  const navEl  = document.querySelector('.vf-nav');
-  if (burger && navEl) {
-    burger.addEventListener('click', function () {
-      const open = navEl.classList.toggle('vf-nav-open');
-      if (open) {
-        Object.assign(navEl.style, {
-          display:'block', position:'absolute', top:'66px',
-          left:'0', right:'0', background:'#fff',
-          borderTop:'2px solid #F5A623', padding:'12px',
-          boxShadow:'0 8px 24px rgba(27,58,107,.1)', zIndex:'998'
-        });
-      } else {
-        navEl.removeAttribute('style');
-      }
+  const mobileMenu = document.getElementById('vf-mobile-menu');
+  
+  if (burger && mobileMenu) {
+    burger.addEventListener('click', function (e) {
+      e.stopPropagation();
+      mobileMenu.classList.toggle('open');
+    });
+    
+    // Fermer quand on clique sur un lien
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        // Sauf les dropdowns
+        if (!link.classList.contains('vf-mobile-dropdown-btn')) {
+          mobileMenu.classList.remove('open');
+        }
+      });
     });
   }
+
+  /* ── Dropdown mobile (langues) ── */
+  const langBtn = document.getElementById('langMobileToggle');
+  const langDropdown = document.getElementById('langMobileDropdown');
+  
+  if (langBtn && langDropdown) {
+    langBtn.addEventListener('click', function (e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const isOpen = langDropdown.style.display !== 'none';
+      langDropdown.style.display = isOpen ? 'none' : 'flex';
+      langDropdown.style.flexDirection = 'column';
+      langBtn.classList.toggle('open');
+    });
+  }
+
+  // Fermer menu quand on clique dehors
+  document.addEventListener('click', (e) => {
+    if (!e.target.closest('.vf-hamburger') && !e.target.closest('.vf-mobile-menu')) {
+      mobileMenu?.classList.remove('open');
+    }
+  });
 
 });
 </script>

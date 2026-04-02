@@ -33,13 +33,13 @@
                 <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label" style="font-size:12px;font-weight:600;color:#1B3A6B;">
-                            Nom complet *
+                            Nom *
                         </label>
-                        <input type="text" name="name" class="form-control rounded-3 @error('name') is-invalid @enderror"
-                               value="{{ old('name', $user->name ?? '') }}"
+                        <input type="text" name="first_name" class="form-control rounded-3 @error('first_name') is-invalid @enderror"
+                               value="{{ old('first_name', $user->first_name ?? '') }}"
                                placeholder="Jean Dupont"
                                style="border:1.5px solid #e8e8e8;font-size:13px;padding:10px 14px;">
-                        @error('name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                        @error('first_ name')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" style="font-size:12px;font-weight:600;color:#1B3A6B;">
@@ -52,9 +52,19 @@
                         @error('email')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                 </div>
-
-                {{-- Mot de passe --}}
+                {{-- Prenom + Mot de passe --}}
                 <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;color:#1B3A6B;">
+                            Prenom *
+                        </label>
+                        <input type="text" name="last_name" class="form-control rounded-3 @error('last_name') is-invalid @enderror"
+                               value="{{ old('last_name', $user->last_name ?? '') }}"
+                               placeholder="Dupont"
+                               style="border:1.5px solid #e8e8e8;font-size:13px;padding:10px 14px;">
+                        @error('last_name')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                    </div>
+                    <div class="row g-3 mb-3">
                     <div class="col-md-6">
                         <label class="form-label" style="font-size:12px;font-weight:600;color:#1B3A6B;">
                             Mot de passe {{ isset($user) ? '(laisser vide = inchangé)' : '*' }}
@@ -74,6 +84,21 @@
                                value="{{ old('phone', $user->phone ?? '') }}"
                                placeholder="+237 6XX XXX XXX"
                                style="border:1.5px solid #e8e8e8;font-size:13px;padding:10px 14px;">
+                    </div>
+                </div>
+                </div>
+
+                {{-- Mot de passe --}}
+                <div class="row g-3 mb-3">
+                    <div class="col-md-6">
+                        <label class="form-label" style="font-size:12px;font-weight:600;color:#1B3A6B;">
+                            Confirme le mot de passe {{ isset($user) ? '(laisser vide = inchangé)' : '*' }}
+                        </label>
+                        <input type="password" name="password_confirmation"
+                               class="form-control rounded-3 @error('password_confirmation') is-invalid @enderror"
+                               placeholder="••••••••"
+                               style="border:1.5px solid #e8e8e8;font-size:13px;padding:10px 14px;">
+                        @error('password_confirmation')<div class="invalid-feedback">{{ $message }}</div>@enderror
                     </div>
                 </div>
 

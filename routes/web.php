@@ -6,16 +6,17 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\UserConsultationController;
 use App\Http\Controllers\Admin\AdminConsultationController;
 use App\Http\Controllers\Tcf\TcfController;
-use App\Http\Controllers\Tcf\TcfEpreuveController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RolePermissionController;
-use App\Http\Controllers\Admin\AbonnementController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\AnalyticsController;
+use App\Http\Controllers\Admin\AnalyticsLangueController;
 use App\Http\Controllers\LangueEpreuveController;
 use App\Http\Controllers\Admin\LangueController;
+use App\Http\Controllers\Admin\AbonnementPlanController;
+use App\Http\Controllers\AbonnementController;
 
 /*
 |--------------------------------------------------------------------------
@@ -61,11 +62,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/langues/{code}/series/{serie}/disciplines/{discipline}/epreuve',[LangueEpreuveController::class, 'epreuve'])->name('langues.epreuve');
     Route::post('/langues/{code}/series/{serie}/disciplines/{discipline}/soumettre',[LangueEpreuveController::class, 'soumettre'])->name('langues.epreuve.soumettre');
 
+    Route::get('/mon-abonnement',[AbonnementController::class, 'index'])->name('abonnement.index');
+    Route::post('/abonnement/{plan}/souscrire', [AbonnementController::class, 'souscrire'])->name('abonnement.souscrire');
+
 
 
     Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
-        Route::get('/admin/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/langues', [AnalyticsLangueController::class, 'index'])->name('analytics.langues');
+
+        Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
         // ── Utilisateurs ──
         Route::resource('users', UserController::class);
@@ -85,6 +91,7 @@ Route::middleware('auth')->group(function () {
 
         // ── Abonnements ──
         Route::get('/abonnements', [AbonnementController::class, 'index'])->name('abonnements.index');
+        Route::post('/abonnements', [AbonnementController::class, 'store'])->name('abonnements.store');
 
         // ── Langues, séries, questions ──
 
@@ -116,6 +123,24 @@ Route::middleware('auth')->group(function () {
         Route::post('/consultations/{consultation}/note',[AdminConsultationController::class, 'note'])->name('consultations.note');
         Route::post('/consultations/{consultation}/lien-visio',[AdminConsultationController::class, 'lienVisio'])->name('consultations.lien-visio');
         Route::post('/consultations/{consultation}/toggle-urgent',[AdminConsultationController::class, 'toggleUrgent'])->name('consultations.toggle-urgent');
-        Route::delete('/consultations/{consultation}',[AdminConsultationController    ::class, 'destroy'])->name('consultations.destroy');
-    });
+        Route::delete('/consultations/{consultation}',[AdminConsultationController::class, 'destroy'])->name('consultations.destroy');
+
+        Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
+        Route::get('/analytics/langues', [AnalyticsController::class, 'langues'])->name('analytics.langues');
+ 
+        // ← NOUVELLE : détail analytique d'un utilisateur
+        Route::get('/analytics/users/{user}', [AnalyticsController::class, 'userDetail'])->name('analytics.user');
+    
+        // Analytics spécifique langues (déjà existante)
+        //Route::get('/analytics/langues', [AnalyticsLangueController::class, 'index'])->name('analytics.langues');
+    
+        // Plans abonnement
+        Route::get(    '/abonnements/plans',               [AbonnementPlanController::class, 'index'])  ->name('abonnements.plans.index');
+        Route::get(    '/abonnements/plans/create',        [AbonnementPlanController::class, 'create']) ->name('abonnements.plans.create');
+        Route::post(   '/abonnements/plans',               [AbonnementPlanController::class, 'store'])  ->name('abonnements.plans.store');
+        Route::get(    '/abonnements/plans/{plan}/edit',   [AbonnementPlanController::class, 'edit'])   ->name('abonnements.plans.edit');
+        Route::put(    '/abonnements/plans/{plan}',        [AbonnementPlanController::class, 'update']) ->name('abonnements.plans.update');
+        Route::delete( '/abonnements/plans/{plan}',        [AbonnementPlanController::class, 'destroy'])->name('abonnements.plans.destroy');
+        Route::post(   '/abonnements/plans/{plan}/toggle', [AbonnementPlanController::class, 'toggle']) ->name('abonnements.plans.toggle');
+        });
 });

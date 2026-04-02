@@ -22,6 +22,15 @@
                  transform:translateY(-1px);color:#1B3A6B;}
 .quick-btn-icon{width:38px;height:38px;border-radius:10px;display:flex;
                 align-items:center;justify-content:center;font-size:17px;flex-shrink:0;}
+.epreuve-item{display:flex;align-items:center;justify-content:space-between;
+              padding:14px 0;border-bottom:1px solid #f5f5f5;}
+.epreuve-item:last-child{border-bottom:none;}
+.epreuve-info{flex:1;}
+.epreuve-titre{font-size:13px;font-weight:600;color:#333;margin-bottom:3px;}
+.epreuve-date{font-size:11px;color:#888;}
+.epreuve-score{text-align:right;}
+.epreuve-score-val{font-size:1.4rem;font-weight:800;line-height:1;}
+.epreuve-score-lbl{font-size:10px;color:#888;margin-top:2px;}
 </style>
 @endpush
 
@@ -52,34 +61,40 @@
     <i class="bi bi-check-circle-fill"></i> {{ session('success') }}
   </div>
 @endif
+@if(session('error'))
+  <div class="alert rounded-3 d-flex align-items-center gap-2 mb-3"
+      style="background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.3);color:#a32d2d;">
+    <i class="bi bi-exclamation-circle-fill"></i> {{ session('error') }}
+  </div>
+@endif
 
 {{-- ══ STATS ══ --}}
 <div class="row g-3 mb-4">
   <div class="col-6 col-md-3">
     <div class="stu-card">
-      <div class="stu-stat-num" style="color:#1B3A6B;">{{ $stats['tests_passes'] }}</div>
+      <div class="stu-stat-num" style="color:#1B3A6B;">{{ $stats['tests_passes'] ?? 0 }}</div>
       <div class="stu-stat-lbl">Épreuves terminées</div>
     </div>
   </div>
   <div class="col-6 col-md-3">
     <div class="stu-card">
-      <div class="stu-stat-num" style="color:#1cc88a;">{{ $stats['score_moyen'] }}<span style="font-size:1rem;">%</span></div>
+      <div class="stu-stat-num" style="color:#1cc88a;">{{ $stats['score_moyen'] ?? 0 }}<span style="font-size:1rem;">%</span></div>
       <div class="stu-stat-lbl">Score moyen</div>
     </div>
   </div>
   <div class="col-6 col-md-3">
     <div class="stu-card">
-      <div class="stu-stat-num" style="color:#F5A623;">{{ $stats['consultations_total'] }}</div>
+      <div class="stu-stat-num" style="color:#F5A623;">{{ $stats['consultations_total'] ?? 0 }}</div>
       <div class="stu-stat-lbl">Consultations</div>
     </div>
   </div>
   <div class="col-6 col-md-3">
-    <div class="stu-card" style="{{ $stats['abonnement_actif'] ? 'border-color:rgba(28,200,138,.3);' : '' }}">
-      <div class="stu-stat-num" style="color:{{ $stats['abonnement_actif'] ? '#1cc88a' : '#ccc' }};">
-        <i class="bi bi-patch-check{{ $stats['abonnement_actif'] ? '-fill' : '' }}" style="font-size:1.6rem;"></i>
+    <div class="stu-card" style="{{ ($stats['abonnement_actif'] ?? false) ? 'border-color:rgba(28,200,138,.3);' : '' }}">
+      <div class="stu-stat-num" style="color:{{ ($stats['abonnement_actif'] ?? false) ? '#1cc88a' : '#ccc' }};">
+        <i class="bi bi-patch-check{{ ($stats['abonnement_actif'] ?? false) ? '-fill' : '' }}" style="font-size:1.6rem;"></i>
       </div>
       <div class="stu-stat-lbl">
-        {{ $stats['abonnement_actif'] ? 'Abonnement actif' : 'Aucun abonnement' }}
+        {{ ($stats['abonnement_actif'] ?? false) ? 'Abonnement actif' : 'Aucun abonnement' }}
       </div>
     </div>
   </div>
@@ -119,7 +134,14 @@
         <div class="ms-3 flex-shrink-0">
           @php
             $statut = $c->statut ?? ($c->status == 1 ? 'approuvee' : 'en_attente');
-            $labels = ['en_attente'=>'En attente','en_cours'=>'En cours','approuvee'=>'Approuvée','declinee'=>'Déclinée','annulee'=>'Annulée','terminee'=>'Terminée'];
+            $labels = [
+              'en_attente'=>'En attente',
+              'en_cours'=>'En cours',
+              'approuvee'=>'Approuvée',
+              'declinee'=>'Déclinée',
+              'annulee'=>'Annulée',
+              'terminee'=>'Terminée'
+            ];
           @endphp
           <span class="badge-consult s-{{ $statut }}">
             {{ $labels[$statut] ?? ucfirst($statut) }}
@@ -131,7 +153,7 @@
         <i class="bi bi-calendar-x" style="font-size:28px;display:block;margin-bottom:8px;"></i>
         <span style="font-size:13px;">Aucune consultation pour le moment.</span>
         <div style="margin-top:10px;">
-          <a href="{{ route('consultation') }}"
+          <a href="{{ route('consultations.create') }}"
              style="font-size:13px;color:#F5A623;font-weight:600;text-decoration:none;">
             Soumettre une demande →
           </a>
@@ -140,33 +162,35 @@
       @endforelse
     </div>
 
-    {{-- Épreuves TCF récentes --}}
+    {{-- ✅ CORRIGÉ : Épreuves TCF récentes --}}
     <div class="stu-card">
       <div class="d-flex align-items-center justify-content-between mb-3">
         <div style="font-size:14px;font-weight:700;color:#1B3A6B;">
-          <i class="bi bi-journal-check me-2" style="color:#F5A623;"></i>Mes épreuves TCF
+          <i class="bi bi-journal-check me-2" style="color:#F5A623;"></i>Mes épreuves TCF/TEF
         </div>
         <a href="{{ route('langues.index') }}"
            style="font-size:12px;color:#F5A623;font-weight:600;text-decoration:none;">
           Toutes les séries →
         </a>
       </div>
+
       @forelse($passages as $p)
-      <div style="display:flex;align-items:center;justify-content:space-between;
-                  padding:11px 0;border-bottom:1px solid #f5f5f5;">
-        <div>
-          <div style="font-size:13px;font-weight:600;color:#333;">
-            {{ $p->serie->nom ?? 'Série' }} — {{ $p->discipline->nom ?? '' }}
+      <div class="epreuve-item">
+        <div class="epreuve-info">
+          <div class="epreuve-titre">
+            {{ optional($p->serie)->nom ?? 'Série' }} 
+            @if($p->discipline)
+              — {{ $p->discipline->nom }}
+            @endif
           </div>
-          <div style="font-size:11px;color:#888;margin-top:2px;">{{ $p->created_at->format('d/m/Y') }}</div>
+          <div class="epreuve-date">{{ $p->created_at->format('d/m/Y à H:i') }}</div>
         </div>
-        <div style="text-align:right;">
-          @if($p->statut === 'termine')
-            <div style="font-size:1.2rem;font-weight:800;
-                        color:{{ $p->score >= 60 ? '#1cc88a' : '#E24B4A' }};">
-              {{ $p->score ?? 0 }}%
+        <div class="epreuve-score">
+          @if($p->statut === 'termine' && $p->score !== null)
+            <div class="epreuve-score-val" style="color:{{ $p->scoreColor() }};">
+              {{ $p->scoreLabel() }}
             </div>
-            <div style="font-size:10px;color:#888;">Score</div>
+            <div class="epreuve-score-lbl">Score: {{ $p->niveauAtteint() }}</div>
           @else
             <span style="font-size:11px;padding:2px 8px;border-radius:8px;
                          background:rgba(245,166,35,.1);color:#633806;">En cours</span>
@@ -192,15 +216,15 @@
   {{-- ══ Colonne droite ══ --}}
   <div class="col-lg-5">
 
-    {{-- Abonnement --}}
+    {{-- ✅ CORRIGÉ : Abonnement --}}
     <div class="stu-card mb-4"
-         style="{{ $stats['abonnement_actif'] ? 'background:#1B3A6B;' : '' }}">
+         style="{{ ($abonnement && $abonnement->isActif()) ? 'background:#1B3A6B;' : '' }}">
       <div style="font-size:11px;font-weight:700;
-                  color:{{ $stats['abonnement_actif'] ? 'rgba(255,255,255,.7)' : '#888' }};
+                  color:{{ ($abonnement && $abonnement->isActif()) ? 'rgba(255,255,255,.7)' : '#888' }};
                   margin-bottom:12px;text-transform:uppercase;letter-spacing:.6px;">
         Abonnement
       </div>
-      @if($abonnement)
+      @if($abonnement && $abonnement->isActif())
         <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
           <div style="width:40px;height:40px;border-radius:10px;
                       background:rgba(245,166,35,.2);display:flex;
@@ -209,10 +233,11 @@
           </div>
           <div>
             <div style="font-size:15px;font-weight:800;color:#F5A623;">
-              {{ ucfirst($abonnement->forfait) }}
+              {{ $abonnement->plan->nom ?? 'Plan' }}
             </div>
             <div style="font-size:11px;color:rgba(255,255,255,.6);">
               Expire le {{ $abonnement->fin_at->format('d/m/Y') }}
+              ({{ $abonnement->joursRestants() }} jours restants)
             </div>
           </div>
         </div>
@@ -221,11 +246,18 @@
           <i class="bi bi-check-circle-fill me-2" style="color:#1cc88a;"></i>
           Accès illimité à toutes les séries TCF/TEF
         </div>
+        @if($abonnement->estBientotExpire())
+        <div style="margin-top:10px;background:rgba(245,166,35,.2);border-radius:8px;
+                    padding:10px 12px;font-size:11px;color:rgba(255,255,255,.8);">
+          <i class="bi bi-exclamation-circle me-2"></i>
+          Votre abonnement expire bientôt !
+        </div>
+        @endif
       @else
         <div style="font-size:13px;color:#888;margin-bottom:14px;line-height:1.6;">
           Passez à la version premium pour accéder à toutes les séries d'entraînement.
         </div>
-        <a href="{{ route('tcf.abonnement') }}"
+        <a href="{{ route('abonnement.index') }}"
            style="display:block;text-align:center;padding:11px;background:#1B3A6B;
                   color:#fff;border-radius:25px;font-size:13px;font-weight:600;
                   text-decoration:none;">
@@ -259,7 +291,7 @@
           </div>
           <i class="bi bi-chevron-right ms-auto" style="font-size:11px;color:#ccc;"></i>
         </a>
-        <a href="{{ route('tcf.abonnement') }}" class="quick-btn">
+        <a href="{{ route('abonnement.index') }}" class="quick-btn">
           <div class="quick-btn-icon" style="background:rgba(28,200,138,.08);">
             <i class="bi bi-credit-card" style="color:#1cc88a;"></i>
           </div>
@@ -278,7 +310,6 @@
         <div style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:.6px;">
           Mon profil
         </div>
-        {{-- ── BOUTON MODIFIER ── --}}
         <a href="{{ route('profil.edit') }}"
            style="display:inline-flex;align-items:center;gap:5px;
                   padding:6px 14px;border-radius:20px;font-size:12px;font-weight:600;

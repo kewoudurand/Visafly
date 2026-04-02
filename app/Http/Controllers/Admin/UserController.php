@@ -69,20 +69,33 @@ class UserController extends Controller
         $this->authorize('manage users');
 
         $request->validate([
-            'name'     => 'required|string|max:255',
-            'email'    => 'required|email|unique:users,email',
-            'password' => ['required', Rules\Password::defaults()],
-            'role'     => 'required|exists:roles,name',
-            'phone'    => 'nullable|string|max:20',
-            'country'  => 'nullable|string|max:100',
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => 'required|email|unique:users,email',
+            'password'   => 'required|min:6|confirmed',
+        ], [
+            'first_name.required' => 'Le prénom est obligatoire.',
+            'last_name.required'  => 'Le nom est obligatoire.',
+            'email.required'      => 'L\'email est obligatoire.',
+            'email.unique'        => 'Cet email est déjà utilisé.',
+            'password.min'        => 'Le mot de passe doit contenir au moins 6 caractères.',
+            'password.confirmed'  => 'La confirmation du mot de passe ne correspond pas.',
         ]);
 
+        $plainPassword = $request->password;
+
+        // ── Créer l'utilisateur ──
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => Hash::make($request->password),
-            'phone'    => $request->phone,
-            'country'  => $request->country,
+            'name'      => $request->first_name . ' ' . $request->last_name, // champ name unifié
+            'first_name'=> $request->first_name,
+            'last_name' => $request->last_name,
+            'email'     => $request->email,
+            'password'  => $request->password,   // ← IMPORTANT : hasher le mot de passe
+            'avatar'    => null,
+            'country'   => $request->country   ?? null,
+            'language'  => $request->language  ?? 'fr',
+            'timezone'  => $request->timezone  ?? 'Africa/Douala',
+            'phone'     => $request->phone      ?? null,
         ]);
 
         $user->assignRole($request->role);
