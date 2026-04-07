@@ -138,8 +138,20 @@
                   ? 'Administration'
                   : 'Mon espace' }}
             </a>
-            @can('pass test')
-            <a href="{{ route('langues.index') }}" class="vf-dd-item">
+
+            @auth
+              @if(auth()->user()->hasRole('student'))
+              <li class="nav-item">
+                  <a class="nav-link" href="{{ route('student.index') }}">
+                      <i class="bi bi-chart-bar me-2"></i>
+                      Résultats
+                  </a>
+              </li>
+              @endif
+            @endauth
+            
+            @can('view result')
+            <a href="{{ route('student.index') }}" class="vf-dd-item">
               <i class="bi bi-journal-check"></i> Mes épreuves TCF
             </a>
             @endcan

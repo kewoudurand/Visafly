@@ -1,33 +1,66 @@
 <?php
 
 namespace App\Models;
- 
+
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 
-class LanguePassageReponse extends \Illuminate\Database\Eloquent\Model
+class LanguePassageReponse extends Model
 {
-    protected $table = 'langue_passage_reponses';
- 
+    protected $table = 'langue_passages_reponses';
+
     protected $fillable = [
-        'passage_id', 'question_id', 'reponse_id', 'correcte',
+        'passage_id',
+        'question_id',
+        'reponse_donnee',
+        'correcte',
     ];
- 
-    protected $casts = ['correcte' => 'boolean'];
- 
-    public function passage()
+
+    protected $casts = [
+        'correcte' => 'boolean',
+        'created_at' => 'datetime',
+        'updated_at' => 'datetime',
+    ];
+
+    /**
+     * Le passage auquel cette réponse appartient
+     */
+    public function passage(): BelongsTo
     {
         return $this->belongsTo(LanguePassage::class, 'passage_id');
     }
- 
-    public function question()
+
+    /**
+     * La question répondue
+     */
+    public function question(): BelongsTo
     {
         return $this->belongsTo(LangueQuestion::class, 'question_id');
     }
- 
-    public function reponse()
+
+    // Scopes
+
+    /**
+     * Obtenir les réponses correctes
+     */
+    public function scopeCorrectes($query)
     {
-        return $this->belongsTo(LangueReponse::class, 'reponse_id');
+        return $query->where('correcte', true);
+    }
+
+    /**
+     * Obtenir les réponses incorrectes
+     */
+    public function scopeIncorrectes($query)
+    {
+        return $query->where('correcte', false);
+    }
+
+    /**
+     * Obtenir les réponses d'un passage
+     */
+    public function scopeForPassage($query, $passageId)
+    {
+        return $query->where('passage_id', $passageId);
     }
 }

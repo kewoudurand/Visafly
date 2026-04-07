@@ -6,13 +6,13 @@
 namespace App\Http\Controllers;
 
 use App\Models\Consultation;
+use App\Models\LanguePassage;
 use App\Services\DashboardService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Http;
-use App\Models\TcfPassage;
-use App\Models\TcfAbonnement;
+use App\Models\LangueAbonnement;
 
 class UserConsultationController extends Controller
 {
@@ -146,7 +146,7 @@ class UserConsultationController extends Controller
     private function studentDashboard($user)
     {
         // Passages TCF récents (5 derniers)
-        $passages = TcfPassage::with(['serie', 'discipline'])
+        $passages = LanguePassage::with(['serie', 'discipline'])
             ->where('user_id', $user->id)
             ->latest()
             ->take(5)
@@ -163,7 +163,7 @@ class UserConsultationController extends Controller
             ->get();
  
         // Abonnement actif
-        $abonnement = TcfAbonnement::where('user_id', $user->id)
+        $abonnement = LangueAbonnement::where('user_id', $user->id)
             ->where('actif', true)
             ->where('fin_at', '>=', now())
             ->latest()
@@ -171,10 +171,10 @@ class UserConsultationController extends Controller
  
         // Stats
         $stats = [
-            'tests_passes'        => TcfPassage::where('user_id', $user->id)
+            'tests_passes'        => LanguePassage::where('user_id', $user->id)
                                         ->where('statut', 'termine')->count(),
             'score_moyen'         => (int) round(
-                                        TcfPassage::where('user_id', $user->id)
+                                        LanguePassage::where('user_id', $user->id)
                                             ->where('statut', 'termine')
                                             ->avg('score') ?? 0
                                     ),

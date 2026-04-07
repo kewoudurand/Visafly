@@ -74,6 +74,25 @@
                     <i class="bi bi-calendar-check"></i> Consultations
                 </a>
             @endcan
+            {{-- ── SECTION ESPACE ÉTUDIANT ── --}}
+
+            @canany(['view result', 'pass test', 'apply program', 'book consultation'])
+              <div style="font-size:10px;font-weight:600;color:rgba(255,255,255,.3);
+                          text-transform:uppercase;letter-spacing:.8px;padding:16px 18px 6px;">
+                  Etudiant  
+              </div>
+            @endcanany
+
+            @can('view result')
+                <a href="{{ route('student.index') }}"
+                style="display:flex;align-items:center;gap:10px;padding:10px 18px;font-size:13px;
+                        color:{{ request()->routeIs('student.*') ? '#F5A623' : 'rgba(255,255,255,.7)' }};
+                        background:{{ request()->routeIs('student.*') ? 'rgba(245,166,35,.12)' : 'transparent' }};
+                        text-decoration:none;
+                        border-left:{{ request()->routeIs('student.*') ? '3px solid #F5A623' : '3px solid transparent' }};">
+                    <i class="bi bi-calendar-check"></i> Mes résultats
+                </a>
+            @endcan
 
             {{-- ── SECTION ADMINISTRATION ── --}}
             @canany(['manage users', 'assign roles', 'manage platform', 'view analytics'])

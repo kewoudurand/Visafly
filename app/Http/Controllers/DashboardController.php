@@ -42,7 +42,7 @@ class DashboardController extends Controller
 
         // ✅ CORRIGÉ : Passages récents (10 derniers tests)
         $passages = LanguePassage::with([
-            'serie:id,nom',
+            'serie:id,titre',
             'discipline:id,nom',
             'langue:id,code,nom,couleur'
         ])

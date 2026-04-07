@@ -8,7 +8,7 @@ use App\Models\LangueSerie;
 use App\Models\LangueQuestion;
 use App\Models\LanguePassage;
 use App\Models\LanguePassageReponse;
-use App\Models\TcfAbonnement;
+use App\Models\LangueAbonnement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
@@ -18,7 +18,17 @@ class LangueEpreuveController extends Controller
     // ── Page accueil 4 examens ──
     public function index()
     {
-        return view('langues.index');
+        $series = LangueSerie::where('active', true)->orderBy('ordre')->get();
+        $langues = Langue::where('actif', true)->orderBy('ordre')->get();
+        $disciplines = LangueDiscipline::whereIn('id', $langues->pluck('disciplines.*.id')->flatten())->get();
+        
+        return view('langues.disciplines', [
+            'langues' => Langue::where('actif', true)->orderBy('ordre')->get(),
+            'series' => $series,
+            'serie' => $series->first(), // Passer aussi le premier pour le title
+            'langue' => $langues->first(), // Passer aussi la première langue pour le title
+            'disciplines' => $disciplines,
+        ]);
     }
 
     // ── Liste des séries ──
@@ -165,7 +175,7 @@ class LangueEpreuveController extends Controller
     private function verifierAbonnement(): bool
     {
         if (!Auth::check()) return false;
-        return TcfAbonnement::where('user_id', Auth::id())
+        return LangueAbonnement::where('user_id', Auth::id())
             ->where('actif', true)->where('fin_at', '>=', now())->exists();
     }
 }
