@@ -304,7 +304,7 @@
 
           <!-- TestDaF / Allemand -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <a href="{{ route('langues.series', 'goethe') }}" class="btn-lang btn-lang-marine">
+            <a href="{{ route('chooses') }}" class="btn-lang btn-lang-marine">
               <div class="btn-lang-icon btn-lang-icon-marine">
                 <i class="bi bi-globe-europe-africa"></i>
               </div>

@@ -18,7 +18,7 @@ use App\Http\Controllers\StudentResultController;
 use App\Http\Controllers\Admin\LangueController;
 use App\Http\Controllers\Admin\AbonnementPlanController;
 use App\Http\Controllers\AbonnementController;
-use App\Http\Controllers\NiveauController;
+use App\Http\Controllers\CoursAllemandController;
 
 /*
 |--------------------------------------------------------------------------
@@ -66,6 +66,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/mon-abonnement',[AbonnementController::class, 'index'])->name('abonnement.index');
     Route::post('/abonnement/{plan}/souscrire', [AbonnementController::class, 'souscrire'])->name('abonnement.souscrire');
+    Route::get('/choose',[CoursAllemandController::class, 'choose'])->name('chooses');
 
 
 
@@ -144,12 +145,13 @@ Route::middleware('auth')->group(function () {
         Route::put(    '/abonnements/plans/{plan}',        [AbonnementPlanController::class, 'update']) ->name('abonnements.plans.update');
         Route::delete( '/abonnements/plans/{plan}',        [AbonnementPlanController::class, 'destroy'])->name('abonnements.plans.destroy');
         Route::post(   '/abonnements/plans/{plan}/toggle', [AbonnementPlanController::class, 'toggle']) ->name('abonnements.plans.toggle');
+        
     });
 
     Route::prefix('results')->name('student.')->group(function () {
         
         // Liste de tous les examens passés
-        Route::get('/', [StudentResultController::class, 'index'])->name('index')->middleware('can:view result');
+        Route::get('/', [StudentResultController::class, 'index'])->name('index');
         
         // Résultats pour un examen spécifique (TCF, TEF, etc.)
         Route::get('/exam/{langue}', [StudentResultController::class, 'showExam'])->name('show')->middleware('can:view result');
@@ -160,40 +162,12 @@ Route::middleware('auth')->group(function () {
         Route::get('/langues',[LangueEpreuveController::class, 'index'])->name('langues.index');
     });
 
-     
-Route::prefix('langues')->name('langues.')->group(function () {
-    
-    // ... autres routes langues ...
-    
-    // ═══════════════════════════════════════════════════
-    // ROUTES POUR LES NIVEAUX ET COURS
-    // ═══════════════════════════════════════════════════
-    
-    // Sélection du niveau
-    Route::get('/{langue}/niveaux', [NiveauController::class, 'selectNiveau'])
-        ->name('niveaux');
-    
-    // Options (cours ou examen) pour un niveau
-    Route::get('/{langue}/niveau/{niveau}/options', [NiveauController::class, 'selectOption'])
-        ->name('options');
-    
-    // Liste des cours pour un niveau
-    Route::get('/{langue}/niveau/{niveau}/cours', [NiveauController::class, 'afficherCours'])
-        ->name('cours');
-    
-    // Détail d'un cours
-    Route::get('/{langue}/cours/{cours}', [NiveauController::class, 'detailsCours'])
-        ->name('cours-detail');
-    
-    // S'inscrire à un cours
-    Route::post('/{langue}/cours/{cours}/inscrire', [NiveauController::class, 'inscrireCours'])
-        ->middleware('auth')
-        ->name('inscrire-cours');
-    
-    // Aller passer un examen
-    Route::get('/{langue}/niveau/{niveau}/examen', [NiveauController::class, 'allerExamen'])
-        ->name('examen');
-    
-});
+    Route::prefix('cours/allemand')->name('cours.allemand.')->group(function () {
+        
+        Route::get('/',[CoursAllemandController::class, 'index'])->name('index');
+        Route::get('/{slug}',[CoursAllemandController::class, 'show'])->name('show');
+        Route::get('/{cours}/lecon/{lecon}',[CoursAllemandController::class, 'lecon'])->name('lecon');
+        Route::post('/valider/{lecon}',[CoursAllemandController::class, 'valider'])->middleware('auth')->name('valider');
+    });
  
 });

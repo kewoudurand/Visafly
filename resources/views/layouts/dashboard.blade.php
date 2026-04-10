@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title', 'Dashboard') — VisaFly</title>
+  <meta name="description" content="@yield('meta_description', 'Agence VisaFly spécialisée en immigration Canada depuis le Cameroun. Accompagnement complet visa et études.')">
+
+  <meta name="keywords" content="visa canada cameroun, immigration canada douala, agence visa cameroun">
   <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
   <link href="{{ asset('assets/css/main.css') }}" rel="stylesheet">

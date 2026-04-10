@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
+use App\Models\Course;
 
 class Langue extends Model
 {
@@ -34,6 +35,11 @@ class Langue extends Model
             'langue_id',      // FK sur langue_disciplines
             'discipline_id',  // FK sur langue_series
         );
+    }
+
+        public function courses()
+    {
+        return $this->hasMany(Course::class);
     }
 
     // ── Helpers ──

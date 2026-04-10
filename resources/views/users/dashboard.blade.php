@@ -1,6 +1,7 @@
 {{-- resources/views/users/dashboard.blade.php --}}
 @extends('layouts.dashboard')
 @section('title', 'Mon espace')
+@section('meta_description', 'VisaFly accompagne les Camerounais pour leurs démarches d’immigration et d’études au Canada.')
 
 @push('styles')
 <style>
