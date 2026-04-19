@@ -125,7 +125,8 @@ class UserConsultationController extends Controller
             $service = new DashboardService();
             $widgets = $service->widgetsFor($user);
             $stats   = $service->statsFor($user);
-            return view('dashboard', compact('user', 'widgets', 'stats'));
+            $consultations =Consultation::latest()->get();
+            return view('admin.dashboard', compact('user', 'widgets', 'stats', 'consultations'));
         }
  
         // ── Consultant → dashboard admin allégé ──
@@ -133,7 +134,7 @@ class UserConsultationController extends Controller
             $service = new DashboardService();
             $widgets = $service->widgetsFor($user);
             $stats   = $service->statsFor($user);
-            return view('dashboard', compact('user', 'widgets', 'stats'));
+            return view('users.dashboard', compact('user', 'widgets', 'stats'));
         }
  
         // ── Student / Tous les autres → dashboard utilisateur ──

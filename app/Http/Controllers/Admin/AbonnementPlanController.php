@@ -59,70 +59,49 @@ class AbonnementPlanController extends Controller
     // ════════════════════════════════════════
     public function store(Request $request)
     {
-        $this->check();
+        // 1. On sécurise le code (slug)
+        $request->merge(['code' => \Illuminate\Support\Str::slug($request->code)]);
+
+        // 2. Validation
+        $validated = $request->validate([
+            'nom'         => 'required|string|max:100',
+            'code'        => 'required|string|max:50|unique:plans_abonnements,code',
+            'couleur'     => 'required|string|max:20',
+            'icone'       => 'required|string|max:100',
+            'description' => 'nullable|string|max:255',
+            'prix'        => 'required|numeric|min:0',
+            'devise'      => 'required|string|in:XAF,EUR,USD,CAD',
+            'duree_jours' => 'required|integer|min:1',
+            'populaire'   => 'nullable', // On gère le booléen plus bas
+            'points'      => 'nullable|array',
+        ]);
 
         try {
-            // ✅ Validation robuste
-            $validated = $request->validate([
-                'nom'              => 'required|string|max:100',
-                'code'             => 'required|string|max:50|unique:plans_abonnements,code',
-                'couleur'          => 'required|string|max:20',
-                'icone'            => 'required|string|max:100',
-                'description'      => 'nullable|string|max:255',
-                'prix'             => 'required|numeric|min:0|max:9999999',
-                'devise'           => 'required|string|max:10|in:XAF,EUR,USD,CAD',
-                'duree_jours'      => 'required|integer|min:1|max:3650',
-                'populaire'        => 'nullable|boolean',
-                'points'           => 'nullable|array|max:20',
-                'points.*.texte'   => 'required_with:points|string|max:255',
-                'points.*.icone'   => 'required_with:points|string|max:100',
-                'points.*.couleur' => 'nullable|string|max:20',
-            ], [
-                'nom.required'          => 'Le nom du plan est obligatoire.',
-                'code.required'         => 'Le code est obligatoire.',
-                'code.unique'           => 'Ce code de plan est déjà utilisé.',
-                'prix.required'         => 'Le prix est obligatoire.',
-                'prix.numeric'          => 'Le prix doit être un nombre.',
-                'prix.max'              => 'Le prix est trop élevé.',
-                'devise.required'       => 'La devise est obligatoire.',
-                'duree_jours.required'  => 'La durée est obligatoire.',
-                'duree_jours.integer'   => 'La durée doit être un nombre entier.',
-                'duree_jours.min'       => 'La durée minimum est 1 jour.',
-            ]);
-
-            // ✅ Construire et créer le plan
+            // 3. Création
             $plan = PlanAbonnement::create([
                 'nom'         => $validated['nom'],
-                'code'        => Str::slug($validated['code']),
+                'code'        => $validated['code'],
                 'couleur'     => $validated['couleur'],
                 'icone'       => $validated['icone'],
-                'description' => $validated['description'] ?? null,
-                'prix'        => (float) $validated['prix'],
+                'description' => $validated['description'],
+                'prix'        => $validated['prix'],
                 'devise'      => $validated['devise'],
-                'duree_jours' => (int) $validated['duree_jours'],
-                'populaire'   => (bool) ($validated['populaire'] ?? false),
+                'duree_jours' => $validated['duree_jours'],
+                'populaire'   => $request->has('populaire'), // Capte le "1" du dd()
                 'actif'       => true,
                 'ordre'       => (PlanAbonnement::max('ordre') ?? 0) + 1,
-                'points'      => $this->buildPoints($request),
+                'points'      => $validated['points'] ?? [], // Directement l'array du validated
             ]);
 
             return redirect()->route('admin.abonnements.plans.index')
-                ->with('success', "✅ Plan « {$plan->nom} » créé avec succès !");
-
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            // Les erreurs de validation sont automatiquement redirigées
-            return back()->withErrors($e->errors())->withInput();
+                ->with('success', "Le plan {$plan->nom} a été créé.");
 
         } catch (\Exception $e) {
-            // Log l'erreur complète
-            Log::error('Erreur création plan', [
-                'message' => $e->getMessage(),
-                'trace'   => $e->getTraceAsString(),
-            ]);
-
-            return back()
-                ->with('error', '❌ Erreur lors de la création du plan : ' . $e->getMessage())
-                ->withInput();
+            // 4. Debugging en cas d'échec SQL
+            \Illuminate\Support\Facades\Log::error("Erreur VisaFly : " . $e->getMessage());
+            
+            // Si tu es en développement, utilise dd($e->getMessage()) ici pour voir l'erreur SQL réelle
+            return back()->with('error', "Erreur : " . $e->getMessage())->withInput();
         }
     }
 

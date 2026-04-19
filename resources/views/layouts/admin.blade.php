@@ -185,7 +185,7 @@
               <a href="#" class="menu-toggle nav-link has-dropdown"><i data-feather="briefcase"></i><span>User Manage</span></a>
               <ul class="dropdown-menu">
                 <li><a class="nav-link" href="/admin/dashboard">All colsulting</a></li>
-                <li><a class="nav-link" href="{{route('admin.userAdd')}}">Add Admin</a></li>
+                <li><a class="nav-link" href="#">Add Admin</a></li>
               </ul>
             </li>
           </ul>

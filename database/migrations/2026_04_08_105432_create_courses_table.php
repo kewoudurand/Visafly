@@ -11,23 +11,36 @@ return new class extends Migration
      */
     public function up(): void
     {
+        // ── 1. Cours (créés par les instructeurs) ─────────────────────────
         Schema::create('courses', function (Blueprint $table) {
             $table->id();
-            $table->string('slug')->unique();          // a1-debutant, b1-intermediaire
-            $table->string('titre');                   // "Allemand A1 — Débutant"
-            $table->string('sous_titre')->nullable();  // "Les bases de l'allemand"
+            $table->foreignId('instructor_id')->nullable()->constrained('users')->nullOnDelete();
+
+            $table->foreignId('langue_id')
+                  ->nullable()
+                  ->constrained('langues')
+                  ->onDelete('set null');
+            $table->string('slug')->nullable();
+            $table->text('sous_titre')->nullable();
+            $table->string('couleur')->nullable();
+            $table->string('icone')->nullable();
+            $table->string('titre');
             $table->text('description')->nullable();
-            $table->string('niveau');                  // A1, A2, B1, B2, C1
-            $table->string('couleur')->default('#1B3A6B');
-            $table->string('icone')->default('bi-book');
-            $table->integer('duree_heures')->default(10);
+
+            // Niveau CEF : A1, A2, B1, B2, C1, C2
+            $table->enum('niveau', ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'])
+                  ->default('A1');
             $table->boolean('gratuit')->default(false);
-            $table->boolean('actif')->default(true);
+
+            $table->string('image_couverture')->nullable();
+            $table->integer('duree_estimee_minutes')->default(0); // calculée auto
+            $table->boolean('publie')->default(false);
             $table->integer('ordre')->default(0);
             $table->timestamps();
+            $table->softDeletes();
 
-            $table->index(['actif', 'ordre']);
-            $table->index('niveau');
+            $table->index(['langue_id', 'niveau', 'publie']);
+            $table->index('instructor_id');
         });
     }
 

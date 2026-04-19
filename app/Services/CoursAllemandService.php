@@ -6,7 +6,7 @@ namespace App\Services;
 use App\Models\CoursAllemand;
 use App\Models\Course;
 use App\Models\CoursLecon;
-use App\Models\CoursProgres;
+use App\Models\UserLessonProgress;
 use App\Models\Lesson;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -22,8 +22,8 @@ class CoursAllemandService
     public function listeCoursAvecProgression(?int $userId): \Illuminate\Support\Collection
     {
         $cours = Course::actifs()
-            ->withCount('lecons')
-            ->with(['lecons:id,cours_id'])
+            ->withCount('lessons')
+            ->with(['lessons:id,course_id'])
             ->get();
 
         if (!$userId) {
@@ -36,9 +36,9 @@ class CoursAllemandService
 
         $progresParCours = CoursProgres::where('user_id', $userId)
             ->where('statut', 'termine')
-            ->selectRaw('cours_id, COUNT(*) as nb')
-            ->groupBy('cours_id')
-            ->pluck('nb', 'cours_id');
+            ->selectRaw('course_id, COUNT(*) as nb')
+            ->groupBy('course_id')
+            ->pluck('nb', 'course_id');
 
         return $cours->map(function ($c) use ($progresParCours) {
             $termines           = $progresParCours[$c->id] ?? 0;
@@ -52,9 +52,9 @@ class CoursAllemandService
 
     // ── Marquer une leçon comme commencée ──
 
-    public function commencerLecon(Lesson $lecon, int $userId): CoursProgres
+    public function commencerLecon(Lesson $lecon, int $userId): UserLessonProgress
     {
-        return CoursProgres::firstOrCreate(
+        return UserLessonProgress::firstOrCreate(
             ['user_id' => $userId, 'lesson_id' => $lecon->id],
             [
                 'cours_id'    => $lecon->cours_id,
@@ -71,11 +71,11 @@ class CoursAllemandService
         int        $userId,
         int        $score,
         array      $reponsesUtilisateur = []
-    ): CoursProgres {
+    ): UserLessonProgress {
         $pointsGagnes = $this->calculerPoints($lecon, $score);
 
-        $progres = CoursProgres::updateOrCreate(
-            ['user_id' => $userId, 'lecon_id' => $lecon->id],
+        $progres = UserLessonProgress::updateOrCreate(
+            ['user_id' => $userId, 'lesson_id' => $lecon->id],
             [
                 'cours_id'     => $lecon->cours_id,
                 'statut'       => 'termine',
@@ -111,15 +111,15 @@ class CoursAllemandService
                                                ->where('statut', 'termine')
                                                ->count(),
             'points_totaux'     => CoursProgres::where('user_id', $userId)
-                                               ->sum('points_gagnes'),
+                                               ->sum('score_final') ?: 0,
             'score_moyen'       => (int) round(
                 CoursProgres::where('user_id', $userId)
                             ->where('statut', 'termine')
-                            ->avg('score') ?? 0
+                            ->avg('score_final') ?? 0
             ),
             'cours_en_cours'    => CoursProgres::where('user_id', $userId)
-                                               ->distinct('cours_id')
-                                               ->count('cours_id'),
+                                               ->distinct('course_id')
+                                               ->count('course_id'),
         ];
     }
 }

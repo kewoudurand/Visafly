@@ -1,73 +1,96 @@
 <?php
-// app/Models/Course.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Course extends Model
 {
-    protected $table = 'courses';
-
     protected $fillable = [
-        'slug', 'titre', 'sous_titre', 'description',
+        'instructor_id',       // ← NEW : user avec rôle instructeur
+        'titre', 'sous_titre', 'description',
         'niveau', 'couleur', 'icone',
-        'duree_heures', 'gratuit', 'actif', 'ordre',
+        'duree_estimee_minutes',
+        'gratuit', 'publie', 'ordre', 'slug',
+        // Ajoute ici d'autres colonnes de ta table courses existante
     ];
 
     protected $casts = [
         'gratuit' => 'boolean',
-        'actif'   => 'boolean',
+        'publie'  => 'boolean',
     ];
 
-    // ── Relations ──────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════
+    // Relations
+    // ══════════════════════════════════════════════════════════════
+
+    /** L'instructeur responsable de ce cours */
+    public function instructor(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'instructor_id');
+    }
 
     public function lecons(): HasMany
     {
-        return $this->hasMany(Lesson::class, 'cours_id')->orderBy('ordre');
+        return $this->hasMany(Lesson::class, 'cours_id');
     }
 
-    public function progres(): HasMany
+    public function progressions(): HasMany
     {
-        return $this->hasMany(CoursProgres::class, 'cours_id');
+        return $this->hasMany(CourseProgression::class, 'cours_id');
     }
 
-    // ── Scopes ─────────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════
+    // Scopes
+    // ══════════════════════════════════════════════════════════════
 
-    public function scopeActifs(Builder $query): Builder
+    public function scopePublies(Builder $query): Builder
     {
-        return $query->where('actif', true)->orderBy('ordre');
+        return $query->where('publie', true);
     }
 
-    public function scopeGratuits(Builder $query): Builder
+    /** Filtre les cours appartenant à un instructeur donné */
+    public function scopeDeInstructeur(Builder $query, int $instructorId): Builder
     {
-        return $query->where('gratuit', true);
+        return $query->where('instructor_id', $instructorId);
     }
 
-    // ── Helpers ────────────────────────────────────────────────
+    // ══════════════════════════════════════════════════════════════
+    // Helpers — propriété / accès
+    // ══════════════════════════════════════════════════════════════
 
-    public function progressionPour(int $userId): int
+    public function appartientA(int $userId): bool
     {
-        $total    = $this->lecons()->count();
-        $termines = CoursProgres::where('user_id', $userId)
-                                ->where('cours_id', $this->id)
-                                ->where('statut', 'termine')
-                                ->count();
-
-        return $total > 0 ? (int) round(($termines / $total) * 100) : 0;
+        return (int) $this->instructeur_id === $userId;
     }
 
-    public function niveauBadgeColor(): string
+    /**
+     * Admin/super-admin → toujours autorisé.
+     * Instructeur → seulement ses propres cours.
+     */
+    public function peutEtreGerePar(?int $userId = null): bool
     {
-        return match($this->niveau) {
-            'A1' => '#1cc88a',
-            'A2' => '#54a3f3',
-            'B1' => '#F5A623',
-            'B2' => '#E24B4A',
-            'C1' => '#7F77DD',
-            default => '#888',
-        };
+        $user = $userId ? User::find($userId) : auth()->user();
+        if (! $user) return false;
+        if ($user->hasAnyRole(['admin', 'super-admin'])) return true;
+        return $this->appartientA($user->id);
+    }
+
+    // ══════════════════════════════════════════════════════════════
+    // Helpers — divers
+    // ══════════════════════════════════════════════════════════════
+
+    public function progressionDe(?int $userId = null): ?CourseProgression
+    {
+        $uid = $userId ?? auth()->id();
+        return $this->progressions()->where('user_id', $uid)->first();
+    }
+
+    public function nomInstructeur(): string
+    {
+        return $this->instructor?->name ?? 'Non assigné';
     }
 }

@@ -75,7 +75,7 @@ class RegisterController extends Controller
         // ── Redirection selon le rôle ──
         // student → dashboard utilisateur
         // admin/super-admin → dashboard admin (géré par DashboardController)
-        return redirect()->route('dashboard')
+        return redirect()->route('home')
             ->with('success', 'Bienvenue sur VisaFly, ' . $user->first_name . ' !');
     }
 }

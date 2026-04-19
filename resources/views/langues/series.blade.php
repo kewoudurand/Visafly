@@ -107,7 +107,7 @@
                      background:#fff;color:#666;font-size:13px;font-weight:600;cursor:pointer;">
         Annuler
       </button>
-      <a href="{{ route('tcf.abonnement') }}"
+      <a href="{{ route('abonnement.index') }}"
          style="flex:1;padding:12px;border-radius:25px;background:#F5A623;
                 color:#1B3A6B;font-size:13px;font-weight:700;text-decoration:none;
                 display:flex;align-items:center;justify-content:center;">

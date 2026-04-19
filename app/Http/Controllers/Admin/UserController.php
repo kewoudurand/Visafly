@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Models\TcfAbonnement;
+use App\Models\LangueAbonnement;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
@@ -51,6 +51,7 @@ class UserController extends Controller
 
         $users = $query->latest()->paginate(15)->withQueryString();
         $roles = Role::all();
+        
 
         return view('admin.users.index', compact('users', 'roles'));
     }
@@ -110,12 +111,12 @@ class UserController extends Controller
         $this->authorize('manage users');
 
         $user->load('roles', 'permissions');
-        $abonnement = TcfAbonnement::where('user_id', $user->id)
+        $abonnement = LangueAbonnement::where('user_id', $user->id)
             ->where('actif', true)
             ->where('fin_at', '>=', now())
             ->latest()->first();
 
-        $historique = TcfAbonnement::where('user_id', $user->id)
+        $historique = LangueAbonnement::where('user_id', $user->id)
             ->latest()->get();
 
         return view('admin.users.show', compact('user', 'abonnement', 'historique'));
@@ -184,14 +185,15 @@ class UserController extends Controller
         $this->authorize('assign roles');
 
         $request->validate(['role' => 'required|exists:roles,name']);
+        $user->syncRoles($request->role);
 
         $user->load('roles', 'permissions');
-        $abonnement = TcfAbonnement::where('user_id', $user->id)
+        $abonnement = LangueAbonnement::where('user_id', $user->id)
             ->where('actif', true)
             ->where('fin_at', '>=', now())
             ->latest()->first();
 
-        $historique = TcfAbonnement::where('user_id', $user->id)
+        $historique = LangueAbonnement::where('user_id', $user->id)
             ->latest()->get();
 
         return view('admin.users.show', compact('user', 'abonnement', 'historique'));
@@ -210,9 +212,9 @@ class UserController extends Controller
         $prix   = ['mensuel' => 5000, 'trimestriel' => 12000, 'annuel' => 40000];
 
         // Désactiver les anciens
-        TcfAbonnement::where('user_id', $user->id)->update(['actif' => false]);
+        LangueAbonnement::where('user_id', $user->id)->update(['actif' => false]);
 
-        TcfAbonnement::create([
+        LangueAbonnement::create([
             'user_id'   => $user->id,
             'forfait'   => $request->forfait,
             'montant'   => $prix[$request->forfait],

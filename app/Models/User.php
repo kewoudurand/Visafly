@@ -29,14 +29,21 @@ class User extends Authenticatable
     }
     public function abonnements()
     {
-        return $this->hasMany(TcfAbonnement::class, 'user_id');
+        return $this->hasMany(LangueAbonnement::class, 'user_id');
     }
 
     public function abonnementActif()
     {
-        return $this->hasOne(TcfAbonnement::class, 'user_id')
+        return $this->hasOne(LangueAbonnement::class, 'user_id')
             ->where('actif', true)
             ->where('fin_at', '>=', now())
             ->latest();
+    }
+
+    // app/Models/User.php
+    public function lessonsProgress() {
+        return $this->belongsToMany(Lesson::class, 'user_lesson_progress')
+                    ->withPivot('terminee', 'score_quiz', 'statut')
+                    ->withTimestamps();
     }
 }

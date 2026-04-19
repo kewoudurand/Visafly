@@ -94,7 +94,7 @@
   $isEdit = isset($plan);
   $action = $isEdit
       ? route('admin.abonnements.plans.update', $plan)
-      : route('admin.abonnements.plans.store');
+      : route('admin.abonnements.store');
   $points = $isEdit ? ($plan->points ?? []) : [
       ['icone'=>'bi-check-circle-fill','couleur'=>'#1cc88a','texte'=>''],
       ['icone'=>'bi-check-circle-fill','couleur'=>'#1cc88a','texte'=>''],

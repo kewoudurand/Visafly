@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\LanguePassage;
 use App\Models\User;
 use App\Models\TcfPassage;
 
@@ -37,10 +38,10 @@ class DashboardService
         $stats = [];
 
         if ($user->can('pass test') || $user->hasRole('user')) {
-            $stats['tests_passes'] = TcfPassage::where('user_id', $user->id)
+            $stats['tests_passes'] = LanguePassage::where('user_id', $user->id)
                 ->where('statut', 'termine')->count();
 
-            $stats['score'] = TcfPassage::where('user_id', $user->id)
+            $stats['score'] = LanguePassage::where('user_id', $user->id)
                 ->where('statut', 'termine')->avg('score') ?? 0;
         }
 

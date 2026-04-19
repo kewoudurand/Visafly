@@ -6,58 +6,40 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('lessons', function (Blueprint $table) {
             $table->id();
             $table->foreignId('cours_id')->constrained('courses')->onDelete('cascade');
-            $table->string('titre');                   // "Bonjour en allemand"
-            $table->string('slug')->unique();
-            $table->text('contenu');                   // Texte explicatif (HTML ou Markdown)
-            $table->enum('type', [
-                'vocabulaire',   // Liste de mots
-                'grammaire',     // Règles grammaticales
-                'dialogue',      // Conversations
-                'exercice',      // Quiz / exercices
-                'culture',       // Culture allemande
-                'prononciation', // Audio & prononciation
-            ])->default('vocabulaire');
-             $table->json('mots')->nullable();
-            /*
-             * Structure mots : [
-             *   { "de": "Hallo", "fr": "Bonjour", "phonetique": "ˈhalo", "exemple": "Hallo, wie geht's?" },
-             * ]
-             */
-            $table->json('exercices')->nullable();
-            /*
-             * Structure exercices : [
-             *   {
-             *     "question": "Comment dit-on 'Bonjour' ?",
-             *     "type": "qcm",    // qcm | texte_libre | association
-             *     "choix": ["Hallo", "Tschüss", "Danke", "Bitte"],
-             *     "reponse": "Hallo",
-             *     "explication": "Hallo est le mot standard..."
-             *   }
-             * ]
-             */
+            $table->foreignId('instructor_id')->nullable()->constrained('users')->nullOnDelete();
 
-            $table->string('audio')->nullable();       // fichier audio stocké
-            $table->integer('duree_minutes')->default(15);
+            // Informations générales
+            $table->string('titre');
+            $table->string('slug')->unique();
+            $table->enum('type', ['vocabulaire', 'dialogue', 'grammaire', 'audio', 'lecture'])
+                  ->default('vocabulaire');
+            $table->longText('contenu')->nullable();  // Corps de leçon en Markdown
+
+            // Contenu structuré (JSON)
+            $table->json('mots')->nullable();         // [{ de, fr, phonetique, exemple }]
+            $table->json('exercices')->nullable();    // [{ question, type, choix, reponse, explication }]
+
+            // Support audio (type = 'audio')
+            $table->string('fichier_audio')->nullable();       // Storage path
+            $table->text('transcription_audio')->nullable();   // Texte de l'audio
+            $table->json('questions_audio')->nullable();       // Questions de compréhension audio
+
+            // Méta
             $table->boolean('gratuite')->default(false);
+            $table->boolean('publiee')->default(true);
             $table->integer('ordre')->default(0);
             $table->integer('points_recompense')->default(10);
-            $table->timestamps();
+            $table->integer('duree_estimee_minutes')->nullable();
 
-            $table->index(['cours_id', 'ordre']);
+            $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('lessons');

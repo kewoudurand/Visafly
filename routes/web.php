@@ -5,7 +5,6 @@ use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\UserConsultationController;
 use App\Http\Controllers\Admin\AdminConsultationController;
-use App\Http\Controllers\Tcf\TcfController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\UserController;
@@ -18,7 +17,13 @@ use App\Http\Controllers\StudentResultController;
 use App\Http\Controllers\Admin\LangueController;
 use App\Http\Controllers\Admin\AbonnementPlanController;
 use App\Http\Controllers\AbonnementController;
-use App\Http\Controllers\CoursAllemandController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\ServiceController;
+use App\Http\Controllers\Student\CourseDashboardController;
+use App\Http\Controllers\Admin\StudentProgressController;
+use App\Http\Controllers\Instructor\InstructorCourseController;
+use App\Http\Controllers\Student\LessonController;
+use App\Http\Controllers\Admin\LessonAdminController;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,8 +31,12 @@ use App\Http\Controllers\CoursAllemandController;
 |--------------------------------------------------------------------------
 */
 
-// Page d'accueil
-Route::get('/', fn() => view('index'))->name('home');
+Route::get('/', function() {
+    $controller = new \App\Http\Controllers\ServiceController();
+    return view('index', [
+        'services' => $controller->allServices() 
+    ]);
+})->name('home');
 
 // Authentification
 Route::get('/register', [RegisterController::class, 'show'])->name('auth.register.show');
@@ -37,14 +46,32 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login'])->name('login.post');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+Route::get('/blog/comment-obtenir-son-visa', function () {return view('blog.comment-obtenir-son-visa');})->name('blog.visa-guide');
+Route::get('/services/{slug}', [ServiceController::class, 'show'])->name('services.show')->where('slug', '[a-z\-]+');
+
 // Consultation publique
 Route::get('/consultations', [UserConsultationController::class, 'create'])->name('consultations.create');
 Route::post('/consultations', [UserConsultationController::class, 'store'])->name('consultations.store');
 Route::get('/consultation/merci', [UserConsultationController::class, 'merci'])->name('consultation.merci');
-Route::get('/abonnement', [TcfController::class, 'abonnement'])->name('tcf.abonnement');
 Route::get('/langues',[LangueEpreuveController::class, 'index'])->name('langues.index');
 Route::get('/langues/{code}/series',[LangueEpreuveController::class, 'series'])->name('langues.series');
 
+Route::prefix('apprendre')->name('student.')->middleware(['auth', 'role:student|admin|super-admin'])->group(function () {
+ 
+    Route::get('cours/{cours}',[CourseController::class, 'show'])->name('cours.show');
+ 
+    Route::get('cours/{cours}/lecons/{lesson}',
+        [LessonController::class, 'show']
+    )->name('cours.lessons.show');
+ 
+    Route::post('cours/{cours}/lecons/{lesson}/soumettre',
+        [LessonController::class, 'soumettre']
+    )->name('cours.lessons.soumettre');
+ 
+    Route::post('cours/{cours}/lecons/{lesson}/terminer',
+        [LessonController::class, 'terminer']
+    )->name('cours.lessons.terminer');
+});
 
 Route::middleware('auth')->group(function () {
 
@@ -58,7 +85,6 @@ Route::middleware('auth')->group(function () {
     // Dashboard utilisateur
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/espace', [DashboardController::class, 'dashboard'])->name('dashboard.espace');
-    Route::get('/espace', [UserConsultationController::class, 'index'])->name('dashboard');
 
     Route::get('/langues/{code}/series/{serie}/disciplines',[LangueEpreuveController::class, 'disciplines'])->name('langues.disciplines');
     Route::get('/langues/{code}/series/{serie}/disciplines/{discipline}/epreuve',[LangueEpreuveController::class, 'epreuve'])->name('langues.epreuve');
@@ -66,10 +92,16 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/mon-abonnement',[AbonnementController::class, 'index'])->name('abonnement.index');
     Route::post('/abonnement/{plan}/souscrire', [AbonnementController::class, 'souscrire'])->name('abonnement.souscrire');
-    Route::get('/choose',[CoursAllemandController::class, 'choose'])->name('chooses');
+    Route::get('/choose',[CourseController::class, 'choose'])->name('chooses');
+    Route::prefix('cours')->name('cours.')->group(function () {
+        Route::get('/',                  [CourseController::class, 'choose'])->name('list');
+        Route::get('{cours:slug}',       [CourseController::class, 'show'])->name('allemand.show');
+        Route::get('{cours:slug}/{lecon:slug}', [CourseController::class, 'lecon'])->middleware('auth')->name('allemand.lecon');
+        Route::post('valider/{lecon}',   [CourseController::class, 'valider'])->middleware('auth')->name('allemand.valider');
+    });
 
 
-
+    //Administrateur
     Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
         Route::get('/analytics/langues', [AnalyticsLangueController::class, 'index'])->name('analytics.langues');
@@ -94,7 +126,7 @@ Route::middleware('auth')->group(function () {
 
         // ── Abonnements ──
         Route::get('/abonnements', [AbonnementController::class, 'index'])->name('abonnements.index');
-        Route::post('/abonnements', [AbonnementController::class, 'store'])->name('abonnements.store');
+        Route::post('/abonnements', [AbonnementPlanController::class, 'store'])->name('abonnements.store');
 
         // ── Langues, séries, questions ──
 
@@ -145,8 +177,52 @@ Route::middleware('auth')->group(function () {
         Route::put(    '/abonnements/plans/{plan}',        [AbonnementPlanController::class, 'update']) ->name('abonnements.plans.update');
         Route::delete( '/abonnements/plans/{plan}',        [AbonnementPlanController::class, 'destroy'])->name('abonnements.plans.destroy');
         Route::post(   '/abonnements/plans/{plan}/toggle', [AbonnementPlanController::class, 'toggle']) ->name('abonnements.plans.toggle');
+
+        Route::get('/student-progress',[StudentProgressController::class, 'index'])->name('student-progress.index');
+        Route::get('/student-progress/{user}',[StudentProgressController::class, 'show'])->name('student-progress.show');
+
+        Route::resource('cours',CourseController::class);
+ 
+        // Leçons (nested sous cours)
+        Route::resource('cours.lessons',LessonAdminController::class);
+    
+        // Réordonner leçons (drag & drop AJAX)
+        Route::post('cours/{cours}/lessons/reordonner', [LessonAdminController::class, 'reordonner'])->name('cours.lessons.reordonner');
+    });
+ 
         
     });
+
+    //Instructor
+    Route::prefix('instructor')->name('instructor.')->middleware(['auth'])->group(function(){
+        Route::get('/instructor',[CourseController::class,'index'])->name('dashboard');
+        Route::get('instructor/create',[CourseController::class,'create'])->name('courses.create');
+        Route::post('instructor',[CourseController::class,'store'])->name('courses.store');
+        Route::get('instructor/{course}/edit',[CourseController::class,'edit'])->name('courses.edit');
+        Route::put('instructor/{course}',[CourseController::class,'update'])->name('courses.update');
+        Route::delete('instructor/{course}',[CourseController::class,'destroy'])->name('courses.destroy');
+        Route::get('instructor/{course}',[CourseController::class,'show'])->name('courses.show');
+        Route::get('instructor/{course}/lecon',[InstructorCourseController::class,'createLesson'])->name('lessons.create');
+        Route::post('instructor/{course}/lecon',[InstructorCourseController::class,'storeLesson'])->name('lessons.store');
+        Route::get('instructor/{course}/lecon/{lesson}/edit',[InstructorCourseController::class,'editLesson'])->name('lessons.edit');
+        Route::put('instructor/{course}/lecon/{lesson}',[InstructorCourseController::class,'updateLesson'])->name('lessons.update');
+        Route::delete('instructor/{course}/lecon/{lesson}',[InstructorCourseController::class,'destroyLesson'])->name('lessons.destroy');
+
+        // Dashboard instructeur
+        Route::get('/', fn () => view('instructeur.dashboard'))->name('dashboard');
+ 
+        // Cours (uniquement les siens)
+        Route::resource('cours', \App\Http\Controllers\Instructeur\CourseController::class);
+ 
+        // Leçons (uniquement dans ses cours)
+        Route::resource('cours.lessons', \App\Http\Controllers\Instructeur\LessonController::class);
+ 
+         // Réordonner leçons
+        Route::post('cours/{cours}/lessons/reordonner',
+            [\App\Http\Controllers\Instructeur\LessonController::class, 'reordonner']
+        )->name('cours.lessons.reordonner');
+    });
+        
 
     Route::prefix('results')->name('student.')->group(function () {
         
@@ -160,14 +236,10 @@ Route::middleware('auth')->group(function () {
         Route::get('/passage/{passage}', [StudentResultController::class, 'showPassage'])->name('detail')->middleware('can:view result');
 
         Route::get('/langues',[LangueEpreuveController::class, 'index'])->name('langues.index');
+
+        Route::get('/student/courses', [CourseDashboardController::class, 'index'])->name('course.index');
+        Route::get('/student-progress/{user}',[StudentProgressController::class, 'show'])->name('student-progress.show');
     });
 
-    Route::prefix('cours/allemand')->name('cours.allemand.')->group(function () {
-        
-        Route::get('/',[CoursAllemandController::class, 'index'])->name('index');
-        Route::get('/{slug}',[CoursAllemandController::class, 'show'])->name('show');
-        Route::get('/{cours}/lecon/{lecon}',[CoursAllemandController::class, 'lecon'])->name('lecon');
-        Route::post('/valider/{lecon}',[CoursAllemandController::class, 'valider'])->middleware('auth')->name('valider');
-    });
+
  
-});

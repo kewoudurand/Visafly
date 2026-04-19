@@ -98,6 +98,62 @@
       0%   { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
+
+    /* ─── Toggle mensuel/annuel ─── */
+    .tarif-toggle-label{font-size:14px;font-weight:600;color:#888;transition:color .2s;cursor:pointer;}
+    .tarif-toggle-label.active{color:#1B3A6B;}
+    .tarif-toggle{width:50px;height:26px;background:#e0e0e0;border-radius:13px;cursor:pointer;position:relative;transition:background .3s;}
+    .tarif-toggle.on{background:#1B3A6B;}
+    .tarif-toggle-dot{width:20px;height:20px;background:#fff;border-radius:50%;position:absolute;top:3px;left:3px;transition:transform .3s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+    .tarif-toggle.on .tarif-toggle-dot{transform:translateX(24px);}
+    .badge-eco{background:#E1F5EE;color:#0f6e56;font-size:10px;font-weight:700;padding:2px 7px;border-radius:8px;vertical-align:middle;}
+    
+    /* ─── Cards ─── */
+    .tarif-card{background:#fff;border-radius:20px;border:1.5px solid #eee;padding:28px 24px;height:100%;display:flex;flex-direction:column;position:relative;transition:transform .3s,box-shadow .3s;}
+    .tarif-card:hover{transform:translateY(-6px);box-shadow:0 20px 50px rgba(27,58,107,.12);}
+    .tarif-card-popular{border-color:#1B3A6B;border-width:2px;}
+    .tarif-card-pro{background:linear-gradient(145deg,#fff 60%,rgba(245,166,35,.05));border-color:#F5A623;border-width:1.5px;}
+    
+    .tarif-popular-badge{position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:#1B3A6B;color:#fff;font-size:11px;font-weight:700;padding:5px 16px;border-radius:20px;white-space:nowrap;}
+    
+    .tarif-header{text-align:center;margin-bottom:20px;}
+    .tarif-icon{width:52px;height:52px;border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 12px;font-size:22px;}
+    .tarif-plan-name{font-size:20px;font-weight:800;color:#1B3A6B;margin-bottom:2px;}
+    .tarif-plan-sub{font-size:12px;color:#888;}
+    
+    .tarif-price-box{text-align:center;margin-bottom:22px;padding:16px;background:rgba(27,58,107,.03);border-radius:12px;}
+    .tarif-price{display:flex;align-items:baseline;justify-content:center;gap:4px;}
+    .price-amount{font-size:2rem;font-weight:900;color:#1B3A6B;}
+    .price-currency{font-size:14px;font-weight:700;color:#888;}
+    .price-period{font-size:12px;color:#aaa;margin-top:2px;}
+    .price-annuel-detail{font-size:11px;color:#1cc88a;margin-top:4px;}
+    
+    .tarif-features{list-style:none;padding:0;margin:0 0 24px;flex:1;}
+    .tarif-features li{display:flex;align-items:center;gap:10px;padding:7px 0;font-size:13px;border-bottom:1px solid #f8f8f8;}
+    .feat-ok{color:#333;}
+    .feat-ok i{color:#1cc88a;font-size:14px;flex-shrink:0;}
+    .feat-no{color:#bbb;}
+    .feat-no i{color:#e0e0e0;font-size:14px;flex-shrink:0;}
+    
+    .tarif-footer{margin-top:auto;}
+    .tarif-btn{display:flex;align-items:center;justify-content:center;padding:12px 20px;border-radius:25px;font-size:13px;font-weight:700;text-decoration:none;transition:all .2s;border:none;cursor:pointer;width:100%;}
+    .tarif-btn-primary{background:#1B3A6B;color:#fff;}
+    .tarif-btn-primary:hover{background:#152d54;transform:translateY(-2px);color:#fff;}
+    .tarif-btn-gold{background:#F5A623;color:#1B3A6B;}
+    .tarif-btn-gold:hover{background:#e09412;transform:translateY(-2px);color:#1B3A6B;}
+    .tarif-btn-outline{background:transparent;color:#1B3A6B;border:1.5px solid #1B3A6B;}
+    .tarif-btn-outline:hover{background:#1B3A6B;color:#fff;}
+    
+    /* ─── Bannière entreprise ─── */
+    .tarif-entreprise{background:#fff;border:1.5px solid #eee;border-radius:20px;padding:28px 32px;margin-top:32px;box-shadow:0 4px 20px rgba(27,58,107,.06);}
+    
+    /* ─── FAQ ─── */
+    .tarif-faq{display:flex;flex-direction:column;gap:8px;}
+    .tarif-faq-item{background:#fff;border:1px solid #eee;border-radius:12px;overflow:hidden;}
+    .tarif-faq-item summary{padding:14px 18px;font-size:14px;font-weight:600;color:#1B3A6B;cursor:pointer;list-style:none;display:flex;align-items:center;justify-content:space-between;}
+    .tarif-faq-item summary::after{content:'\F282';font-family:'bootstrap-icons';font-size:13px;color:#aaa;transition:transform .3s;}
+    .tarif-faq-item[open] summary::after{transform:rotate(180deg);}
+    .tarif-faq-item p{padding:0 18px 14px;font-size:13px;color:#666;line-height:1.7;margin:0;}
   </style>
 
 </head>
@@ -338,109 +394,16 @@
 
         <div class="row gy-5">
 
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="service-item" data-num="01">
-              <div class="service-icon">
-                <i class="bi bi-graph-up-arrow"></i>
+              @foreach($services as $slug => $data)
+              <div class="col-lg-4 col-md-6">
+                  <div class="service-item">
+                      <h3>{{ $data['titre'] }}</h3>
+                      <a href="{{ route('services.show', ['slug' => $slug]) }}" class="service-link">
+                          Learn More <i class="bi bi-arrow-right"></i>
+                      </a>
+                  </div>
               </div>
-              <h3>Conseil stratégique(Consulting)</h3>
-              <p>Notre service de Conseil Stratégique vous accompagne pas à pas afin de maximiser vos chances de réussite et de construire un projet solide, réaliste et conforme aux exigences des autorités d’immigration.</p>
-              <a href="service-details.html" class="service-link">
-                Learn More <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="service-item" data-num="02">
-              <div class="service-icon">
-                <i class="bi bi-palette"></i>
-              </div>
-              <h3>VISA</h3>
-              <p>Accompagnement complet dans la préparation, la vérification et le dépôt de votre demande de visa selon votre destination et votre projet.</p>
-              <a href="service-details.html" class="service-link">
-                Learn More <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item" data-num="03">
-              <div class="service-icon">
-                <i class="bi bi-code-slash"></i>
-              </div>
-              <h3>FORMATION & LANGUE</h3>
-              <p>Orientation vers les meilleures écoles et formations à l’étranger, avec appui pour l’apprentissage ou la certification en langue (IELTS, TEF, etc.).</p>
-              <a href="service-details.html" class="service-link">
-                Learn More <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            <div class="service-item" data-num="04">
-              <div class="service-icon">
-                <i class="bi bi-megaphone"></i>
-              </div>
-              <h3>Assurances voyage et sante</h3>
-              <p>Souscription rapide à des assurances couvrant vos soins médicaux, urgences et imprévus durant le séjour à l’étranger.</p>
-              <a href="service-details.html" class="service-link">
-                Learn More <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            <div class="service-item" data-num="05">
-              <div class="service-icon">
-                <i class="bi bi-people"></i>
-              </div>
-              <h3>Achats de billets d'avion</h3>
-              <p>Assistance pour trouver et réserver les meilleurs vols au tarif le plus avantageux selon votre destination et vos dates de départ.</p>
-              <a href="service-details.html" class="service-link">
-                Learn More <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item" data-num="06">
-              <div class="service-icon">
-                <i class="bi bi-bar-chart"></i>
-              </div>
-              <h3>Reservation d'hotel ou hebergement</h3>
-              <p>Aide à la recherche et à la réservation d’un logement sûr et adapté à votre budget et à votre durée de séjour.</p>
-              <a href="service-details.html" class="service-link">
-                Learn More <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item" data-num="07">
-              <div class="service-icon">
-                <i class="bi bi-bar-chart"></i>
-              </div>
-              <h3>Orientation et accompagnement a jusqu'a l'installation </h3>
-              <p>Accueil, conseils pratiques et suivi personnalisé pour faciliter votre intégration dans le nouveau pays.</p>
-              <a href="service-details.html" class="service-link">
-                Learn More <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div><!-- End Service Item -->
-
-          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="400">
-            <div class="service-item" data-num="08">
-              <div class="service-icon">
-                <i class="bi bi-bar-chart"></i>
-              </div>
-              <h3>L'import - Export</h3>
-              <p>Appui aux particuliers et entreprises dans leurs opérations commerciales internationales : sourcing, transport, et formalités douanières.</p>
-              <a href="service-details.html" class="service-link">
-                Learn More <i class="bi bi-arrow-right"></i>
-              </a>
-            </div>
-          </div><!-- End Service Item -->
+              @endforeach
 
         </div>
 
@@ -942,6 +905,215 @@
       </div>
     </section><!-- /Testimonials Section -->
 
+    <!-- Tarifs Section -->
+    <section id="tarifs" class="tarifs section light-background">
+    
+      <div class="container section-title" data-aos="fade-up">
+        <span class="subtitle">Tarifs</span>
+        <h2>Nos formules d'abonnement</h2>
+        <p>Choisissez la formule adaptée à votre projet. Accédez à nos tests, cours de langue et ressources exclusives pour maximiser vos chances de réussite.</p>
+      </div>
+    
+      <div class="container" data-aos="fade-up" data-aos-delay="100">
+    
+        {{-- Toggle mensuel / annuel --}}
+        <div class="d-flex justify-content-center align-items-center gap-3 mb-5" data-aos="fade-up" data-aos-delay="150">
+          <span class="tarif-toggle-label active" id="label-mensuel">Mensuel</span>
+          <div class="tarif-toggle" id="tarif-toggle" onclick="toggleTarif()">
+            <div class="tarif-toggle-dot" id="toggle-dot"></div>
+          </div>
+          <span class="tarif-toggle-label" id="label-annuel">
+            Annuel <span class="badge-eco">-20%</span>
+          </span>
+        </div>
+    
+        <div class="row justify-content-center g-4">
+    
+          {{-- ── Plan Gratuit ── --}}
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="200">
+            <div class="tarif-card">
+              <div class="tarif-header">
+                <div class="tarif-icon" style="background:rgba(136,135,128,.1);">
+                  <i class="bi bi-person" style="color:#5F5E5A;"></i>
+                </div>
+                <div class="tarif-plan-name">Gratuit</div>
+                <div class="tarif-plan-sub">Pour découvrir VisaFly</div>
+              </div>
+              <div class="tarif-price-box">
+                <div class="tarif-price">
+                  <span class="price-amount">0</span>
+                  <span class="price-currency">FCFA</span>
+                </div>
+                <div class="price-period">pour toujours</div>
+              </div>
+              <ul class="tarif-features">
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Accès aux leçons gratuites</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>5 tests TCF/TEF par mois</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Résultats détaillés</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>1 consultation offerte</li>
+                <li class="feat-no"><i class="bi bi-x-circle-fill"></i>Cours d'allemand complets</li>
+                <li class="feat-no"><i class="bi bi-x-circle-fill"></i>Tests illimités</li>
+                <li class="feat-no"><i class="bi bi-x-circle-fill"></i>Suivi personnalisé</li>
+                <li class="feat-no"><i class="bi bi-x-circle-fill"></i>Téléchargement ressources</li>
+              </ul>
+              <div class="tarif-footer">
+                <a href="{{ route('auth.register.show') }}" class="tarif-btn tarif-btn-outline">
+                  Commencer gratuitement
+                </a>
+              </div>
+            </div>
+          </div>
+    
+          {{-- ── Plan Essentiel ── --}}
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="250">
+            <div class="tarif-card tarif-card-popular">
+              <div class="tarif-popular-badge">
+                <i class="bi bi-star-fill me-1"></i> Le plus populaire
+              </div>
+              <div class="tarif-header">
+                <div class="tarif-icon" style="background:rgba(27,58,107,.1);">
+                  <i class="bi bi-lightning-charge" style="color:#1B3A6B;"></i>
+                </div>
+                <div class="tarif-plan-name">Essentiel</div>
+                <div class="tarif-plan-sub">Pour se préparer sérieusement</div>
+              </div>
+              <div class="tarif-price-box">
+                <div class="tarif-price">
+                  <span class="price-amount" id="price-essentiel">9 900</span>
+                  <span class="price-currency">FCFA</span>
+                </div>
+                <div class="price-period" id="period-essentiel">par mois</div>
+                <div class="price-annuel-detail" id="detail-essentiel" style="display:none;">
+                  soit <strong>94 800 FCFA/an</strong> au lieu de 118 800 FCFA
+                </div>
+              </div>
+              <ul class="tarif-features">
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Tout le plan Gratuit</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Tests TCF/TEF/IELTS illimités</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Cours d'allemand A1 et A2</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Statistiques de progression</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>3 consultations/mois</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Accès app mobile</li>
+                <li class="feat-no"><i class="bi bi-x-circle-fill"></i>Cours B1/B2 et au-delà</li>
+                <li class="feat-no"><i class="bi bi-x-circle-fill"></i>Conseiller dédié</li>
+              </ul>
+              <div class="tarif-footer">
+                <a href="{{ route('abonnement.index') }}" class="tarif-btn tarif-btn-primary">
+                  <i class="bi bi-arrow-right-circle me-1"></i> Choisir Essentiel
+                </a>
+              </div>
+            </div>
+          </div>
+    
+          {{-- ── Plan Pro ── --}}
+          <div class="col-lg-4 col-md-6" data-aos="fade-up" data-aos-delay="300">
+            <div class="tarif-card tarif-card-pro">
+              <div class="tarif-header">
+                <div class="tarif-icon" style="background:rgba(245,166,35,.15);">
+                  <i class="bi bi-trophy" style="color:#633806;"></i>
+                </div>
+                <div class="tarif-plan-name" style="color:#1B3A6B;">Pro</div>
+                <div class="tarif-plan-sub">Pour une réussite assurée</div>
+              </div>
+              <div class="tarif-price-box">
+                <div class="tarif-price">
+                  <span class="price-amount" id="price-pro">19 900</span>
+                  <span class="price-currency">FCFA</span>
+                </div>
+                <div class="price-period" id="period-pro">par mois</div>
+                <div class="price-annuel-detail" id="detail-pro" style="display:none;">
+                  soit <strong>190 800 FCFA/an</strong> au lieu de 238 800 FCFA
+                </div>
+              </div>
+              <ul class="tarif-features">
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Tout le plan Essentiel</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Cours allemand A1 → B2 complets</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Goethe-Zertifikat inclus</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Consultations visa illimitées</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Conseiller dédié personnel</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Suivi dossier visa complet</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Téléchargements illimités</li>
+                <li class="feat-ok"><i class="bi bi-check-circle-fill"></i>Priorité traitement dossier</li>
+              </ul>
+              <div class="tarif-footer">
+                <a href="{{ route('abonnement.index') }}" class="tarif-btn tarif-btn-gold">
+                  <i class="bi bi-patch-check me-1"></i> Choisir Pro
+                </a>
+              </div>
+            </div>
+          </div>
+    
+        </div>
+    
+        {{-- Bannière entreprise --}}
+        <div class="tarif-entreprise" data-aos="fade-up" data-aos-delay="350">
+          <div class="row align-items-center">
+            <div class="col-md-8">
+              <div class="d-flex align-items-center gap-3 mb-2">
+                <div style="width:44px;height:44px;border-radius:12px;background:rgba(245,166,35,.15);
+                            display:flex;align-items:center;justify-content:center;">
+                  <i class="bi bi-building" style="color:#F5A623;font-size:20px;"></i>
+                </div>
+                <div>
+                  <div style="font-size:16px;font-weight:800;color:#1B3A6B;">
+                    Formule Entreprise & Groupes
+                  </div>
+                  <div style="font-size:13px;color:#666;">
+                    Pour les entreprises, universités et groupes de 5 personnes et plus
+                  </div>
+                </div>
+              </div>
+              <p style="font-size:13px;color:#777;margin:0;">
+                Tarifs négociés, tableau de bord administrateur, suivi collectif des progressions, 
+                sessions de formation en présentiel ou à distance. Devis personnalisé sous 24h.
+              </p>
+            </div>
+            <div class="col-md-4 text-md-end mt-3 mt-md-0">
+              <a href="{{ route('consultations.create') }}" class="tarif-btn tarif-btn-outline"
+                style="display:inline-flex;">
+                <i class="bi bi-telephone me-2"></i> Demander un devis
+              </a>
+            </div>
+          </div>
+        </div>
+    
+        {{-- FAQ rapide --}}
+        <div class="row justify-content-center mt-5" data-aos="fade-up" data-aos-delay="400">
+          <div class="col-lg-8">
+            <div style="text-align:center;margin-bottom:28px;">
+              <div style="font-size:16px;font-weight:700;color:#1B3A6B;">
+                Questions fréquentes
+              </div>
+            </div>
+            <div class="tarif-faq">
+    
+              <details class="tarif-faq-item">
+                <summary>Puis-je changer de formule à tout moment ?</summary>
+                <p>Oui, vous pouvez passer à un plan supérieur ou inférieur à tout moment depuis votre espace personnel. La différence est calculée au prorata.</p>
+              </details>
+    
+              <details class="tarif-faq-item">
+                <summary>Les paiements sont-ils sécurisés ?</summary>
+                <p>Oui. Nous acceptons Orange Money, MTN MoMo, et virements bancaires. Toutes les transactions sont chiffrées et sécurisées.</p>
+              </details>
+    
+              <details class="tarif-faq-item">
+                <summary>Y a-t-il une période d'essai ?</summary>
+                <p>Le plan Gratuit est disponible sans limite de temps. Vous pouvez explorer nos contenus avant de choisir un abonnement payant.</p>
+              </details>
+    
+              <details class="tarif-faq-item">
+                <summary>Que se passe-t-il si je résilie ?</summary>
+                <p>Votre accès premium reste actif jusqu'à la fin de la période payée. Vos données et progressions sont conservées même après résiliation.</p>
+              </details>
+    
+            </div>
+          </div>
+        </div>
+    
+      </div>
+    </section><!-- /Tarifs Section -->
+
     <!-- Contact Section -->
     <section id="contact" class="contact section light-background">
 
@@ -1257,6 +1429,30 @@
 
   <!-- Main JS File -->
   <script src="{{asset('assets/js/main.js')}}"></script>
+
+  <script>
+    var tarifAnnuel = false;
+    function toggleTarif() {
+      tarifAnnuel = !tarifAnnuel;
+      const toggle = document.getElementById('tarif-toggle');
+      const lblM   = document.getElementById('label-mensuel');
+      const lblA   = document.getElementById('label-annuel');
+    
+      toggle.classList.toggle('on', tarifAnnuel);
+      lblM.classList.toggle('active', !tarifAnnuel);
+      lblA.classList.toggle('active', tarifAnnuel);
+    
+      // Prix Essentiel
+      document.getElementById('price-essentiel').textContent  = tarifAnnuel ? '7 900'  : '9 900';
+      document.getElementById('period-essentiel').textContent  = tarifAnnuel ? 'par mois (facturé annuellement)' : 'par mois';
+      document.getElementById('detail-essentiel').style.display = tarifAnnuel ? 'block' : 'none';
+    
+      // Prix Pro
+      document.getElementById('price-pro').textContent  = tarifAnnuel ? '15 900'  : '19 900';
+      document.getElementById('period-pro').textContent  = tarifAnnuel ? 'par mois (facturé annuellement)' : 'par mois';
+      document.getElementById('detail-pro').style.display = tarifAnnuel ? 'block' : 'none';
+    }
+  </script>
 
 </body>
 

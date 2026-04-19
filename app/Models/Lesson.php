@@ -1,73 +1,143 @@
 <?php
-// app/Models/Lesson.php
 
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Storage;
 
 class Lesson extends Model
 {
-    protected $table = 'lessons';
-
     protected $fillable = [
-        'cours_id', 'titre', 'slug', 'contenu', 'type',
-        'mots', 'exercices', 'audio',
-        'duree_minutes', 'gratuite', 'ordre', 'points_recompense',
+        'cours_id',
+        'instructor_id',       // ← user avec rôle instructeur
+        'titre', 'slug', 'type', 'contenu',
+        'mots', 'exercices',
+        'fichier_audio', 'transcription_audio', 'questions_audio',
+        'gratuite', 'publiee', 'ordre',
+        'points_recompense', 'duree_estimee_minutes',
     ];
 
     protected $casts = [
-        'mots'      => 'array',
-        'exercices' => 'array',
-        'gratuite'  => 'boolean',
+        'mots'            => 'array',
+        'exercices'       => 'array',
+        'questions_audio' => 'array',
+        'gratuite'        => 'boolean',
+        'publiee'         => 'boolean',
     ];
-
-    // ── Relations ──
 
     public function cours(): BelongsTo
     {
         return $this->belongsTo(Course::class, 'cours_id');
     }
 
-    public function progres(): HasMany
+    public function instructor(): BelongsTo
     {
-        return $this->hasMany(CoursProgres::class, 'lesson_id');
+        return $this->belongsTo(User::class, 'instructor_id');
     }
 
-    // ── Helpers ──
-
-    public function estTermineePar(int $userId): bool
+    public function progressions(): HasMany
     {
-        return CoursProgres::where('user_id', $userId)
-                           ->where('lesson_id', $this->id)
-                           ->where('statut', 'termine')
-                           ->exists();
+        return $this->hasMany(LessonProgression::class, 'lesson_id');
     }
 
-    public function typeIcon(): string
+    public function scopePubliees(Builder $query): Builder
     {
-        return match($this->type) {
-            'vocabulaire'   => 'bi-alphabet',
-            'grammaire'     => 'bi-pencil-square',
-            'dialogue'      => 'bi-chat-dots',
-            'exercice'      => 'bi-check2-circle',
-            'culture'       => 'bi-globe-europe-africa',
-            'prononciation' => 'bi-mic',
-            default         => 'bi-book',
+        return $query->where('publiee', true);
+    }
+
+    public function scopeOrdonnees(Builder $query): Builder
+    {
+        return $query->orderBy('ordre');
+    }
+
+    public function scopeDeInstructeur(Builder $query, int $instructorId): Builder
+    {
+        return $query->where('instructor_id', $instructorId);
+    }
+
+    public function appartientA(int $userId): bool
+    {
+        return (int) $this->instructor_id === $userId;
+    }
+
+    public function peutEtreGereePar(?int $userId = null): bool
+    {
+        $user = $userId ? User::find($userId) : auth()->user();
+        if (! $user) return false;
+        if ($user->hasAnyRole(['admin', 'super-admin'])) return true;
+        return $this->appartientA($user->id);
+    }
+
+    public function progressionDe(?int $userId = null): ?LessonProgression
+    {
+        $uid = $userId ?? auth()->id();
+        return $this->progressions()->where('user_id', $uid)->first();
+    }
+
+    public function estTermineePar($user): bool
+    {
+        // Si on nous passe l'objet User, on récupère son ID
+        $userId = ($user instanceof \App\Models\User) ? $user->id : $user;
+
+        if (!$userId) return false;
+
+        return \DB::table('user_lesson_progress')
+            ->where('lesson_id', $this->id)
+            ->where('user_id', $userId)
+            ->where('terminee', true)
+            ->exists();
+    }
+
+    public function estAccessiblePar(?int $userId = null): bool
+    {
+        if ($this->gratuite) return true;
+        $uid = $userId ?? auth()->id();
+        return \App\Models\LangueAbonnement::where('user_id', $uid)
+            ->where('langue_id', $this->cours->langue_id ?? null)
+            ->where('statut', 'actif')
+            ->where('date_fin', '>=', now())
+            ->exists();
+    }
+
+    public function nombreMots(): int { return count($this->mots ?? []); }
+    public function nombreExercices(): int { return count($this->exercices ?? []); }
+
+    public function urlAudio(): ?string
+    {
+        return $this->fichier_audio
+            ? Storage::disk('public')->url($this->fichier_audio)
+            : null;
+    }
+
+    public function nomInstructeur(): string
+    {
+        return $this->instructeur?->name ?? 'Non assigné';
+    }
+
+    public function iconeType(): string
+    {
+        return match ($this->type) {
+            'vocabulaire' => 'bi-alphabet',
+            'dialogue'    => 'bi-chat-dots',
+            'grammaire'   => 'bi-pencil-square',
+            'audio'       => 'bi-headphones',
+            'lecture'     => 'bi-book',
+            default       => 'bi-journals',
         };
     }
 
     public function typeLabel(): string
     {
-        return match($this->type) {
-            'vocabulaire'   => 'Vocabulaire',
-            'grammaire'     => 'Grammaire',
-            'dialogue'      => 'Dialogue',
-            'exercice'      => 'Exercice',
-            'culture'       => 'Culture',
-            'prononciation' => 'Prononciation',
-            default         => ucfirst($this->type),
+        return match ($this->type) {
+            'vocabulaire' => 'success',
+            'dialogue'    => 'primary',
+            'grammaire'   => 'warning',
+            'audio'       => 'info',
+            'lecture'     => 'secondary',
+            default       => 'dark',
         };
     }
 }

@@ -1,9 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 
-
-<!-- form-wizard.html  21 Nov 2019 03:55:16 GMT -->
-
 <head>
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
@@ -159,48 +156,7 @@
         </aside>
       </div> 
       <div style="display:flex; flex-direction:column; flex:1; overflow:hidden;">
-        <nav id="navmenu" class="main-navbar" style="position:sticky; top:0; z-index:999; width:100%;">
-
-          <!-- Logo -->
-          <a class="navbar-brand" href="{{ url('/') }}">
-            <div class="nav-brand-icon">
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
-                <path d="M12 2L2 7l10 5 10-5-10-5z" fill="#F5A623"/>
-                <path d="M2 17l10 5 10-5M2 12l10 5 10-5"
-                      stroke="#F5A623" stroke-width="1.8" stroke-linecap="round"/>
-              </svg>
-            </div>
-            <span class="nav-brand-text">Visa<span class="nav-brand-gold">Fly</span></span>
-          </a>
-
-          <!-- Hamburger mobile -->
-          <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
-
-          <!-- Liens -->
-          <ul class="nav-links-list">
-            <li><a href="{{ url('/') }}"         class="nav-link-item">Accueil</a></li>
-            <li><a href="{{ url('/#about') }}"   class="nav-link-item">À propos</a></li>
-            <li><a href="{{ url('/#langues') }}" class="nav-link-item">Les Langues</a></li>
-            <li><a href="{{ url('/#services') }}" class="nav-link-item">Nos services</a></li>
-            <li><a href="{{ url('/#portfolio') }}" class="nav-link-item">Réalisations</a></li>
-            <li><a href="{{ url('/#team') }}"    class="nav-link-item">Team</a></li>
-            <li><a href="{{ url('/#contact') }}" class="nav-link-item">Contact</a></li>
-          </ul>
-
-          <!-- Boutons CTA -->
-          <div class="nav-cta-group">
-            <a href="{{ route('login') }}" class="btn-nav-login">Se connecter</a>
-            <a href="{{ route('consultations.create') }}" class="btn-nav-consult">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none">
-                <path d="M22 2L11 13" stroke="#1B3A6B" stroke-width="2.2" stroke-linecap="round"/>
-                <path d="M22 2L15 22l-4-9-9-4 20-7z" stroke="#1B3A6B" stroke-width="2.2"
-                      stroke-linecap="round" stroke-linejoin="round"/>
-              </svg>
-              Se consulter
-            </a>
-          </div>
-
-        </nav>
+        @include('partials/navbar')
 
         <!-- Main Content -->
         <div class="main-content" style="flex:1; overflow-y:auto; padding:2rem; background:#F8F9FA;">

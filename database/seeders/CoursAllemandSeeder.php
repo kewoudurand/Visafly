@@ -5,6 +5,7 @@ namespace Database\Seeders;
 
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Str;
 
@@ -12,6 +13,8 @@ class CoursAllemandSeeder extends Seeder
 {
     public function run(): void
     {
+        $adminId = User::first()->id ?? 1;
+        
         $this->seedNiveauA1();
         $this->seedNiveauA2();
         $this->seedNiveauB1();
@@ -28,9 +31,9 @@ class CoursAllemandSeeder extends Seeder
             'niveau'       => 'A1',
             'couleur'      => '#1cc88a',
             'icone'        => 'bi-1-circle',
-            'duree_heures' => 8,
+            'duree_estimee_minutes' => 8,
             'gratuit'      => false,
-            'actif'        => true,
+            'publie'        => true,
             'ordre'        => 1,
         ]);
 
@@ -322,9 +325,9 @@ class CoursAllemandSeeder extends Seeder
             'niveau'       => 'A2',
             'couleur'      => '#54a3f3',
             'icone'        => 'bi-2-circle',
-            'duree_heures' => 12,
+            'duree_estimee_minutes' => 12,
             'gratuit'      => false,
-            'actif'        => true,
+            'publie'        => true,
             'ordre'        => 2,
         ]);
 
@@ -422,9 +425,9 @@ class CoursAllemandSeeder extends Seeder
             'niveau'       => 'B1',
             'couleur'      => '#F5A623',
             'icone'        => 'bi-3-circle',
-            'duree_heures' => 20,
+            'duree_estimee_minutes' => 20,
             'gratuit'      => false,
-            'actif'        => true,
+            'publie'        => true,
             'ordre'        => 3,
         ]);
 
