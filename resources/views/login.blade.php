@@ -502,8 +502,8 @@
 
         {{-- Boutons sociaux --}}
         <div class="d-flex gap-2">
-          <a href="#" class="btn-social-vf facebook">
-            <i class="fab fa-facebook"></i> Facebook
+          <a href="{{ route('google.login') }}" class="btn-social-vf google">
+            <i class="fab fa-google"></i> Google
           </a>
           <a href="#" class="btn-social-vf twitter">
             <i class="fab fa-twitter"></i> Twitter

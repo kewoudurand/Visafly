@@ -1,11 +1,11 @@
 {{-- resources/views/instructeur/lessons/create.blade.php --}}
-@extends('layouts.instructeur')
+@extends('layouts.dashboard')
 @section('title', 'Nouvelle leçon — ' . $cours->titre)
 
 @section('content')
 <div class="container-fluid">
     <div class="d-flex align-items-center gap-2 mb-4">
-        <a href="{{ route('instructeur.cours.lessons.index', $cours) }}" class="btn btn-outline-secondary btn-sm">
+        <a href="{{ route('instructor.cours.lessons.index', $cours) }}" class="btn btn-outline-secondary btn-sm">
             <i class="bi bi-arrow-left"></i>
         </a>
         <div>

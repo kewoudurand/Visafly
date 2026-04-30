@@ -173,18 +173,18 @@
 
         <div class="row g-3 mb-3">
           <div class="col-md-6">
-            <label class="pf-label">Nom complet *</label>
-            <input type="text" name="name" class="pf-input @error('name') is-invalid @enderror"
+            <label class="pf-label">Nom *</label>
+            <input type="text" name="first_name" class="pf-input @error('first_name') is-invalid @enderror"
                    value="{{ old('name', $user->first_name) }}" placeholder="Jean Dupont">
-            @error('name')
+            @error('first_name')
               <div style="font-size:11px;color:#E24B4A;margin-top:4px;">{{ $message }}</div>
             @enderror
           </div>
           <div class="col-md-6">
-            <label class="pf-label">Adresse email *</label>
-            <input type="email" name="email" class="pf-input @error('email') is-invalid @enderror"
-                   value="{{ old('email', $user->email) }}" placeholder="email@exemple.com">
-            @error('email')
+            <label class="pf-label">Prénom complet *</label>
+            <input type="text" name="last_name" class="pf-input @error('last_name') is-invalid @enderror"
+                   value="{{ old('last_name', $user->last_name) }}" placeholder="Jean Dupont">
+            @error('last_name')
               <div style="font-size:11px;color:#E24B4A;margin-top:4px;">{{ $message }}</div>
             @enderror
           </div>
@@ -204,8 +204,17 @@
           </div>
         </div>
 
+        <div class="">
+          <label class="pf-label">Adresse email *</label>
+          <input type="email" name="email" class="pf-input @error('email') is-invalid @enderror"
+                  value="{{ old('email', $user->email) }}" placeholder="email@exemple.com">
+          @error('email')
+            <div style="font-size:11px;color:#E24B4A;margin-top:4px;">{{ $message }}</div>
+          @enderror
+        </div>
+
         {{-- Langue préférée --}}
-        <div class="mb-4">
+        <div class="mb-4 my-2">
           <label class="pf-label">Langue préférée</label>
           <div class="row g-2">
             @foreach(['fr'=>'🇫🇷 Français','en'=>'🇬🇧 English','de'=>'🇩🇪 Deutsch','pt'=>'🇵🇹 Português'] as $code => $label)

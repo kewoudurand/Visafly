@@ -26,26 +26,29 @@ class ProfileController extends Controller
     // ══════════════════════════════════════
     public function update(Request $request)
     {
+        //dd($request->all());
         $user = Auth::user();
 
         $request->validate([
-            'name'    => 'required|string|max:255',
-            'email'   => ['required','email', Rule::unique('users','email')->ignore($user->id)],
-            'phone'   => 'nullable|string|max:25',
-            'country' => 'nullable|string|max:100',
-            'language'=> 'nullable|in:fr,en,de,pt',
+            'first_name' => 'required|string|max:255',
+            'last_name'  => 'required|string|max:255',
+            'email'      => ['required','email', Rule::unique('users','email')->ignore($user->id)],
+            'phone'      => 'nullable|string|max:25',
+            'country'    => 'nullable|string|max:100',
+            'language'   => 'nullable|in:fr,en,de,pt',
         ], [
-            'name.required'  => 'Le nom est obligatoire.',
-            'email.required' => 'L\'email est obligatoire.',
-            'email.unique'   => 'Cet email est déjà utilisé.',
+            'first_name.required' => 'Le prénom est obligatoire.',
+            'last_name.required'  => 'Le nom est obligatoire.',
+            'email.required'      => 'L\'email est obligatoire.',
         ]);
 
         $user->update([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'phone'    => $request->phone,
-            'country'  => $request->country,
-            'language' => $request->language ?? 'fr',
+            'first_name' => $request->first_name,
+            'last_name'  => $request->last_name,
+            'email'      => $request->email,
+            'phone'      => $request->phone,
+            'country'    => $request->country,
+            'language'   => $request->language ?? 'fr',
         ]);
 
         return back()->with('success', 'Profil mis à jour avec succès.');

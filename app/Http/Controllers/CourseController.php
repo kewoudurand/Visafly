@@ -56,22 +56,21 @@ class CourseController extends Controller
         return redirect()->route('admin.cours.index')->with('success', 'Cours créé.');
     }
  
-    public function edit(Course $cours)
+    public function edit(Course $cour)
     {
-        $instructeurs = User::role('instructeur')->orderBy('name')->get(['id', 'name']);
  
-        return view('admin.courses.edit', compact('cours', 'instructeurs'));
+        return view('admin.courses.edit', ['cours' => $cour]);
     }
  
     public function update(Request $request, Course $cours)
     {
         $validated = $request->validate(array_merge($this->reglesCours(), [
-            'instructeur_id' => 'nullable|exists:users,id',
+            'instructor_id' => 'nullable|exists:users,id',
         ]));
  
-        $instructeurId = $validated['instructeur_id'] ?? $cours->instructeur_id ?? auth()->id();
+        $instructorId = $validated['instructor_id'] ?? $cours->instructor_id ?? auth()->id();
  
-        $cours->update($this->construireDataCours($request, $validated, $instructeurId, $cours));
+        $cours->update($this->construireDataCours($request, $validated, $instructorId, $cours));
  
         return redirect()->route('admin.cours.index')->with('success', 'Cours mis à jour.');
     }

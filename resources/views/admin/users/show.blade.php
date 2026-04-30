@@ -144,11 +144,16 @@
                     <div class="row g-2 align-items-end">
                         <div class="col-md-6">
                             <label style="font-size:11px;font-weight:600;color:#1B3A6B;">Forfait</label>
-                            <select name="forfait" class="form-select form-select-sm rounded-3"
-                                    style="border:1.5px solid #e8e8e8;font-size:13px;">
-                                <option value="mensuel">Mensuel — 5 000 XAF</option>
-                                <option value="trimestriel">Trimestriel — 12 000 XAF</option>
-                                <option value="annuel">Annuel — 40 000 XAF</option>
+                            <select name="forfait_id" class="form-select form-select-sm rounded-3"
+                                    style="border:1.5px solid #e8e8e8;font-size:13px;" required>
+                                <option value="" selected disabled>Choisir un forfait...</option>
+                                
+                                @foreach($forfaits as $forfait)
+                                    <option value="{{ $forfait->id }}">
+                                        {{ $forfait->nom }} — {{ number_format($forfait->prix, 0, ',', ' ') }} XAF
+                                    </option>
+                                @endforeach
+                                
                             </select>
                         </div>
                         <div class="col-md-6">

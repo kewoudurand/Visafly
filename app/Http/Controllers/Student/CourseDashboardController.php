@@ -4,11 +4,13 @@ namespace App\Http\Controllers\Student;
 
 use App\Http\Controllers\Controller;
 use App\Models\Course;
+use App\Models\CourseProgression;
 use App\Models\Lesson;
 use App\Models\UserCourseProgress;
 use App\Models\UserLessonProgress;
 use App\Models\LanguePassage;
 use App\Models\Langue;
+use App\Models\LessonProgression;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -17,7 +19,7 @@ use Illuminate\Support\Facades\Auth;
 //  Page de progression de l'étudiant (cours commencés + terminés)
 // ─────────────────────────────────────────────────────────────────────────────
 
-class StudentCourseController extends Controller
+class CourseDashboardController extends Controller
 {
     // ════════════════════════════════════════
     //  PAGE PRINCIPALE : Mes cours & Progression
@@ -27,13 +29,13 @@ class StudentCourseController extends Controller
         $userId = Auth::id();
 
         // ── Cours (plateforme instructor) ──────────────────────────────
-        $coursEnCours = UserCourseProgress::where('user_id', $userId)
+        $coursEnCours = CourseProgression::where('user_id', $userId)
             ->where('statut', 'en_cours')
             ->with(['course.langue', 'course.lessons'])
             ->orderByDesc('derniere_activite_at')
             ->get();
 
-        $coursTermines = UserCourseProgress::where('user_id', $userId)
+        $coursTermines = CourseProgression::where('user_id', $userId)
             ->where('statut', 'termine')
             ->with(['course.langue'])
             ->orderByDesc('fin_at')
@@ -77,7 +79,7 @@ class StudentCourseController extends Controller
         }
 
         // ── Cours disponibles non commencés ────────────────────────────
-        $coursCommencesIds = UserCourseProgress::where('user_id', $userId)
+        $coursCommencesIds = CourseProgression::where('user_id', $userId)
             ->pluck('course_id')->toArray();
 
         $coursDisponibles = Course::where('publie', true)
@@ -103,7 +105,7 @@ class StudentCourseController extends Controller
         $userId = Auth::id();
 
         // Marquer comme vue
-        UserLessonProgress::updateOrCreate(
+        LessonProgression::updateOrCreate(
             ['user_id' => $userId, 'lesson_id' => $lesson->id],
             ['vue' => true]
         );
@@ -120,7 +122,7 @@ class StudentCourseController extends Controller
         $next       = $currentIdx < $lessons->count() - 1 ? $lessons[$currentIdx + 1] : null;
 
         $isLast     = $next === null;
-        $progression = UserCourseProgress::where('user_id', $userId)
+        $progression = CourseProgression::where('user_id', $userId)
             ->where('course_id', $course->id)->first();
 
         return view('student.courses.lesson', compact(
@@ -132,10 +134,10 @@ class StudentCourseController extends Controller
     //  TERMINER UNE LEÇON (POST)
     // ════════════════════════════════════════
     public function terminerLesson(Request $request, Course $course, Lesson $lesson)
-    {
+    {   
         $userId = Auth::id();
 
-        $progressionLecon = UserLessonProgress::updateOrCreate(
+        $progressionLecon = LessonProgression::updateOrCreate(
             ['user_id' => $userId, 'lesson_id' => $lesson->id],
             [
                 'vue'         => true,
@@ -169,7 +171,7 @@ class StudentCourseController extends Controller
 
         // Si c'est la dernière leçon → cours terminé
         $totalLecons  = $course->lessons()->where('publiee', true)->count();
-        $terminees    = UserLessonProgress::where('user_id', $userId)
+        $terminees    = LessonProgression::where('user_id', $userId)
             ->whereIn('lesson_id', $course->lessons()->pluck('id'))
             ->where('terminee', true)->count();
 
@@ -207,7 +209,7 @@ class StudentCourseController extends Controller
     {
         $userId = Auth::id();
 
-        UserCourseProgress::firstOrCreate(
+        CourseProgression::firstOrCreate(
             ['user_id' => $userId, 'course_id' => $course->id],
             [
                 'statut'        => 'en_cours',
@@ -260,10 +262,10 @@ class StudentCourseController extends Controller
     // ════════════════════════════════════════
     //  HELPER PRIVÉ : Mettre à jour la progression
     // ════════════════════════════════════════
-    private function updateCourseProgress(Course $course, int $userId): UserCourseProgress
+    private function updateCourseProgress(Course $course, int $userId): CourseProgression
     {
         $totalLecons = $course->lessons()->where('publiee', true)->count();
-        $terminees   = UserLessonProgress::where('user_id', $userId)
+        $terminees   = LessonProgression::where('user_id', $userId)
             ->whereIn('lesson_id', $course->lessons()->pluck('id'))
             ->where('terminee', true)->count();
 
@@ -271,12 +273,12 @@ class StudentCourseController extends Controller
             ? min(100, (int) round(($terminees / $totalLecons) * 100))
             : 0;
 
-        $avgScore = UserLessonProgress::where('user_id', $userId)
+        $avgScore = LessonProgression::where('user_id', $userId)
             ->whereIn('lesson_id', $course->lessons()->pluck('id'))
             ->whereNotNull('score_quiz')
             ->avg('score_quiz');
 
-        return UserCourseProgress::updateOrCreate(
+        return CourseProgression::updateOrCreate(
             ['user_id' => $userId, 'course_id' => $course->id],
             [
                 'statut'                => $pct >= 100 ? 'termine' : 'en_cours',

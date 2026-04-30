@@ -9,7 +9,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 class CourseProgression extends Model
 {
     protected $fillable = [
-        'user_id', 'cours_id', 'lecons_terminees', 'total_lecons',
+        'user_id', 'lesson_id','cours_id', 'lecons_terminees', 'total_lecons',
         'pourcentage', 'points_total', 'termine', 'terminee_le',
     ];
  

@@ -3,6 +3,8 @@
 namespace App\Http;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
+use Illuminate\Console\Scheduling\Schedule;
+use Illuminate\Support\Facades\Log;
 use Spatie\Permission\Middlewares\RoleMiddleware;
 use Spatie\Permission\Middlewares\PermissionMiddleware;
 use Spatie\Permission\Middlewares\RoleOrPermissionMiddleware;
@@ -68,4 +70,29 @@ class Kernel extends HttpKernel
         'role' => \Spatie\Permission\Middlewares\RoleMiddleware::class,
         'permission' => \Spatie\Permission\Middlewares\PermissionMiddleware::class,
     ];
+
+    protected function schedule(Schedule $schedule)
+    {
+        // Chaque jour à 2h du matin: valider les parrainages
+        $schedule->command('affiliate:complete-referrals --status=pending')
+                ->dailyAt('02:00')
+                ->name('affiliate.complete')
+                ->withoutOverlapping()
+                ->onSuccess(function () {
+                    Log::info('✅ Parrainages validés');
+                })
+                ->onFailure(function () {
+                    Log::error('❌ Erreur parrainages');
+                    // Envoyer notification à l'admin
+                });
+
+        // Chaque jour à 3h du matin: mettre à jour les soldes
+        $schedule->command('affiliate:update-balances')
+                ->dailyAt('03:00')
+                ->name('affiliate.balances')
+                ->withoutOverlapping()
+                ->onSuccess(function () {
+                    Log::info('✅ Soldes mis à jour');
+                });
+    }
 }

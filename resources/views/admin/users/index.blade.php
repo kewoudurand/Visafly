@@ -143,7 +143,7 @@
                 <td>
                     @if($abo)
                         <span class="abo-actif">
-                            <i class="bi bi-check-circle me-1"></i>{{ ucfirst($abo->forfait) }}
+                            <i class="bi bi-check-circle me-1"></i>{{ number_format($abo->montant, 0, ',', ' ') }} XAF
                         </span>
                         <div style="font-size:10px;color:#888;margin-top:2px;">
                             jusqu'au {{ $abo->fin_at->format('d/m/Y') }}

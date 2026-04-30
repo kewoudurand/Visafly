@@ -129,7 +129,7 @@
                 <button type="submit" class="btn fw-bold py-2" style="background:#1B3A6B;color:#fff">
                     <i class="bi bi-check-lg me-2"></i>{{ isset($cours) ? 'Enregistrer' : 'Créer le cours' }}
                 </button>
-                <a href="{{ route('instructeur.cours.index') }}" class="btn btn-light fw-semibold">Annuler</a>
+                <a href="{{ route('instructor.dashboard') }}" class="btn btn-light fw-semibold">Annuler</a>
             </div>
 
         </div>

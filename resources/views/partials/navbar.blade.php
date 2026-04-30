@@ -145,7 +145,7 @@
             @if(auth()->user()->hasRole('student'))
                 <a href="{{ route('dashboard.index') }}" class="vf-dd-item"><i class="bi bi-speedometer2"></i> Mon Tableau de Bord</a>
                 <a href="{{ route('student.course.index') }}" class="vf-dd-item"><i class="bi bi-book"></i> Catalogue des Cours</a>
-                <a href="{{ route('student.student-progress.show',auth()->user()) }}" class="vf-dd-item"><i class="bi bi-graph-up"></i> Ma Progression</a>
+                <a href="{{ route('progression.index') }}" class="vf-dd-item"><i class="bi bi-graph-up"></i> Ma Progression</a>
             @endif
 
             @can('pass test')

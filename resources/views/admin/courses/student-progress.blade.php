@@ -4,68 +4,68 @@
 
 @push('styles')
 <style>
-/* ════════════════════════════════════════════════════════════
-   ADMIN — TABLEAU SUIVI ÉTUDIANTS
-════════════════════════════════════════════════════════════ */
+  /* ════════════════════════════════════════════════════════════
+    ADMIN — TABLEAU SUIVI ÉTUDIANTS
+  ════════════════════════════════════════════════════════════ */
 
-/* KPIs */
-.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-@media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
-@media(max-width:480px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
+  /* KPIs */
+  .kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
+  @media(max-width:900px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:480px){.kpi-row{grid-template-columns:repeat(2,1fr);}}
 
-.kpi{background:#fff;border-radius:14px;border:1px solid #eee;padding:18px 20px;
-     position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(27,58,107,.05);}
-.kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
-            background:var(--c,#1B3A6B);}
-.kpi-n{font-size:2rem;font-weight:800;color:var(--c,#1B3A6B);line-height:1;margin-bottom:4px;}
-.kpi-l{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.6px;}
+  .kpi{background:#fff;border-radius:14px;border:1px solid #eee;padding:18px 20px;
+      position:relative;overflow:hidden;box-shadow:0 2px 8px rgba(27,58,107,.05);}
+  .kpi::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;
+              background:var(--c,#1B3A6B);}
+  .kpi-n{font-size:2rem;font-weight:800;color:var(--c,#1B3A6B);line-height:1;margin-bottom:4px;}
+  .kpi-l{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.6px;}
 
-/* Tableau */
-.prog-table th{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;
-               letter-spacing:.6px;border:none;padding:12px 16px;background:#f8f9fb;
-               white-space:nowrap;}
-.prog-table td{padding:14px 16px;vertical-align:middle;border-bottom:1px solid #f5f5f5;
-               font-size:13px;}
-.prog-table tr:hover td{background:rgba(27,58,107,.015);}
+  /* Tableau */
+  .prog-table th{font-size:11px;font-weight:600;color:#888;text-transform:uppercase;
+                letter-spacing:.6px;border:none;padding:12px 16px;background:#f8f9fb;
+                white-space:nowrap;}
+  .prog-table td{padding:14px 16px;vertical-align:middle;border-bottom:1px solid #f5f5f5;
+                font-size:13px;}
+  .prog-table tr:hover td{background:rgba(27,58,107,.015);}
 
-/* Avatar initiales */
-.user-av{width:36px;height:36px;border-radius:50%;background:#1B3A6B;
-         display:flex;align-items:center;justify-content:center;
-         font-size:12px;font-weight:700;color:#F5A623;flex-shrink:0;}
+  /* Avatar initiales */
+  .user-av{width:36px;height:36px;border-radius:50%;background:#1B3A6B;
+          display:flex;align-items:center;justify-content:center;
+          font-size:12px;font-weight:700;color:#F5A623;flex-shrink:0;}
 
-/* Mini barre de progression */
-.mini-bar{height:6px;border-radius:3px;background:#f0f0f0;overflow:hidden;min-width:80px;}
-.mini-bar-fill{height:100%;border-radius:3px;}
+  /* Mini barre de progression */
+  .mini-bar{height:6px;border-radius:3px;background:#f0f0f0;overflow:hidden;min-width:80px;}
+  .mini-bar-fill{height:100%;border-radius:3px;}
 
-/* Score pill */
-.sp{padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700;}
-.sp-good{background:rgba(28,200,138,.1);color:#0f6e56;}
-.sp-mid {background:rgba(245,166,35,.12);color:#633806;}
-.sp-bad {background:rgba(226,75,74,.08);color:#a32d2d;}
-.sp-none{background:#f0f0f0;color:#888;}
+  /* Score pill */
+  .sp{padding:3px 9px;border-radius:10px;font-size:11px;font-weight:700;}
+  .sp-good{background:rgba(28,200,138,.1);color:#0f6e56;}
+  .sp-mid {background:rgba(245,166,35,.12);color:#633806;}
+  .sp-bad {background:rgba(226,75,74,.08);color:#a32d2d;}
+  .sp-none{background:#f0f0f0;color:#888;}
 
-/* Abonnement */
-.abo-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
+  /* Abonnement */
+  .abo-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;}
 
-/* Top étudiant card */
-.top-card{background:#fff;border-radius:12px;border:1px solid #eee;
-          padding:14px;display:flex;align-items:center;gap:12px;
-          box-shadow:0 2px 6px rgba(27,58,107,.04);transition:all .2s;}
-.top-card:hover{box-shadow:0 4px 16px rgba(27,58,107,.08);}
-.rank-badge{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;
-            justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
+  /* Top étudiant card */
+  .top-card{background:#fff;border-radius:12px;border:1px solid #eee;
+            padding:14px;display:flex;align-items:center;gap:12px;
+            box-shadow:0 2px 6px rgba(27,58,107,.04);transition:all .2s;}
+  .top-card:hover{box-shadow:0 4px 16px rgba(27,58,107,.08);}
+  .rank-badge{width:28px;height:28px;border-radius:8px;display:flex;align-items:center;
+              justify-content:center;font-size:12px;font-weight:800;flex-shrink:0;}
 
-/* Filtre search */
-.vf-search{border:1.5px solid #e8e8e8;border-radius:10px;padding:9px 14px 9px 38px;
-           font-size:13px;width:100%;max-width:300px;outline:none;
-           background:#fafafa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23aaa' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 12px center;
-           transition:border-color .2s;}
-.vf-search:focus{border-color:#F5A623;background-color:#fff;}
+  /* Filtre search */
+  .vf-search{border:1.5px solid #e8e8e8;border-radius:10px;padding:9px 14px 9px 38px;
+            font-size:13px;width:100%;max-width:300px;outline:none;
+            background:#fafafa url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='%23aaa' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.099zm-5.242 1.656a5.5 5.5 0 1 1 0-11 5.5 5.5 0 0 1 0 11z'/%3E%3C/svg%3E") no-repeat 12px center;
+            transition:border-color .2s;}
+  .vf-search:focus{border-color:#F5A623;background-color:#fff;}
 
-@media(max-width:768px){
-  .hide-mobile{display:none!important;}
-  .prog-table td,.prog-table th{padding:10px 10px;}
-}
+  @media(max-width:768px){
+    .hide-mobile{display:none!important;}
+    .prog-table td,.prog-table th{padding:10px 10px;}
+  }
 </style>
 @endpush
 
@@ -106,7 +106,7 @@
 </div>
 
 <div class="row g-4">
-  <div class="col-lg-8">
+  <div class="col-lg-12">
 
     {{-- ── Filtre ── --}}
     <form method="GET" class="mb-3 d-flex align-items-center gap-2">
@@ -120,7 +120,7 @@
     </form>
 
     {{-- ── Tableau étudiants ── --}}
-    <div class="rounded-3 overflow-hidden"
+    <div class="rounded-3 table-responsive"
          style="background:#fff;border:1px solid #eee;box-shadow:0 2px 8px rgba(27,58,107,.05);">
       <table class="table prog-table mb-0">
         <thead>

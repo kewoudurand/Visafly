@@ -48,6 +48,16 @@
       <form method="POST" action="{{ route('register.store') }}">
         @csrf
 
+        
+        @if($referrer)
+            <div class="alert alert-info">
+                Vous êtes parrainé par: <strong>{{ $referrer->first_name }}</strong>
+                <input type="hidden" name="ref" value="{{ $referralCode }}">
+            </div>
+        @elseif(request()->query('ref'))
+            <input type="hidden" name="ref" value="{{ request()->query('ref') }}">
+        @endif
+
         {{-- Prénom + Nom --}}
         <div class="row g-3 mb-3">
           <div class="col-6">

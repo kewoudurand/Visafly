@@ -100,7 +100,7 @@
              class="sidebar-link {{ request()->routeIs('langues.*') ? 'active' : '' }}">
             <i class="bi bi-journal-check"></i> Mes épreuves
           </a>
-          <a href="{{ route('student.courses.progress') }}"
+          <a href="{{ route('progression.index') }}"
              class="sidebar-link {{ request()->routeIs('student.courses.*') ? 'active' : '' }}">
             <i class="bi bi-graph-up-arrow"></i> Ma progression
           </a>
@@ -114,6 +114,10 @@
              class="sidebar-link {{ request()->routeIs('abonnement*') ? 'active' : '' }}">
             <i class="bi bi-credit-card"></i> Mon abonnement
           </a>
+          <a href="{{ route('affiliate.dashboard') }}"
+             class="sidebar-link {{ request()->routeIs('affiliate*') ? 'active' : '' }}">
+            <i class="bi bi-person-circle"></i> Mes affiliation
+          </a>
           <a href="{{ route('profil.edit') }}"
              class="sidebar-link {{ request()->routeIs('profil*') ? 'active' : '' }}">
             <i class="bi bi-person-circle"></i> Mon profil
@@ -121,7 +125,7 @@
         @endif
 
         {{-- ── INSTRUCTEUR ── --}}
-        @if(Auth::user()->hasAnyRole(['instructor']) && !Auth::user()->hasAnyRole(['admin','super-admin']))
+        @if(Auth::user()->hasAnyRole(['instructor']))
           <span class="sidebar-section">Mes cours</span>
           <a href="{{ route('instructor.dashboard') }}"
              class="sidebar-link {{ request()->routeIs('instructor.dashboard') ? 'active' : '' }}">
@@ -135,6 +139,10 @@
              class="sidebar-link {{ request()->routeIs('langues.*') ? 'active' : '' }}">
             <i class="bi bi-translate"></i> Examens langues
           </a>
+          <a href="{{ route('affiliate.dashboard') }}"
+             class="sidebar-link {{ request()->routeIs('affiliate*') ? 'active' : '' }}">
+            <i class="bi bi-person-circle"></i> Mes affiliation
+          </a>
           <a href="{{ route('profil.edit') }}"
              class="sidebar-link {{ request()->routeIs('profil*') ? 'active' : '' }}">
             <i class="bi bi-person-circle"></i> Mon profil
@@ -147,6 +155,10 @@
           <a href="{{ route('admin.consultations.index') }}"
              class="sidebar-link {{ request()->routeIs('admin.consultations.*') ? 'active' : '' }}">
             <i class="bi bi-calendar-check"></i> Mes consultations
+          </a>
+          <a href="{{ route('affiliate.dashboard') }}"
+             class="sidebar-link {{ request()->routeIs('affiliate*') ? 'active' : '' }}">
+            <i class="bi bi-person-circle"></i> Mes affiliation
           </a>
           <a href="{{ route('profil.edit') }}"
              class="sidebar-link {{ request()->routeIs('profil*') ? 'active' : '' }}">
@@ -185,9 +197,25 @@
              class="sidebar-link {{ request()->routeIs('admin.consultations.*') ? 'active' : '' }}">
             <i class="bi bi-calendar-check"></i> Consultations
           </a>
-          <a href="{{ route('instructor.dashboard') }}"
-             class="sidebar-link {{ request()->routeIs('instructor.*') ? 'active' : '' }}">
-            <i class="bi bi-book"></i> Gestion cours
+          <a href="{{ route('admin.cours.index') }}"
+             class="sidebar-link {{ request()->routeIs('admin.cours.index') ? 'active' : '' }}">
+            <i class="bi bi-book"></i> Mes cours
+          </a>
+          <a href="{{ route('admin.cours.create') }}"
+             class="sidebar-link {{ request()->routeIs('admin.cours.create') ? 'active' : '' }}">
+            <i class="bi bi-plus-circle"></i> Créer un cours
+          </a>
+          <a href="{{ route('affiliate.dashboard') }}"
+             class="sidebar-link {{ request()->routeIs('affiliate*') ? 'active' : '' }}">
+            <i class="bi bi-person-circle"></i> Mes affiliation
+          </a>
+          <a href="{{ route('admin.affiliate.index') }}"
+             class="sidebar-link {{ request()->routeIs('affiliate*') ? 'active' : '' }}">
+            <i class="bi bi-person-circle"></i> Listes affiliation
+          </a>
+          <a href="{{ route('profil.edit') }}"
+             class="sidebar-link {{ request()->routeIs('profil*') ? 'active' : '' }}">
+            <i class="bi bi-person-circle"></i> Mon profil
           </a>
         @endif
 

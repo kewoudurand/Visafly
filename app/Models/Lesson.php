@@ -107,11 +107,29 @@ class Lesson extends Model
 
     public function urlAudio(): ?string
     {
-        return $this->fichier_audio
-            ? Storage::disk('public')->url($this->fichier_audio)
-            : null;
+        if (!$this->fichier_audio) return null;
+        
+        // Storage::url() ajoutera automatiquement '/storage/' devant le chemin 
+        // et utilisera l'APP_URL de votre fichier .env
+        return Storage::disk('public')->url($this->fichier_audio);
     }
-
+    
+    // ── MÉTHODE mimeTypeAudio() NOUVELLE ────────────────────────
+    
+    public function mimeTypeAudio(): string
+    {
+        if (! $this->fichier_audio) return 'audio/mpeg';
+    
+        return match (strtolower(pathinfo($this->fichier_audio, PATHINFO_EXTENSION))) {
+            'mp3'  => 'audio/mpeg',
+            'wav'  => 'audio/wav',
+            'ogg'  => 'audio/ogg',
+            'm4a'  => 'audio/mp4',
+            'aac'  => 'audio/aac',
+            'webm' => 'audio/webm',
+            default => 'audio/mpeg',
+        };
+    }
     public function nomInstructeur(): string
     {
         return $this->instructeur?->name ?? 'Non assigné';

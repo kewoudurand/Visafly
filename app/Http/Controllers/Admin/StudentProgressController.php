@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CourseProgression;
 use App\Models\CoursProgres;
 use App\Models\User;
 use App\Services\CourseProgressionService;
@@ -42,7 +43,7 @@ class StudentProgressController extends Controller
     {
         // 1. Récupérer la progression réelle de l'utilisateur sur chaque cours
         // On charge les relations pour afficher le titre du cours et la langue associée
-        $progressions = CoursProgres::with(['course.langue'])
+        $progressions = CourseProgression::with(['cours'])
             ->where('user_id', $user->id)
             ->get();
 

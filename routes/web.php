@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\UserConsultationController;
 use App\Http\Controllers\Admin\AdminConsultationController;
@@ -21,9 +22,15 @@ use App\Http\Controllers\CourseController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\Student\CourseDashboardController;
 use App\Http\Controllers\Admin\StudentProgressController;
-use App\Http\Controllers\Instructor\InstructorCourseController;
 use App\Http\Controllers\Student\LessonController;
+use App\Http\Controllers\Instructor\CourseInstructorController;
 use App\Http\Controllers\Admin\LessonAdminController;
+use App\Http\Controllers\Admin\AffiliateAdminController;
+use App\Http\Controllers\Instructor\LessonInstructorController;
+use App\Http\Controllers\ProgressionController;
+use App\Http\Controllers\AffiliateController;
+use App\Http\Controllers\WithdrawalController;
+
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +44,10 @@ Route::get('/', function() {
         'services' => $controller->allServices() 
     ]);
 })->name('home');
+
+
+Route::get('/auth/google', [GoogleController::class,'redirect'])->name('google.login');
+Route::get('/auth/google/callback', [GoogleController::class,'callback']);
 
 // Authentification
 Route::get('/register', [RegisterController::class, 'show'])->name('auth.register.show');
@@ -93,11 +104,38 @@ Route::middleware('auth')->group(function () {
     Route::get('/mon-abonnement',[AbonnementController::class, 'index'])->name('abonnement.index');
     Route::post('/abonnement/{plan}/souscrire', [AbonnementController::class, 'souscrire'])->name('abonnement.souscrire');
     Route::get('/choose',[CourseController::class, 'choose'])->name('chooses');
+
+    Route::get('/mes-affiliation', [AffiliateController::class, 'dashboard'])->name('affiliate.dashboard');
+    Route::get('/list', [AffiliateController::class, 'listAffiliates'])->name('affiliate.list');
+    Route::get('/stats', [AffiliateController::class, 'stats'])->name('affiliate.stats');
+    Route::get('/link', [AffiliateController::class, 'getAffiliateLink'])->name('affiliate.link');
+    Route::post('/withdraw', [AffiliateController::class, 'withdraw'])->name('affiliate.withdraw');
+    Route::get('/history', [AffiliateController::class, 'transactionHistory'])->name('affiliate.history');
     Route::prefix('cours')->name('cours.')->group(function () {
         Route::get('/',                  [CourseController::class, 'choose'])->name('list');
         Route::get('{cours:slug}',       [CourseController::class, 'show'])->name('allemand.show');
         Route::get('{cours:slug}/{lecon:slug}', [CourseController::class, 'lecon'])->middleware('auth')->name('allemand.lecon');
         Route::post('valider/{lecon}',   [CourseController::class, 'valider'])->middleware('auth')->name('allemand.valider');
+    });
+
+    Route::prefix('affiliate/withdraw')->name('affiliate.withdraw.')->group(function () {
+    
+        // ÉTAPE 1 : Formulaire du montant
+        Route::get('/', [WithdrawalController::class, 'showForm'])->name('show-form');
+        Route::post('/validate-amount', [WithdrawalController::class, 'validateAmount'])->name('validate-amount');
+
+        // ÉTAPE 2 : Choix du moyen de paiement
+        Route::get('/choose-method', [WithdrawalController::class, 'chooseMethod'])->name('show-method');
+
+        // ÉTAPE 3 : Détails selon le moyen (Numéro OM, MTN, etc.)
+        Route::get('/method/{method}', [WithdrawalController::class, 'showMethodDetails'])->name('method-details');
+
+        // ÉTAPE 4 : Soumission finale
+        Route::post('/submit', [WithdrawalController::class, 'submitWithdrawal'])->name('submit');
+
+        // HISTORIQUE & ACTIONS
+        Route::get('/history', [WithdrawalController::class, 'history'])->name('history');
+        Route::post('/{withdrawal}/cancel', [WithdrawalController::class, 'cancelWithdrawal'])->name('cancel');
     });
 
 
@@ -188,42 +226,80 @@ Route::middleware('auth')->group(function () {
     
         // Réordonner leçons (drag & drop AJAX)
         Route::post('cours/{cours}/lessons/reordonner', [LessonAdminController::class, 'reordonner'])->name('cours.lessons.reordonner');
+
+        // ═══ ROUTES D'AFFILIATION ═══
+        Route::prefix('affiliate')->name('affiliate.')->group(function () {
+            
+            // Dashboard principal
+            Route::get('/', [AffiliateAdminController::class, 'index'])->name('index');
+            
+            // Parrainages
+            Route::get('/referrals/pending', [AffiliateAdminController::class, 'pendingReferrals'])->name('referrals.pending');
+            
+            Route::post('/referrals/{referral}/complete', [AffiliateAdminController::class, 'completeReferral'])
+                ->name('referrals.complete');
+            
+            Route::post('/referrals/{referral}/reject', [AffiliateAdminController::class, 'rejectReferral'])
+                ->name('referrals.reject');
+            
+            Route::post('/referrals/complete-all', [AffiliateAdminController::class, 'completeAllPending'])
+                ->name('referrals.complete-all');
+            
+            // Affiliés
+            Route::get('/affiliates', [AffiliateAdminController::class, 'affiliatesList'])
+                ->name('affiliates.list');
+            
+            Route::get('/affiliates/{user}', [AffiliateAdminController::class, 'affiliateDetail'])
+                ->name('affiliates.detail');
+            
+            Route::post('/affiliates/{user}/deactivate', [AffiliateAdminController::class, 'deactivateAffiliate'])
+                ->name('affiliates.deactivate');
+            
+            Route::post('/affiliates/{user}/activate', [AffiliateAdminController::class, 'activateAffiliate'])
+                ->name('affiliates.activate');
+            
+            Route::get('/affiliates/{user}/referrals', [AffiliateAdminController::class, 'manageAffiliateReferrals'])
+                ->name('affiliates.referrals');
+            
+            // Retraits
+            Route::get('/withdrawals', [AffiliateAdminController::class, 'withdrawals'])
+                ->name('withdrawals');
+            
+            Route::post('/withdrawals/approve', [AffiliateAdminController::class, 'approveWithdrawal'])
+                ->name('withdrawals.approve');
+            
+            // Commission manuelle
+            Route::post('/commission/add-manual', [AffiliateAdminController::class, 'addManualCommission'])
+                ->name('commission.manual');
+            
+            // Export
+            Route::get('/export', [AffiliateAdminController::class, 'exportStats'])
+                ->name('export');
+        });
     });
  
-        
-    });
 
     //Instructor
     Route::prefix('instructor')->name('instructor.')->middleware(['auth'])->group(function(){
-        Route::get('/instructor',[CourseController::class,'index'])->name('dashboard');
-        Route::get('instructor/create',[CourseController::class,'create'])->name('courses.create');
-        Route::post('instructor',[CourseController::class,'store'])->name('courses.store');
-        Route::get('instructor/{course}/edit',[CourseController::class,'edit'])->name('courses.edit');
-        Route::put('instructor/{course}',[CourseController::class,'update'])->name('courses.update');
-        Route::delete('instructor/{course}',[CourseController::class,'destroy'])->name('courses.destroy');
-        Route::get('instructor/{course}',[CourseController::class,'show'])->name('courses.show');
-        Route::get('instructor/{course}/lecon',[InstructorCourseController::class,'createLesson'])->name('lessons.create');
-        Route::post('instructor/{course}/lecon',[InstructorCourseController::class,'storeLesson'])->name('lessons.store');
-        Route::get('instructor/{course}/lecon/{lesson}/edit',[InstructorCourseController::class,'editLesson'])->name('lessons.edit');
-        Route::put('instructor/{course}/lecon/{lesson}',[InstructorCourseController::class,'updateLesson'])->name('lessons.update');
-        Route::delete('instructor/{course}/lecon/{lesson}',[InstructorCourseController::class,'destroyLesson'])->name('lessons.destroy');
-
-        // Dashboard instructeur
-        Route::get('/', fn () => view('instructeur.dashboard'))->name('dashboard');
+        Route::get('/',[CourseInstructorController::class,'index'])->name('dashboard');
+        Route::get('instructor/create',[CourseInstructorController::class,'create'])->name('courses.create');
+        Route::post('instructor',[CourseInstructorController::class,'store'])->name('courses.store');
+        Route::get('instructor/{course}/edit',[CourseInstructorController::class,'edit'])->name('courses.edit');
+        Route::put('instructor/{course}',[CourseInstructorController::class,'update'])->name('courses.update');
+        Route::delete('instructor/{course}',[CourseInstructorController::class,'destroy'])->name('courses.destroy');
+        Route::get('instructor/{course}',[CourseInstructorController::class,'show'])->name('courses.show');
  
         // Cours (uniquement les siens)
-        Route::resource('cours', \App\Http\Controllers\Instructeur\CourseController::class);
  
         // Leçons (uniquement dans ses cours)
-        Route::resource('cours.lessons', \App\Http\Controllers\Instructeur\LessonController::class);
+        Route::resource('cours.lessons', LessonInstructorController::class);
  
          // Réordonner leçons
-        Route::post('cours/{cours}/lessons/reordonner',
-            [\App\Http\Controllers\Instructeur\LessonController::class, 'reordonner']
+        Route::post('cours/{cours}/lessons/reordonner',[LessonInstructorController::class, 'reordonner']
         )->name('cours.lessons.reordonner');
     });
         
-
+    // student
     Route::prefix('results')->name('student.')->group(function () {
         
         // Liste de tous les examens passés
@@ -241,5 +317,11 @@ Route::middleware('auth')->group(function () {
         Route::get('/student-progress/{user}',[StudentProgressController::class, 'show'])->name('student-progress.show');
     });
 
+    Route::middleware(['auth'])->prefix('mon-parcours')->name('progression.')->group(function () {
+        Route::get('/',           [ProgressionController::class, 'index'])->name('index');
+        Route::get('/cours/{cours}', [ProgressionController::class, 'cours'])->name('cours');
+        Route::get('/lecon/{lecon}', [ProgressionController::class, 'lecon'])->name('lecon');
+    });
 
- 
+
+});

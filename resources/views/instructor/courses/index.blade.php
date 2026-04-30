@@ -1,5 +1,5 @@
 {{-- resources/views/instructeur/courses/index.blade.php --}}
-@extends('layouts.admin')
+@extends('layouts.dashboard')
 @section('title', 'Mes cours')
 
 @push('styles')
@@ -26,7 +26,7 @@
             <h4 class="fw-bold mb-0" style="color:#1B3A6B">Mes cours</h4>
             <p class="text-muted small mb-0">{{ $cours->total() }} cours au total</p>
         </div>
-        <a href="{{ route('instructeur.cours.create') }}"
+        <a href="{{ route('instructor.courses.create') }}"
            class="btn fw-bold px-4" style="background:#1B3A6B;color:#fff;border-color:#1B3A6B">
             <i class="bi bi-plus-lg me-2"></i>Nouveau cours
         </a>
@@ -60,15 +60,15 @@
                                     <i class="bi bi-three-dots-vertical"></i>
                                 </button>
                                 <ul class="dropdown-menu dropdown-menu-end shadow-sm border-0">
-                                    <li><a class="dropdown-item" href="{{ route('instructeur.cours.lessons.index', $c) }}">
+                                    <li><a class="dropdown-item" href="{{ route('instructor.cours.lessons.index', $c) }}">
                                         <i class="bi bi-list-ul me-2 text-primary"></i>Gérer les leçons
                                     </a></li>
-                                    <li><a class="dropdown-item" href="{{ route('instructeur.cours.edit', $c) }}">
+                                    <li><a class="dropdown-item" href="{{ route('instructor.courses.edit', $c) }}">
                                         <i class="bi bi-pencil me-2 text-warning"></i>Modifier
                                     </a></li>
                                     <li><hr class="dropdown-divider"></li>
                                     <li>
-                                        <form action="{{ route('instructeur.cours.destroy', $c) }}" method="POST"
+                                        <form action="{{ route('instructor.courses.destroy', $c) }}" method="POST"
                                               onsubmit="return confirm('Supprimer ce cours ?')">
                                             @csrf @method('DELETE')
                                             <button class="dropdown-item text-danger">
@@ -91,7 +91,7 @@
                             @if(!$c->publie)<span class="stat-chip" style="background:#f8d7da;color:#842029"><i class="bi bi-eye-slash"></i>Brouillon</span>@endif
                         </div>
                         <div class="mt-auto">
-                            <a href="{{ route('instructeur.cours.lessons.index', $c) }}"
+                            <a href="{{ route('instructor.cours.lessons.index', $c) }}"
                                class="btn btn-sm w-100 fw-semibold" style="background:#f0f4ff;color:#1B3A6B">
                                 <i class="bi bi-list-ul me-1"></i>Gérer les leçons
                             </a>

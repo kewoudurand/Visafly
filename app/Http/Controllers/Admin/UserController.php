@@ -9,6 +9,7 @@ use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
@@ -119,7 +120,9 @@ class UserController extends Controller
         $historique = LangueAbonnement::where('user_id', $user->id)
             ->latest()->get();
 
-        return view('admin.users.show', compact('user', 'abonnement', 'historique'));
+        $forfaits = \App\Models\PlanAbonnement::all();
+
+        return view('admin.users.show', compact('user', 'abonnement', 'historique', 'forfaits'));
     }
 
     // ── Formulaire modification ──
@@ -204,27 +207,32 @@ class UserController extends Controller
     {
         $this->authorize('manage users');
 
+        // 1. On valide que l'ID existe bien dans la table des forfaits
         $request->validate([
-            'forfait' => 'required|in:mensuel,trimestriel,annuel',
+            'forfait_id' => 'required|exists:plans_abonnements,id', // Remplacez par le nom réel de votre table
         ]);
 
-        $durees = ['mensuel' => 1, 'trimestriel' => 3, 'annuel' => 12];
-        $prix   = ['mensuel' => 5000, 'trimestriel' => 12000, 'annuel' => 40000];
+        // 2. On récupère les infos du forfait directement depuis la BD
+        $forfaitDuree = \App\Models\PlanAbonnement::findOrFail($request->forfait_id);
 
-        // Désactiver les anciens
+        // 3. Désactiver les anciens abonnements
         LangueAbonnement::where('user_id', $user->id)->update(['actif' => false]);
 
+        // 4. Création du nouvel abonnement avec les données dynamiques
         LangueAbonnement::create([
             'user_id'   => $user->id,
-            'forfait'   => $request->forfait,
-            'montant'   => $prix[$request->forfait],
+            'plan_id'   => $forfaitDuree->id,
+            'forfait'   => $forfaitDuree->nom, // "Mensuel", etc.
+            'montant'   => $forfaitDuree->prix,
+            'code'               => 'SUB-' . strtoupper(Str::random(10)),
             'devise'    => 'XAF',
             'debut_at'  => now(),
-            'fin_at'    => now()->addMonths($durees[$request->forfait]),
+            // On utilise la colonne 'duree_mois' (ou le nom dans votre BD) pour calculer la fin
+            'fin_at'    => now()->addMonths($forfaitDuree->duree_jours), 
             'actif'     => true,
             'reference_paiement' => 'ADMIN-'.strtoupper(uniqid()),
         ]);
 
-        return back()->with('success', "Abonnement {$request->forfait} activé pour {$user->first_name}.");
+        return back()->with('success', "L'abonnement forfaitaire a été activé avec succès.");
     }
 }

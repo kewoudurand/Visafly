@@ -13,17 +13,17 @@ class TcfSeeder extends Seeder
     {
         // ── Séries ──
         $series = [
-            ['nom'=>'Série 100', 'code'=>'serie_100', 'type'=>'TCF', 'gratuit'=>true,  'ordre'=>1],
-            ['nom'=>'Série 148', 'code'=>'serie_148', 'type'=>'TCF', 'gratuit'=>true,  'ordre'=>2],
-            ['nom'=>'Série 149', 'code'=>'serie_149', 'type'=>'TCF', 'gratuit'=>false, 'ordre'=>3],
-            ['nom'=>'Méthodologie TCF', 'code'=>'methodo_tcf', 'type'=>'TCF', 'gratuit'=>false, 'ordre'=>4],
-            ['nom'=>'Série 150', 'code'=>'serie_150', 'type'=>'TCF', 'gratuit'=>false, 'ordre'=>5],
-            ['nom'=>'Série 151', 'code'=>'serie_151', 'type'=>'TCF', 'gratuit'=>false, 'ordre'=>6],
-            ['nom'=>'Série 100', 'code'=>'tef_serie_100', 'type'=>'TEF', 'gratuit'=>true,  'ordre'=>1],
-            ['nom'=>'Série 101', 'code'=>'tef_serie_101', 'type'=>'TEF', 'gratuit'=>false, 'ordre'=>2],
+            ['titre'=>'Série 100', 'code'=>'serie_100', 'type'=>'TCF', 'gratuit'=>true,  'ordre'=>1],
+            ['titre'=>'Série 148', 'code'=>'serie_148', 'type'=>'TCF', 'gratuit'=>true,  'ordre'=>2],
+            ['titre'=>'Série 149', 'code'=>'serie_149', 'type'=>'TCF', 'gratuit'=>false, 'ordre'=>3],
+            ['titre'=>'Méthodologie TCF', 'code'=>'methodo_tcf', 'type'=>'TCF', 'gratuit'=>false, 'ordre'=>4],
+            ['titre'=>'Série 150', 'code'=>'serie_150', 'type'=>'TCF', 'gratuit'=>false, 'ordre'=>5],
+            ['titre'=>'Série 151', 'code'=>'serie_151', 'type'=>'TCF', 'gratuit'=>false, 'ordre'=>6],
+            ['titre'=>'Série 100', 'code'=>'tef_serie_100', 'type'=>'TEF', 'gratuit'=>true,  'ordre'=>1],
+            ['titre'=>'Série 101', 'code'=>'tef_serie_101', 'type'=>'TEF', 'gratuit'=>false, 'ordre'=>2],
         ];
         foreach ($series as $s) {
-            DB::table('tcf_series')->insertOrIgnore(array_merge($s, [
+            DB::table('langue_series')->insertOrIgnore(array_merge($s, [
                 'actif' => true,
                 'created_at' => now(),
                 'updated_at' => now(),
@@ -31,7 +31,7 @@ class TcfSeeder extends Seeder
         }
 
         // ── Disciplines pour Série 100 TCF ──
-        $serie100 = DB::table('tcf_series')->where('code','serie_100')->first();
+        $serie100 = DB::table('langue_series')->where('code','serie_100')->first();
 
         $disciplines = [
             [
@@ -69,7 +69,7 @@ class TcfSeeder extends Seeder
         ];
 
         foreach ($disciplines as $d) {
-            DB::table('tcf_disciplines')->insertOrIgnore(array_merge($d, [
+            DB::table('langue_disciplines')->insertOrIgnore(array_merge($d, [
                 'serie_id'   => $serie100->id,
                 'actif'      => true,
                 'created_at' => now(),
@@ -78,12 +78,12 @@ class TcfSeeder extends Seeder
         }
 
         // ── Exemple de question ──
-        $discCE = DB::table('tcf_disciplines')
+        $discCE = DB::table('langue_disciplines')
             ->where('serie_id', $serie100->id)
             ->where('code', 'comprehension_ecrite')
             ->first();
 
-        $questionId = DB::table('tcf_questions')->insertGetId([
+        $questionId = DB::table('langue_questions')->insertGetId([
             'discipline_id'  => $discCE->id,
             'numero'         => 40,
             'consigne'       => "Heure d'ouverture du service consulaire :\n\nLe service consulaire est ouvert au public les lundis, mercredis et jeudis de 8h30 à 14h et les mardis et vendredis de 14h30 à 18h.",
@@ -101,7 +101,7 @@ class TcfSeeder extends Seeder
             ['lettre'=>'D', 'texte'=>'Le jeudi matin.',    'est_correcte'=>false],
         ];
         foreach ($reponses as $r) {
-            DB::table('tcf_reponses')->insert(array_merge($r, [
+            DB::table('langue_reponses')->insert(array_merge($r, [
                 'question_id' => $questionId,
                 'created_at'  => now(),
                 'updated_at'  => now(),

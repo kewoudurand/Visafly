@@ -1,5 +1,5 @@
 {{-- resources/views/instructeur/courses/edit.blade.php --}}
-@extends('layouts.instructeur')
+@extends('layouts.dashboard')
 @section('title', 'Modifier — ' . $cours->titre)
 
 @section('content')
@@ -10,9 +10,9 @@
         </a>
         <h4 class="mb-0 fw-bold" style="color:#1B3A6B">Modifier le cours</h4>
     </div>
-    @include('instructeur.courses._form', [
+    @include('instructor.courses._form', [
         'cours'       => $cours,
-        'routeAction' => route('instructeur.cours.update', $cours),
+        'routeAction' => route('instructor.cours.update', ['cour' => $cours->id]),
         'method'      => 'PUT',
     ])
 </div>
