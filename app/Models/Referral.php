@@ -18,6 +18,10 @@ class Referral extends Model
         'commission' => 'decimal:2',
     ];
 
+    protected $attributes = [
+        'commission' => 250, // ✅ CHANGER ICI
+    ];
+
     // Relations
     public function referrer()
     {

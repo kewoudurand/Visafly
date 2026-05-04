@@ -8,6 +8,9 @@
 <div class="container-fluid py-5">
     {{-- Header --}}
     <div class="mb-5 d-flex justify-content-between align-items-center">
+        <a href="{{ route('admin.affiliate.index') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
         <div>
             <h1 class="h2 fw-bold mb-1" style="color: #1B3A6B;">{{ $user->first_name ?? $user->name }} {{ $user->last_name ?? '' }}</h1>
             <p class="text-muted">{{ $user->email }}</p>

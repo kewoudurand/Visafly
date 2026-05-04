@@ -36,7 +36,7 @@ return [
     /**
      * Commission par défaut (montant fixe)
      */
-    'default_commission' => env('AFFILIATE_DEFAULT_COMMISSION', 5000),
+    'default_commission' => env('AFFILIATE_DEFAULT_COMMISSION', 250),
 
     /**
      * Commission en pourcentage (alternative)
@@ -76,9 +76,9 @@ return [
      * Format: [level => commission_amount or percentage]
      */
     'multi_level_commissions' => [
-        1 => 5000,    // Niveau 1: commission complète
-        2 => 1000,    // Niveau 2: 1000 au parrain du parrain
-        // 3 => 500,   // Décommentez pour 3 niveaux
+        1 => 250,    // Niveau 1: commission complète
+        2 => 150,    // Niveau 2: 1000 au parrain du parrain
+        3 => 100,   // Décommentez pour 3 niveaux
     ],
 
     /*
@@ -90,7 +90,7 @@ return [
     /**
      * Montant minimum pour retirer
      */
-    'minimum_withdrawal' => env('AFFILIATE_MIN_WITHDRAWAL', 1000),
+    'minimum_withdrawal' => env('AFFILIATE_MIN_WITHDRAWAL', 10000),
 
     /**
      * Montant maximum par retrait

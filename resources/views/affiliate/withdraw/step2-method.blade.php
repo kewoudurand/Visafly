@@ -7,6 +7,9 @@
         <div class="col-xl-8 col-lg-10">
 
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+                <a href="{{ route('admin.affiliate.index') }}" class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
 
                 {{-- Header --}}
                 <div class="px-4 py-4 border-bottom bg-white">

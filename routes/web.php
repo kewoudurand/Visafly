@@ -111,6 +111,16 @@ Route::middleware('auth')->group(function () {
     Route::get('/link', [AffiliateController::class, 'getAffiliateLink'])->name('affiliate.link');
     Route::post('/withdraw', [AffiliateController::class, 'withdraw'])->name('affiliate.withdraw');
     Route::get('/history', [AffiliateController::class, 'transactionHistory'])->name('affiliate.history');
+
+    // Notifications
+    Route::get('/notifications', [\App\Http\Controllers\NotificationController::class, 'index'])->name('notifications.index');
+    Route::get('/notifications/unread', [\App\Http\Controllers\NotificationController::class, 'getUnread'])->name('notifications.getUnread');
+    Route::get('/notifications/unread-count', [\App\Http\Controllers\NotificationController::class, 'getUnreadCount'])->name('notifications.getUnreadCount');
+    Route::post('/notifications/{notification}/mark-read', [\App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [\App\Http\Controllers\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{notification}', [\App\Http\Controllers\NotificationController::class, 'delete'])->name('notifications.delete');
+    Route::delete('/notifications', [\App\Http\Controllers\NotificationController::class, 'deleteAll'])->name('notifications.delete-all');
+
     Route::prefix('cours')->name('cours.')->group(function () {
         Route::get('/',                  [CourseController::class, 'choose'])->name('list');
         Route::get('{cours:slug}',       [CourseController::class, 'show'])->name('allemand.show');

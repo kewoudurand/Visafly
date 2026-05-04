@@ -47,6 +47,7 @@
         <li><a href="{{ url('/#contact') }}">Contact</a></li>
       </ul>
     </nav>
+    
 
     {{-- ══ ACTIONS DROITE ══ --}}
     <div class="vf-actions">
@@ -82,10 +83,11 @@
       {{-- ══ CONNECTÉ ══ --}}
       @auth
         {{-- Cloche notification (desktop seulement) --}}
-        <button class="vf-icon-btn vf-desktop-only" title="Notifications">
-          <i class="bi bi-bell" style="font-size:16px;"></i>
-          <span class="vf-notif-dot"></span>
-        </button>
+        <div class="vf-icon-btn vf-desktop-only">
+            @auth
+                @include('components.notifications-bell')
+            @endauth
+        </div>
 
         {{-- Avatar + dropdown (visible desktop et mobile) --}}
         <div class="vf-profile-menu">

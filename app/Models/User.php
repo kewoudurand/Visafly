@@ -160,4 +160,10 @@ class User extends Authenticatable
     {
         return $this->is_active_affiliate === true;
     }
+
+    //Notification
+    public function notifications()
+    {
+        return $this->hasMany(\App\Models\Notification::class);
+    }
 }

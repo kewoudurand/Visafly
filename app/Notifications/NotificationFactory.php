@@ -4,6 +4,7 @@ namespace App\Notifications;
  
 use App\Models\User;
 use App\Models\Notification;
+use App\Events\NotificationCreated;
  
 class NotificationFactory
 {

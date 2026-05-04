@@ -46,6 +46,9 @@
 
 <div class="d-flex align-items-center justify-content-between mb-4">
     <div>
+        <a href="{{ route('admin.cours.index') }}" class="btn btn-outline-secondary btn-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>    
         <h2 class="fw-bold mb-1" style="color:#1B3A6B;font-size:1.4rem;">
             Gestion des langues
         </h2>

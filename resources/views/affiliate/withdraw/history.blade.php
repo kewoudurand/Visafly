@@ -3,6 +3,9 @@
 
 @section('content')
 <div class="container py-5">
+    <a href="{{ route('admin.affiliate.index') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i>
+    </a>
     <div class="row">
         <div class="col-md-12">
             <h1>📋 Historique de mes Retraits</h1>

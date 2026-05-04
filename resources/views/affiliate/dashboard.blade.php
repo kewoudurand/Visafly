@@ -27,6 +27,9 @@
 
 @section('content')
 <div class="container mt-5">
+    <a href="{{ route('affiliate.dashboard') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i>
+    </a>
     <div class="row mb-4">
         <div class="col-md-12">
             <h1 class="mb-4">📊 Tableau de Bord d'Affiliation</h1>

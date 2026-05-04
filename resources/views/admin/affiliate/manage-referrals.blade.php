@@ -6,6 +6,9 @@
 
 @section('content')
 <div class="container-fluid py-5">
+    <a href="{{ route('admin.affiliate.index') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i>
+    </a>
     {{-- Header --}}
     <div class="mb-5 d-flex justify-content-between align-items-center">
         <div>

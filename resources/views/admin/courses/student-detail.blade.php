@@ -33,6 +33,9 @@
 
 {{-- En-tête --}}
 <div class="d-flex align-items-center gap-3 mb-4">
+    <a href="{{ route('admin.cours.index') }}" class="btn btn-outline-secondary btn-sm">
+        <i class="bi bi-arrow-left"></i>
+    </a>
     <a href="{{ route('admin.student-progress.index') }}" 
        style="width:36px;height:36px;border-radius:9px;background:#fff;border:1px solid #e8e8e8;
               display:flex;align-items:center;justify-content:center;color:#1B3A6B;text-decoration:none;">
