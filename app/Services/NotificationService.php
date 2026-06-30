@@ -126,7 +126,7 @@ class NotificationService
                 'course_id' => $courseId,
                 'course_title' => $courseTitle,
             ],
-            'action_url' => route('instructeur.courses.edit', $courseId),
+            'action_url' => route('instructor.courses.edit', $courseId),
             'action_label' => 'Gérer le cours',
         ]);
     }
@@ -146,7 +146,7 @@ class NotificationService
                 'course_id' => $courseId,
                 'lesson_title' => $lessonTitle,
             ],
-            'action_url' => route('instructeur.courses.lessons', $courseId),
+            'action_url' => route('instructor.cours.lessons.index', $courseId),
             'action_label' => 'Voir les leçons',
         ]);
     }

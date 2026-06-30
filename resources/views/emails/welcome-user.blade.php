@@ -9,7 +9,7 @@
     <h2>Bonjour {{ $user->frist_name }} {{ $user->last_name }},</h2>
 
     <p>
-        Votre compte administrateur VisaFly a été créé avec succès.
+        Votre compte chez VisaFly a été créé avec succès.
     </p>
 
     <p>Voici vos informations de connexion :</p>

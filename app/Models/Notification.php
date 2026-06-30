@@ -22,6 +22,7 @@ class Notification extends Model
 
     protected $casts = [
         'data' => 'json',
+        'data' => 'array',
         'is_read' => 'boolean',
         'read_at' => 'datetime',
         'created_at' => 'datetime',
@@ -100,5 +101,39 @@ class Notification extends Model
             'system' => 'ℹ️',
             default => '📢',
         };
+    }
+
+    /**
+     * Crée et enregistre une notification liée à une consultation.
+     *
+     * @param Consultation $consultation L'objet de la consultation concernée
+     * @param string $type Le type d'événement (ex: rdv_programme, rdv_annule)
+     * @param string $title Le titre visible par l’utilisateur
+     * @param string $message Le corps du message de notification
+     * @param array|null $data Métadonnées optionnelles (ex: ['screen' => 'rdv'])
+     * @param string|null $actionUrl Lien d'action optionnel (ex: lien Google Meet)
+     * @param string|null $actionLabel Libellé du bouton d'action
+     * @return self
+     */
+    public static function consultation(
+        Consultation $consultation,
+        string       $type,
+        string       $title,
+        string       $message,
+        ?array       $data = null,
+        ?string      $actionUrl = null,
+        ?string      $actionLabel = null
+    ): self {
+        return static::create([
+            'consultation_id' => $consultation->id,
+            'user_id'         => $consultation->user_id, // L'étudiant/client destinataire
+            'type'            => $type,
+            'title'           => $title,
+            'message'         => $message,
+            'data'            => $data, // Assure-toi que 'data' est casté en 'array' dans ton modèle
+            'action_url'      => $actionUrl,
+            'action_label'    => $actionLabel,
+            'lu_le'           => null, // Non lue par défaut
+        ]);
     }
 }

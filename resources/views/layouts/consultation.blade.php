@@ -179,15 +179,18 @@
       <div class="modal-content">
 
         <div class="modal-header">
-          <h5 class="modal-title">Confirmation</h5>
+          <h5 class="fw-bold mb-3 text-secondary" style="font-size:14px;">Documents & Finalisation</h5>
           <button type="button" class="btn-close" data-dismiss="modal"></button>
         </div>
 
-        <div class="modal-body">
-          Votre consultation sera traitée et un conseiller vous contactera 
-          par WhatsApp ou Email.<br><br>
-          Voulez-vous confirmer l’envoi ?
-        </div>
+            
+            <div class="text-center py-3">
+              <i class="bi bi-file-earmark-check text-success" style="font-size: 40px;"></i>
+              <p class="text-muted mt-2" style="font-size: 13px;">
+                Toutes les sections précédentes ont été complétées.<br> <strong>"Cliquez sur Soumettre"</strong> <br>
+                Un Email vous a ete envoyer pour suivre <strong>"L'evolution de votre procedure"</strong> .
+              </p>
+            </div>
 
         <div class="modal-footer">
           <button type="button" class="btn btn-secondary" data-dismiss="modal">
@@ -195,7 +198,7 @@
           </button>
 
           <button type="button" class="btn btn-primary" id="confirmSubmit">
-            D’accord
+            Soumettre
           </button>
         </div>
 

@@ -14,6 +14,8 @@ class CourseController extends Controller
     // ── Liste publique des cours ──────────────────────────────────
     public function choose(Request $request)
     {
+        $abonnementActif = auth()->check() ? auth()->user()->hasActiveSubscription() : false;
+
         $cours = Course::with('instructor')
             ->withCount(['lecons' => fn($q) => $q->where('publiee', true)])
             ->where('publie', true)
@@ -21,7 +23,7 @@ class CourseController extends Controller
             ->when($request->filled('niveau'), fn($q) => $q->where('niveau', strtoupper($request->niveau)))
             ->get();
 
-        return view('courses.list', compact('cours'));
+        return view('courses.list', compact('cours', 'abonnementActif'));
     }
 
     // ── Afficher la liste des cours (admin) ───────────────────────
@@ -87,6 +89,12 @@ class CourseController extends Controller
     {
         if (! $cours->publie && ! auth()->user()?->hasAnyRole(['admin', 'super-admin'])) {
             abort(404);
+        }
+        $user = auth()->user();
+
+        if (!$user->abonnementActif() && !$cours->gratuit) {
+            return redirect()->route('abonnement.souscrire')
+                ->with('error','Abonnement requis');
         }
 
         $lecons = $cours->lecons()

@@ -1,4 +1,4 @@
-{{-- resources/views/users/profil.blade.php --}}
+{{-- resources/views/profil/profil.blade.php --}}
 @extends('layouts.dashboard')
 @section('title', 'Mon profil — VisaFly')
 
@@ -175,7 +175,7 @@
           <div class="col-md-6">
             <label class="pf-label">Nom *</label>
             <input type="text" name="first_name" class="pf-input @error('first_name') is-invalid @enderror"
-                   value="{{ old('name', $user->first_name) }}" placeholder="Jean Dupont">
+                   value="{{ old('first_name', $user->first_name) }}" placeholder="Jean Dupont">
             @error('first_name')
               <div style="font-size:11px;color:#E24B4A;margin-top:4px;">{{ $message }}</div>
             @enderror

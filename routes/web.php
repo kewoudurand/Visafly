@@ -30,6 +30,7 @@ use App\Http\Controllers\Instructor\LessonInstructorController;
 use App\Http\Controllers\ProgressionController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\WithdrawalController;
+use App\Http\Controllers\ConsultationController;
 
 
 /*
@@ -195,18 +196,35 @@ Route::middleware('auth')->group(function () {
         Route::delete('/langues/questions/{question}',[LangueController::class, 'destroyQuestion'])->name('questions.destroy');
 
         // -consultations -
-        Route::get('/consultations',[AdminConsultationController::class, 'index'])->name('consultations.index');
-        Route::get('/consultations/export',[AdminConsultationController::class, 'export'])->name('consultations.export');
-        Route::get('/consultations/{consultation}',[AdminConsultationController::class, 'show'])->name('consultations.show');
-        Route::post('/consultations/{consultation}/en-cours',[AdminConsultationController::class, 'enCours'])->name('consultations.en-cours');
-        Route::post('/consultations/{consultation}/approuver',[AdminConsultationController::class, 'approuver'])->name('consultations.approuver');
-        Route::post('/consultations/{consultation}/decliner',[AdminConsultationController::class, 'decliner'])->name('consultations.decliner');
-        Route::post('/consultations/{consultation}/terminer',[AdminConsultationController::class, 'terminer'])->name('consultations.terminer');
-        Route::post('/consultations/{consultation}/assigner',[AdminConsultationController::class, 'assigner'])->name('consultations.assigner');
-        Route::post('/consultations/{consultation}/note',[AdminConsultationController::class, 'note'])->name('consultations.note');
-        Route::post('/consultations/{consultation}/lien-visio',[AdminConsultationController::class, 'lienVisio'])->name('consultations.lien-visio');
-        Route::post('/consultations/{consultation}/toggle-urgent',[AdminConsultationController::class, 'toggleUrgent'])->name('consultations.toggle-urgent');
-        Route::delete('/consultations/{consultation}',[AdminConsultationController::class, 'destroy'])->name('consultations.destroy');
+        Route::get('/consultation', [AdminConsultationController::class, 'index'])->name('consultations.index');
+        Route::get('/export',   [AdminConsultationController::class, 'export'])->name('consultations.export');
+ 
+        // ── Fiche complète ────────────────────────────────────
+        Route::get('/{consultation}', [AdminConsultationController::class, 'show'])->name('consultations.show');
+ 
+        // ── Actions statut ────────────────────────────────────
+        Route::post('/{consultation}/en-cours',  [AdminConsultationController::class, 'enCours'])->name('en-cours');
+        Route::post('/{consultation}/approuver', [AdminConsultationController::class, 'approuver'])->name('approuver');
+        Route::post('/{consultation}/decliner',  [AdminConsultationController::class, 'decliner'])->name('decliner');
+        Route::post('/{consultation}/terminer',  [AdminConsultationController::class, 'terminer'])->name('terminer');
+        Route::delete('/{consultation}',         [AdminConsultationController::class, 'destroy'])->name('consultations.destroy');
+ 
+        // ── Consultant ────────────────────────────────────────
+        // Assigner ou changer de consultant
+        Route::post('/{consultation}/assigner', [AdminConsultationController::class, 'assigner'])->name('consultations.assigner');
+ 
+        // ── Divers ────────────────────────────────────────────
+        Route::post('/{consultation}/note', [AdminConsultationController::class, 'note'])->name('consultations.note');
+        Route::post('/{consultation}/lien-visio',[AdminConsultationController::class, 'lienVisio'])->name('consultations.lien-visio');
+        Route::post('/{consultation}/toggle-urgent',[AdminConsultationController::class, 'toggleUrgent'])->name('consultations.toggle-urgent');
+ 
+        // ── Montant total ─────────────────────────────────────
+        Route::post('/{consultation}/montant',[AdminConsultationController::class, 'setMontantTotal'])->name('consultations.montant');
+ 
+        // ── Paiements (tranches) ──────────────────────────────
+        Route::post('/{consultation}/paiements',[AdminConsultationController::class, 'addPaiement'])->name('consultations.paiements.store');
+        Route::put('/{consultation}/paiements/{paiement}',[AdminConsultationController::class, 'updatePaiement'])->name('consultations.paiements.update');
+        Route::delete('/{consultation}/paiements/{paiement}',[AdminConsultationController::class, 'deletePaiement'])->name('consultations.paiements.destroy');
 
         Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
         Route::get('/analytics/langues', [AnalyticsController::class, 'langues'])->name('analytics.langues');
@@ -302,7 +320,11 @@ Route::middleware('auth')->group(function () {
         // Cours (uniquement les siens)
  
         // Leçons (uniquement dans ses cours)
-        Route::resource('cours.lessons', LessonInstructorController::class);
+        Route::resource('cours.lessons', LessonInstructorController::class)->parameters([
+            'cours' => 'cours'
+        ])->names([
+            'show' => 'courses.lessons', // On lie l'alias au nom attendu
+        ]);
  
          // Réordonner leçons
         Route::post('cours/{cours}/lessons/reordonner',[LessonInstructorController::class, 'reordonner']
@@ -310,7 +332,7 @@ Route::middleware('auth')->group(function () {
     });
         
     // student
-    Route::prefix('results')->name('student.')->group(function () {
+    Route::prefix('student')->name('student.')->middleware(['auth'])->group(function () {
         
         // Liste de tous les examens passés
         Route::get('/', [StudentResultController::class, 'index'])->name('index');
@@ -325,6 +347,27 @@ Route::middleware('auth')->group(function () {
 
         Route::get('/student/courses', [CourseDashboardController::class, 'index'])->name('course.index');
         Route::get('/student-progress/{user}',[StudentProgressController::class, 'show'])->name('student-progress.show');
+    });
+
+    //Consultant
+    Route::prefix('consultant')->name('consultant.')->middleware(['auth'])->group(function () {
+        Route::get('/dashboard', [ConsultationController::class, 'dashboard'])->name('dashboard');
+        Route::post('/consultations/save', [ConsultationController::class, 'store'])->name('store');
+        Route::get('/consultations/{consultation}', [ConsultationController::class, 'show'])->name('show');
+        Route::patch('/update/{consultation}',[ConsultationController::class, 'updateStatus'])->name('updateStatus');
+        Route::post('/etapes/{etape}/traiter', [ConsultationController::class, 'traiterEtape'])->name('etapes.traiter');
+        Route::post('/consultations/{consultation}/notes', [ConsultationController::class, 'storeNote'])->name('notes.store');
+        Route::post('/consultations/{consultation}/rdv', [ConsultationController::class, 'programmerRdv'])->name('rdv.programmer');
+        Route::patch('/documents/{id}/status', [ConsultationController::class, 'updateDocumentStatus'])->name('updateDocumentsStatus');
+    });
+
+    //User
+    Route::prefix('user')->name('user.')->middleware(['auth'])->group(function () {
+        Route::get('/mon-dossier', [DashboardController::class, 'userDashboard'])->name('dashboard');
+        Route::get('/consultations', [UserConsultationController::class, 'create'])->name('create');
+        Route::post('/client/documents', [UserConsultationController::class, 'storeDocument'])->name('documents.store');
+        Route::get('/client/{consultation}', [UserConsultationController::class, 'show'])->name('consultations.show');
+        Route::post('/client/{consultation}/cancel', [UserConsultationController::class, 'cancel'])->name('consultations.cancel');
     });
 
     Route::middleware(['auth'])->prefix('mon-parcours')->name('progression.')->group(function () {

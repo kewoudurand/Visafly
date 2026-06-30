@@ -312,7 +312,7 @@
                     {{ isset($lesson) && $lesson->id ? 'Enregistrer les modifications' : 'Créer la leçon' }}
                 </button>
                 <a href="{{ route(
-                    request()->is('admin/*') ? 'admin.cours.lessons.index' : 'instructeur.cours.lessons.index',
+                    request()->is('admin/*') ? 'admin.cours.lessons.index' : 'instructor.cours.lessons.index',
                     $cours
                 ) }}" class="btn btn-light fw-semibold">
                     Annuler

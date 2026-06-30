@@ -1,6 +1,7 @@
 <?php
 // ═══════════════════════════════════════════════════
 //  app/Http/Controllers/ProfileController.php
+//  ✅ COMPATIBLE HYBRIDE WEB & FLUTTER (SANCTUM)
 // ═══════════════════════════════════════════════════
 namespace App\Http\Controllers;
 
@@ -8,17 +9,38 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 
 class ProfileController extends Controller
 {
     // ══════════════════════════════════════
-    //  Afficher le formulaire de profil
+    //  Afficher / Récupérer le profil
     // ══════════════════════════════════════
-    public function edit()
+    public function edit(Request $request)
     {
         $user = Auth::user();
-        return view('users.profil', compact('user'));
+
+        // 📱 Si l'appel vient de Flutter, on renvoie les données utilisateur brutes
+        if ($request->wantsJson()) {
+            return response()->json([
+                'user' => [
+                    'id'            => $user->id,
+                    'name'          => $user->first_name . ' ' . $user->last_name,
+                    'first_name'    => $user->first_name,
+                    'last_name'     => $user->last_name,
+                    'email'         => $user->email,
+                    'phone'         => $user->phone,
+                    'country'       => $user->country,
+                    'language'      => $user->language,
+                    'referral_code' => $user->referral_code,
+                    'avatar_url'    => $user->avatar ? asset('storage/' . $user->avatar) : null,
+                ]
+            ], 200);
+        }
+
+        // 💻 Sinon, fonctionnement Web classique
+        return view('profils.profil', compact('user'));
     }
 
     // ══════════════════════════════════════
@@ -26,21 +48,36 @@ class ProfileController extends Controller
     // ══════════════════════════════════════
     public function update(Request $request)
     {
-        //dd($request->all());
         $user = Auth::user();
 
-        $request->validate([
+        $rules = [
             'first_name' => 'required|string|max:255',
             'last_name'  => 'required|string|max:255',
-            'email'      => ['required','email', Rule::unique('users','email')->ignore($user->id)],
+            'email'      => ['required', 'email', Rule::unique('users', 'email')->ignore($user->id)],
             'phone'      => 'nullable|string|max:25',
             'country'    => 'nullable|string|max:100',
             'language'   => 'nullable|in:fr,en,de,pt',
-        ], [
+        ];
+
+        $messages = [
             'first_name.required' => 'Le prénom est obligatoire.',
             'last_name.required'  => 'Le nom est obligatoire.',
             'email.required'      => 'L\'email est obligatoire.',
-        ]);
+            'email.unique'        => 'Cet email est déjà pris par un autre utilisateur.',
+        ];
+
+        // 📱 Gestion d'erreur propre pour Flutter
+        if ($request->wantsJson()) {
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return response()->json([
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+        } else {
+            $request->validate($rules, $messages);
+        }
 
         $user->update([
             'first_name' => $request->first_name,
@@ -51,6 +88,20 @@ class ProfileController extends Controller
             'language'   => $request->language ?? 'fr',
         ]);
 
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Profil mis à jour avec succès ✨',
+                'user' => [
+                    'name'       => $user->first_name . ' ' . $user->last_name,
+                    'first_name' => $user->first_name,
+                    'last_name'  => $user->last_name,
+                    'email'      => $user->email,
+                    'phone'      => $user->phone,
+                    'country'    => $user->country,
+                ]
+            ], 200);
+        }
+
         return back()->with('success', 'Profil mis à jour avec succès.');
     }
 
@@ -59,27 +110,43 @@ class ProfileController extends Controller
     // ══════════════════════════════════════
     public function updatePassword(Request $request)
     {
-        $request->validate([
+        $rules = [
             'current_password'      => 'required',
             'password'              => 'required|min:8|confirmed',
             'password_confirmation' => 'required',
-        ], [
+        ];
+
+        $messages = [
             'current_password.required' => 'Veuillez saisir votre mot de passe actuel.',
             'password.min'              => 'Le nouveau mot de passe doit contenir au moins 8 caractères.',
             'password.confirmed'        => 'La confirmation ne correspond pas.',
-        ]);
+        ];
+
+        if ($request->wantsJson()) {
+            $validator = Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return response()->json(['message' => $validator->errors()->first()], 422);
+            }
+        } else {
+            $request->validate($rules, $messages);
+        }
 
         $user = Auth::user();
 
         if (!Hash::check($request->current_password, $user->password)) {
-            return back()
-                ->withErrors(['current_password' => 'Mot de passe actuel incorrect.'])
-                ->withInput();
+            if ($request->wantsJson()) {
+                return response()->json(['message' => 'Mot de passe actuel incorrect.'], 401);
+            }
+            return back()->withErrors(['current_password' => 'Mot de passe actuel incorrect.'])->withInput();
         }
 
         $user->update([
             'password' => Hash::make($request->password),
         ]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Mot de passe modifié avec succès 🎉'], 200);
+        }
 
         return back()->with('success_password', 'Mot de passe modifié avec succès.');
     }
@@ -92,21 +159,26 @@ class ProfileController extends Controller
         $request->validate([
             'avatar' => 'required|image|mimes:jpg,jpeg,png,webp|max:2048',
         ], [
-            'avatar.image'    => 'Le fichier doit être une image.',
-            'avatar.max'      => 'L\'image ne doit pas dépasser 2 Mo.',
-            'avatar.mimes'    => 'Format accepté : jpg, jpeg, png, webp.',
+            'avatar.image' => 'Le fichier doit être une image.',
+            'avatar.max'   => 'L\'image ne doit pas dépasser 2 Mo.',
+            'avatar.mimes' => 'Format accepté : jpg, jpeg, png, webp.',
         ]);
 
         $user = Auth::user();
 
-        // Supprimer l'ancien avatar
         if ($user->avatar && Storage::disk('public')->exists($user->avatar)) {
             Storage::disk('public')->delete($user->avatar);
         }
 
-        // Enregistrer le nouveau
         $path = $request->file('avatar')->store('avatars', 'public');
         $user->update(['avatar' => $path]);
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Photo de profil mise à jour.',
+                'avatar_url' => asset('storage/' . $path)
+            ], 200);
+        }
 
         return back()->with('success', 'Photo de profil mise à jour.');
     }
@@ -114,7 +186,7 @@ class ProfileController extends Controller
     // ══════════════════════════════════════
     //  Supprimer l'avatar
     // ══════════════════════════════════════
-    public function deleteAvatar()
+    public function deleteAvatar(Request $request)
     {
         $user = Auth::user();
 
@@ -123,6 +195,10 @@ class ProfileController extends Controller
         }
 
         $user->update(['avatar' => null]);
+
+        if ($request->wantsJson()) {
+            return response()->json(['message' => 'Photo de profil supprimée.'], 200);
+        }
 
         return back()->with('success', 'Photo de profil supprimée.');
     }

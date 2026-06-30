@@ -21,6 +21,15 @@ class AffiliateController extends Controller
     {
         $user = Auth::user();
         $stats = $this->affiliationService->getDetailedStats($user);
+        $referralsCount = $user->referrals()->count();
+        $activeReferralsWithSub = $user->referrals()->whereHas('abonnements', function($q) {$q->where('actif', true);})->count();
+
+        if ($referralsCount < 20) {
+            return view('affiliate.dashboard', compact('stats','referralsCount','activeReferralsWithSub'))->with('error', "Retrait refusé. Vous devez avoir parrainé au moins 20 personnes (Actuel : $referralsCount).");
+        }
+        if ($activeReferralsWithSub < 20) {
+            return back()->with('error', "Retrait refusé. Vos 20 affiliés doivent avoir souscrit à un abonnement (Actuel : $activeReferralsWithSub).");
+        }
 
         return view('affiliate.dashboard', compact('stats'));
     }

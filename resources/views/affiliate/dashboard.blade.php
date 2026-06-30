@@ -57,11 +57,14 @@
                         data-bs-target="#withdrawModal">
                         🏦 Retirer des Fonds
                     </button> --}}
-                    <a href="{{ route('affiliate.withdraw.show-form') }}" class="mx-2" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;
+                    <button type="button" class="btn btn-primary rounded-pill fw-bold" data-bs-toggle="modal" data-bs-target="#eligibilityModal">
+                        <i class="bi bi-wallet2 me-2"></i>Demander un retrait
+                    </button>
+                    {{-- <a href="{{ route('affiliate.withdraw.show-form') }}" class="mx-2" style="display:inline-flex;align-items:center;gap:6px;padding:10px 20px;
                 background:#23f562;color:#fff;border-radius:20px;font-size:13px;
                 font-weight:700;text-decoration:none;">
                         🏦 Retirer des Fonds
-                    </a>
+                    </a> --}}
                 @endif
             </div>
         </div>
@@ -177,7 +180,7 @@
 </div>
 
 {{-- Modal de Retrait --}}
-<div class="modal fade" id="withdrawModal" tabindex="-1">
+{{-- <div class="modal fade" id="withdrawModal" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
             <div class="modal-header">
@@ -227,6 +230,89 @@
                     <button type="submit" class="btn btn-success">Confirmer le Retrait</button>
                 </div>
             </form>
+        </div>
+    </div>
+</div> --}}
+
+<!-- Modal Éligibilité Retrait -->
+<div class="modal fade" id="eligibilityModal" tabindex="-1" aria-labelledby="eligibilityModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 20px;">
+            <div class="modal-header border-0 pt-4 px-4">
+                <h5 class="modal-title fw-bold" id="eligibilityModalLabel" style="color: #1B3A6B;">
+                    <i class="bi bi-shield-check me-2 text-warning"></i>Vérification d'éligibilité
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            
+            <div class="modal-body px-4 pb-4">
+                <p class="text-muted small mb-4">Pour garantir la qualité du réseau VisaFly, les retraits sont soumis aux conditions suivantes :</p>
+
+                <!-- Condition 1: Nombre d'affiliés -->
+                <div class="p-3 rounded-3 mb-3" style="background: #fafafa; border: 1px solid #eee;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold" style="font-size: 13px; color: #1B3A6B;">Affiliations minimales</div>
+                            <div class="small text-muted">Avoir parrainé au moins 20 personnes</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge rounded-pill {{ $referralsCount >= 20 ? 'bg-success' : 'bg-danger' }}">
+                                {{ $referralsCount }} / 20
+                            </span>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 6px;">
+                        <div class="progress-bar {{ $referralsCount >= 20 ? 'bg-success' : 'bg-warning' }}" 
+                             role="progressbar" 
+                             style="width: {{ min(($referralsCount / 20) * 100, 100) }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Condition 2: Affiliés avec abonnement -->
+                <div class="p-3 rounded-3 mb-4" style="background: #fafafa; border: 1px solid #eee;">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold" style="font-size: 13px; color: #1B3A6B;">Affiliés actifs</div>
+                            <div class="small text-muted">Affiliés ayant pris un abonnement</div>
+                        </div>
+                        <div class="text-end">
+                            <span class="badge rounded-pill {{ $activeReferralsWithSub >= 20 ? 'bg-success' : 'bg-danger' }}">
+                                {{ $activeReferralsWithSub }} / 20
+                            </span>
+                        </div>
+                    </div>
+                    <div class="progress mt-2" style="height: 6px;">
+                        <div class="progress-bar {{ $activeReferralsWithSub >= 20 ? 'bg-success' : 'bg-warning' }}" 
+                             role="progressbar" 
+                             style="width: {{ min(($activeReferralsWithSub / 20) * 100, 100) }}%"></div>
+                    </div>
+                </div>
+
+                <!-- Résultat final -->
+                @if($referralsCount >= 20 && $activeReferralsWithSub >= 20)
+                    <div class="alert alert-success border-0 rounded-3 d-flex align-items-center gap-3">
+                        <i class="bi bi-check-circle-fill fs-4"></i>
+                        <div>
+                            <div class="fw-bold">Félicitations !</div>
+                            <div class="small">Toutes les conditions sont remplies. Vous pouvez procéder au retrait.</div>
+                        </div>
+                    </div>
+                    <a href="{{ route('affiliate.withdraw.show-form') }}" class="btn btn-primary w-100 rounded-pill py-2 fw-bold mt-2 shadow-sm">
+                        Accéder au formulaire de retrait
+                    </a>
+                @else
+                    <div class="alert alert-warning border-0 rounded-3 d-flex align-items-center gap-3">
+                        <i class="bi bi-exclamation-triangle-fill fs-4"></i>
+                        <div>
+                            <div class="fw-bold">Inéligible</div>
+                            <div class="small">Vous ne remplissez pas encore les conditions pour retirer vos gains.</div>
+                        </div>
+                    </div>
+                    <button class="btn btn-secondary w-100 rounded-pill py-2 fw-bold mt-2" disabled>
+                        Retrait bloqué
+                    </button>
+                @endif
+            </div>
         </div>
     </div>
 </div>

@@ -22,7 +22,7 @@ class WelcomeUserMail extends Mailable
 
     public function build()
     {
-        return $this->subject('Bienvenue sur VisaFly - Accès Administrateur')
+        return $this->subject('Bienvenue sur VisaFly - Accès Utilisateur')
                     ->view('emails.welcome-user');
     }
 }

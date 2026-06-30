@@ -38,6 +38,11 @@ class Course extends Model
         return $this->hasMany(Lesson::class, 'cours_id');
     }
 
+        public function lessons(): HasMany
+    {
+        return $this->hasMany(Lesson::class ,'cours_id');
+    }
+
     public function progressions(): HasMany
     {
         return $this->hasMany(CourseProgression::class, 'cours_id');

@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http;
+namespace App\Console;
 
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 use Illuminate\Console\Scheduling\Schedule;

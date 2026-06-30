@@ -84,50 +84,53 @@ trait GereParInstructeur
      * @param  Lesson|null $lecon      null = création, instance = mise à jour
      * @param  int      $instructeurId ID de l'instructeur à enregistrer
      */
-    protected function construireDataLecon(
-        Request $request,
-        array   $validated,
-        Course  $cours,
-        ?Lesson $lecon,
-        int     $instructeurId
-    ): array {
-        // Slug unique (uniquement à la création)
-        $slug = $lecon?->slug ?? $this->genererSlug($cours, $validated['titre']);
+   protected function construireDataLecon(
+    Request $request,
+    array $validated,
+    Course $cours,
+    ?Lesson $lecon,
+    int $instructeurId
+): array {
+    // 1. Slug (inchangé)
+    $slug = $lecon?->slug ?? $this->genererSlug($cours, $validated['titre']);
 
-        // Upload audio
-        $audioPath = $lecon?->fichier_audio;
-        if ($request->hasFile('fichier_audio')) {
-            if ($audioPath) Storage::disk('public')->delete($audioPath);
-            $audioPath = $request->file('fichier_audio')
-                ->store('lessons/audio/' . $cours->id, 'public');
-        }
-
-        // Nettoyage des choix vides dans les exercices
-        $exercices = collect($validated['exercices'] ?? [])->map(function ($ex) {
-            $ex['choix'] = array_values(array_filter($ex['choix'] ?? []));
-            return $ex;
-        })->toArray();
-
-        return [
-            'cours_id'              => $cours->id,
-            'instructor_id'        => $instructeurId,
-            'titre'                 => $validated['titre'],
-            'slug'                  => $slug,
-            'type'                  => $validated['type'],
-            'contenu'               => $validated['contenu'] ?? null,
-            'mots'                  => $validated['mots'] ?? [],
-            'exercices'             => $exercices,
-            'fichier_audio'         => $audioPath,
-            'transcription_audio'   => $validated['transcription_audio'] ?? null,
-            'gratuite'              => $request->boolean('gratuite'),
-            'publiee'               => $request->boolean('publiee', true),
-            'ordre'                 => $validated['ordre']
-                                        ?? ($lecon?->ordre
-                                            ?? Lesson::where('cours_id', $cours->id)->max('ordre') + 1),
-            'points_recompense'     => $validated['points_recompense'] ?? 10,
-            'duree_estimee_minutes' => $validated['duree_estimee_minutes'] ?? null,
-        ];
+    // 2. Gestion audio (Compatible Web & API)
+    $audioPath = $lecon?->fichier_audio;
+    
+    // Si c'est un vrai fichier uploadé (Web classique)
+    if ($request->hasFile('fichier_audio')) {
+        if ($audioPath) Storage::disk('public')->delete($audioPath);
+        $audioPath = $request->file('fichier_audio')->store('lessons/audio/' . $cours->id, 'public');
+    } 
+    // Si c'est une chaîne envoyée via API (Mobile)
+    elseif (isset($validated['fichier_audio'])) {
+        $audioPath = $validated['fichier_audio'];
     }
+
+    // 3. Exercices (Nettoyage)
+    $exercices = collect($validated['exercices'] ?? [])->map(function ($ex) {
+        $ex['choix'] = array_values(array_filter((array)($ex['choix'] ?? [])));
+        return $ex;
+    })->toArray();
+
+    return [
+        'cours_id'            => $cours->id,
+        'instructor_id'       => $instructeurId,
+        'titre'               => $validated['titre'],
+        'slug'                => $slug,
+        'type'                => $validated['type'],
+        'contenu'             => $validated['contenu'] ?? null,
+        'mots'                => $validated['mots'] ?? [],
+        'exercices'           => $exercices,
+        'fichier_audio'       => $audioPath,
+        'transcription_audio' => $validated['transcription_audio'] ?? null,
+        'gratuite'            => (bool)($validated['gratuite'] ?? false),
+        'publiee'             => (bool)($validated['publiee'] ?? true),
+        'ordre'               => $validated['ordre'] ?? ($lecon?->ordre ?? Lesson::where('cours_id', $cours->id)->max('ordre') + 1),
+        'points_recompense'   => $validated['points_recompense'] ?? 10,
+        'duree_estimee_minutes' => $validated['duree_estimee_minutes'] ?? null,
+    ];
+}
 
     /**
      * Retourne le tableau prêt pour Course::create() / $cours->update().

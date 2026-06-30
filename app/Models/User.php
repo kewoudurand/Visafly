@@ -5,11 +5,12 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Str;
 
 class User extends Authenticatable
 {
-    use HasRoles, Notifiable;          
+    use HasRoles, Notifiable,HasApiTokens;          
 
     protected $fillable = [
         'first_name', 'last_name', 'email', 'password','role',
@@ -23,9 +24,15 @@ class User extends Authenticatable
         'email_verified_at' => 'datetime',
         'password' => 'hashed',
     ];
+
+    public function getFullNameAttribute()
+    {
+        return "{$this->first_name} {$this->last_name}";
+    }
+
     public function consultations()
     {
-        return $this->hasMany(Consultation::class);
+        return $this->hasMany(Consultation::class , 'consultant_id');
     }
     public function abonnements()
     {
@@ -37,10 +44,14 @@ class User extends Authenticatable
         return $this->hasOne(LangueAbonnement::class, 'user_id')
             ->where('actif', true)
             ->where('fin_at', '>=', now())
-            ->latest();
+            ->latestOfMany();
     }
 
-    // app/Models/User.php
+    public function hasActiveSubscription()
+    {
+        return $this->abonnementActif()->exists();
+    }
+
     public function lessonsProgress() {
         return $this->belongsToMany(Lesson::class, 'user_lesson_progress')
                     ->withPivot('terminee', 'score_quiz', 'statut')

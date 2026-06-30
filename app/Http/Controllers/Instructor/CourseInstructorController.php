@@ -19,7 +19,7 @@ class CourseInstructorController extends Controller
             ->orderBy('ordre')
             ->paginate(20);
 
-        return view('instructor.courses.index', compact('cours'));
+        return view('instructor.dashboard', compact('cours'));
     }
 
     public function create()
@@ -38,7 +38,7 @@ class CourseInstructorController extends Controller
 
         Course::create($data);
 
-        return redirect()->route('instructor.cours.index')
+        return redirect()->route('instructor.dashboard')
             ->with('success', 'Cours créé avec succès.');
     }
 

@@ -14,60 +14,65 @@ class LessonInstructorController extends Controller
     use GereParInstructeur;
 
 
-    private function assertOwnsCours(Course $cours): void
-    {
-        abort_unless((int) $cours->instructor_id === (int) auth()->id(), 403);
-    }
+    // private function assertOwnsCours(Course $cours): void
+    // {
+    //     abort_unless((int) $cours->instructor_id === (int) auth()->id(), 403);
+    // }
 
-    private function assertOwnsLecon(Lesson $lesson): void
-    {
-        abort_unless((int) $lesson->instructor_id === (int) auth()->id(), 403);
-    }
+    // private function assertOwnsLecon(Lesson $lesson): void
+    // {
+    //     abort_unless((int) $lesson->instructor_id === (int) auth()->id(), 403);
+    // }
 
-    public function index(Course $cours)
+    // Remplace $cours par $cour
+    public function index($id)
     {
-        $this->assertOwnsCours($cours);
-
-        // ✅ Double filtre : cours du bon instructeur + leçons du bon instructeur
-        $lecons = $cours->lessons()
+        $cours = Course::where('id', $id)
             ->where('instructor_id', auth()->id())
+            ->firstOrFail();
+
+        $lecons = $cours->lecons()
             ->ordonnees()
             ->get();
 
-        return view('instructeur.lessons.index', compact('cours', 'lecons'));
+        return view('instructor.lessons.index', compact('cours', 'lecons'));
     }
 
-    public function create(Course $cours)
+    public function create(Course $cour)
     {
-        $this->assertOwnsCours($cours);
+        //$this->assertOwnsCours($cour);
 
-        return view('instructeur.lessons.create', [
-            'cours' => $cours,
-            'cour'  => $cours,
+        return view('instructor.lessons.create', [
+            'cours' => $cour,
+            'cour'  => $cour,
         ]);
     }
 
     public function store(Request $request, Course $cours)
     {
-        $this->assertOwnsCours($cours);
+        // $this->assertOwnsCours($cours);
 
+        // Validation standard
         $validated = $request->validate($this->reglesLecon());
+
+        // Construction des données
         $data = $this->construireDataLecon($request, $validated, $cours, null, auth()->id());
 
-        // ✅ Double sécurité
-        $data['cours_id']       = $cours->id;
-        $data['instructor_id'] = auth()->id();
+        $lesson = Lesson::create($data);
 
-        Lesson::create($data);
+        // Retourne JSON si l'appel vient de Flutter, sinon redirige (Web)
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json(['success' => true, 'lecon' => $lesson], 201);
+        }
 
-        return redirect()->route('instructeur.cours.lessons.index', $cours)
+        return redirect()->route('instructor.cours.lessons.index', $cours)
             ->with('success', 'Leçon créée avec succès.');
     }
 
     public function edit(Course $cours, Lesson $lesson)
     {
-        $this->assertOwnsCours($cours);
-        $this->assertOwnsLecon($lesson);
+        // $this->assertOwnsCours($cours);
+        // $this->assertOwnsLecon($lesson);
         abort_unless($lesson->cours_id === $cours->id, 404);
 
         return view('instructeur.lessons.edit', [
@@ -79,8 +84,8 @@ class LessonInstructorController extends Controller
 
     public function update(Request $request, Course $cours, Lesson $lesson)
     {
-        $this->assertOwnsCours($cours);
-        $this->assertOwnsLecon($lesson);
+        // $this->assertOwnsCours($cours);
+        // $this->assertOwnsLecon($lesson);
         abort_unless($lesson->cours_id === $cours->id, 404);
 
         $validated = $request->validate($this->reglesLecon());
@@ -97,8 +102,8 @@ class LessonInstructorController extends Controller
 
     public function destroy(Course $cours, Lesson $lesson)
     {
-        $this->assertOwnsCours($cours);
-        $this->assertOwnsLecon($lesson);
+        // $this->assertOwnsCours($cours);
+        // $this->assertOwnsLecon($lesson);
 
         if ($lesson->fichier_audio) {
             Storage::disk('public')->delete($lesson->fichier_audio);
@@ -111,7 +116,7 @@ class LessonInstructorController extends Controller
 
     public function reordonner(Request $request, Course $cours)
     {
-        $this->assertOwnsCours($cours);
+        // $this->assertOwnsCours($cours);
         $request->validate(['ordre' => 'required|array', 'ordre.*' => 'integer']);
 
         foreach ($request->ordre as $position => $lessonId) {

@@ -94,8 +94,8 @@
           <i class="bi bi-speedometer2"></i> Tableau de bord
         </a>
 
-        {{-- ── ÉTUDIANT / USER ── --}}
-        @if(Auth::user()->hasAnyRole(['student','user']))
+        {{-- ── ÉTUDIANT── --}}
+        @if(Auth::user()->hasAnyRole(['student']))
           <span class="sidebar-section">Mon espace</span>
           <a href="{{ route('langues.index') }}"
              class="sidebar-link {{ request()->routeIs('langues.*') ? 'active' : '' }}">
@@ -114,6 +114,23 @@
           <a href="{{ route('abonnement.index') }}"
              class="sidebar-link {{ request()->routeIs('abonnement*') ? 'active' : '' }}">
             <i class="bi bi-credit-card"></i> Mon abonnement
+          </a>
+          <a href="{{ route('affiliate.dashboard') }}"
+             class="sidebar-link {{ request()->routeIs('affiliate*') ? 'active' : '' }}">
+            <i class="bi bi-person-circle"></i> Mes affiliation
+          </a>
+          <a href="{{ route('profil.edit') }}"
+             class="sidebar-link {{ request()->routeIs('profil*') ? 'active' : '' }}">
+            <i class="bi bi-person-circle"></i> Mon profil
+          </a>
+        @endif
+
+        {{-- ── User ── --}}
+        @if(Auth::user()->hasAnyRole(['user']))
+          <span class="sidebar-section">Mon espace</span>
+          <a href="{{ route('user.dashboard') }}"
+             class="sidebar-link {{ request()->routeIs('user.*') ? 'active' : '' }}">
+            <i class="bi bi-journal-check"></i> Mes Consultations
           </a>
           <a href="{{ route('affiliate.dashboard') }}"
              class="sidebar-link {{ request()->routeIs('affiliate*') ? 'active' : '' }}">
@@ -151,10 +168,10 @@
         @endif
 
         {{-- ── CONSULTANT ── --}}
-        @if(Auth::user()->hasAnyRole(['consultant']) && !Auth::user()->hasAnyRole(['admin','super-admin']))
+        @if(Auth::user()->hasAnyRole(['consultant']))
           <span class="sidebar-section">Consultations</span>
-          <a href="{{ route('admin.consultations.index') }}"
-             class="sidebar-link {{ request()->routeIs('admin.consultations.*') ? 'active' : '' }}">
+          <a href="{{ route('consultant.dashboard') }}"
+             class="sidebar-link {{ request()->routeIs('consultant.dashboard') ? 'active' : '' }}">
             <i class="bi bi-calendar-check"></i> Mes consultations
           </a>
           <a href="{{ route('affiliate.dashboard') }}"

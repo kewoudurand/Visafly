@@ -113,5 +113,25 @@ class NotificationFactory
             default => '❓ Autre',
         };
     }
+
+    /**
+ * Créer une notification pour le consultant lorsqu'un client dépose un document
+ */
+    public static function newDocumentSubmitted(User $consultant, $consultation, $clientName)
+    {
+        return Notification::create([
+            'user_id' => $consultant->id,
+            'type' => 'new_document',
+            'title' => '📄 Nouveau document reçu',
+            'message' => "Le client {$clientName} a déposé de nouveaux documents pour la consultation n°{$consultation->id}.",
+            'icon' => 'info',
+            'data' => [
+                'consultation_id' => $consultation->id,
+                'client_name' => $clientName,
+            ],
+            'action_url' => route('consultant.show', $consultation->id),
+            'action_label' => 'Voir le dossier',
+        ]);
+    }
 }
  

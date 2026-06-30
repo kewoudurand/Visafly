@@ -13,19 +13,20 @@ class CoursAllemandSeeder extends Seeder
 {
     public function run(): void
     {
-        $adminId = User::first()->id ?? 1;
+        $instructor = User::first() ?? User::factory()->create();
         
-        $this->seedNiveauA1();
-        $this->seedNiveauA2();
-        $this->seedNiveauB1();
+        $this->seedNiveauA1($instructor->id);
+        $this->seedNiveauA2($instructor->id);
+        $this->seedNiveauB1($instructor->id);
     }
 
     // ════════════════ NIVEAU A1 ════════════════
 
-    private function seedNiveauA1(): void
+    private function seedNiveauA1(int $instructorId): void
     {
         $cours = Course::firstOrCreate(['slug' => 'allemand-a1'], [
             'titre'        => 'Allemand A1 — Débutant',
+            'instructor_id'=> $instructorId,
             'sous_titre'   => 'Les bases de l\'allemand en 20 leçons',
             'description'  => 'Commencez votre voyage en allemand. Apprenez les salutations, les chiffres, les couleurs et les bases de la communication quotidienne.',
             'niveau'       => 'A1',
@@ -316,10 +317,11 @@ class CoursAllemandSeeder extends Seeder
 
     // ════════════════ NIVEAU A2 ════════════════
 
-    private function seedNiveauA2(): void
+    private function seedNiveauA2(int $instructorId): void
     {
         $cours = Course::firstOrCreate(['slug' => 'allemand-a2'], [
             'titre'        => 'Allemand A2 — Élémentaire',
+            'instructor_id'=> $instructorId,
             'sous_titre'   => 'Communiquer au quotidien',
             'description'  => 'Élargissez votre vocabulaire et vos compétences pour des situations du quotidien : courses, transport, restaurant.',
             'niveau'       => 'A2',
@@ -416,10 +418,11 @@ class CoursAllemandSeeder extends Seeder
 
     // ════════════════ NIVEAU B1 ════════════════
 
-    private function seedNiveauB1(): void
+    private function seedNiveauB1(int $instructorId): void
     {
         $cours = Course::firstOrCreate(['slug' => 'allemand-b1'], [
             'titre'        => 'Allemand B1 — Intermédiaire',
+            'instructor_id'=> $instructorId,
             'sous_titre'   => 'Vers la fluidité conversationnelle',
             'description'  => 'Maîtrisez les temps, les cas grammaticaux et élargissez votre expression pour le travail et la vie en Allemagne.',
             'niveau'       => 'B1',

@@ -21,14 +21,22 @@ class UserController extends Controller
     {
         $this->authorize('manage users');
 
-        $query = User::with('roles')
-            ->withCount('roles');
+        $user = auth()->user();
+        $query = User::with('roles')->withCount('roles');
+
+        // ── LOGIQUE DE FILTRAGE PAR RÔLE ──
+        if (!$user->hasRole('super-admin')) {
+            // Si admin (et non super-admin), on exclut le super-admin de la liste
+            $query->whereDoesntHave('roles', function ($q) {
+                $q->where('name', 'super-admin');
+            });
+        }
 
         // Recherche
         if ($request->filled('search')) {
             $query->where(function ($q) use ($request) {
-                $q->where('name', 'like', '%'.$request->search.'%')
-                  ->orWhere('email', 'like', '%'.$request->search.'%');
+                $q->where('first_name', 'like', '%' . $request->search . '%')
+                ->orWhere('email', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -51,8 +59,10 @@ class UserController extends Controller
         }
 
         $users = $query->latest()->paginate(15)->withQueryString();
-        $roles = Role::all();
         
+        // Si l'utilisateur n'est pas super-admin, on peut aussi restreindre la liste des rôles 
+        // visibles dans le filtre si nécessaire, mais ici on laisse tous les rôles pour le filtre.
+        $roles = Role::all();
 
         return view('admin.users.index', compact('users', 'roles'));
     }
@@ -187,19 +197,14 @@ class UserController extends Controller
     {
         $this->authorize('assign roles');
 
+        // 1. Validation
         $request->validate(['role' => 'required|exists:roles,name']);
+
+        // 2. Mise à jour
         $user->syncRoles($request->role);
 
-        $user->load('roles', 'permissions');
-        $abonnement = LangueAbonnement::where('user_id', $user->id)
-            ->where('actif', true)
-            ->where('fin_at', '>=', now())
-            ->latest()->first();
-
-        $historique = LangueAbonnement::where('user_id', $user->id)
-            ->latest()->get();
-
-        return view('admin.users.show', compact('user', 'abonnement', 'historique'));
+        // 3. Redirection au lieu de retourner la vue manuellement
+        return back()->with('success', 'Rôle mis à jour avec succès.');
     }
 
     // ── Activer / Désactiver un abonnement manuel ──

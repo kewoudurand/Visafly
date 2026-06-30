@@ -14,7 +14,7 @@ class CourseObserver
     {
         // Notifier l'instructeur
         NotificationService::courseCreated(
-            $cours->instructeur, // Adapter selon votre modèle
+            $cours->instructor, // Adapter selon votre modèle
             $cours->titre,       // Adapter selon vos colonnes
             $cours->id
         );

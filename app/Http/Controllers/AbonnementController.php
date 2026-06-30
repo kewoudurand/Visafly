@@ -42,7 +42,7 @@ class AbonnementController extends Controller
             ->latest('created_at')
             ->get();
 
-        return view('users.abonnement', compact('abonnement', 'plans', 'langues', 'historique'));
+        return view('abonnement.abonnement', compact('abonnement', 'plans', 'langues', 'historique'));
     }
 
     // ════════════════════════════════════════

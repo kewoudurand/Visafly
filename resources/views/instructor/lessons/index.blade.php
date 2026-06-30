@@ -1,5 +1,5 @@
 {{-- resources/views/instructeur/lessons/index.blade.php --}}
-@extends('layouts.instructeur')
+@extends('layouts.dashboard')
 @section('title', 'Leçons — ' . $cours->titre)
 
 @push('styles')
@@ -30,7 +30,7 @@
     <div class="cours-header">
         <div class="d-flex justify-content-between align-items-start flex-wrap gap-3">
             <div class="d-flex align-items-center gap-3">
-                <a href="{{ route('instructeur.cours.index') }}"
+                <a href="{{ route('instructor.dashboard') }}"
                    class="btn btn-sm" style="background:rgba(255,255,255,.15);color:#fff">
                     <i class="bi bi-arrow-left"></i>
                 </a>
@@ -43,7 +43,7 @@
                     <p class="mb-0 opacity-75 small">{{ $lecons->count() }} leçon(s)</p>
                 </div>
             </div>
-            <a href="{{ route('instructeur.cours.lessons.create', $cours) }}"
+            <a href="{{ route('instructor.cours.lessons.create', $cours) }}"
                class="btn fw-bold px-4" style="background:#F5A623;color:#000">
                 <i class="bi bi-plus-lg me-1"></i>Nouvelle leçon
             </a>
@@ -62,7 +62,7 @@
         <div class="text-center py-5">
             <div style="font-size:3rem">📝</div>
             <p class="text-muted mt-2 mb-3">Aucune leçon dans ce cours.</p>
-            <a href="{{ route('instructeur.cours.lessons.create', $cours) }}" class="btn btn-primary">
+            <a href="{{ route('instructor.cours.lessons.create', $cours) }}" class="btn btn-primary">
                 Créer la première leçon
             </a>
         </div>
@@ -116,11 +116,11 @@
                 </div>
 
                 <div class="d-flex gap-1 flex-shrink-0">
-                    <a href="{{ route('instructeur.cours.lessons.edit', [$cours, $lecon]) }}"
+                    <a href="{{ route('instructor.cours.lessons.edit', [$cours, $lecon]) }}"
                        class="btn btn-sm btn-outline-primary" title="Modifier">
                         <i class="bi bi-pencil"></i>
                     </a>
-                    <form action="{{ route('instructeur.cours.lessons.destroy', [$cours, $lecon]) }}"
+                    <form action="{{ route('instructor.cours.lessons.destroy', [$cours, $lecon]) }}"
                           method="POST"
                           onsubmit="return confirm('Supprimer « {{ $lecon->titre }} » ?')">
                         @csrf @method('DELETE')
@@ -149,7 +149,7 @@ if (el) {
         handle: '.drag-handle', animation: 150, ghostClass: 'sortable-ghost',
         onEnd() {
             const ordre = [...el.querySelectorAll('.lecon-row')].map(r => r.dataset.id);
-            fetch("{{ route('instructeur.cours.lessons.reordonner', $cours) }}", {
+            fetch("{{ route('instructor.cours.lessons.reordonner', $cours) }}", {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json', 'X-CSRF-TOKEN': '{{ csrf_token() }}' },
                 body: JSON.stringify({ ordre })

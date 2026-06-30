@@ -1,7 +1,7 @@
 <?php
 // ═══════════════════════════════════════════════════
 //  app/Http/Controllers/Auth/RegisterController.php
-//  ✅ AVEC INTÉGRATION AFFILIATION
+//  ✅ AVEC INTÉGRATION AFFILIATION & DOUBLE CASQUETTE FLUTTER / WEB
 // ═══════════════════════════════════════════════════
 namespace App\Http\Controllers\Auth;
 
@@ -17,7 +17,6 @@ use Spatie\Permission\Models\Role;
 
 class RegisterController extends Controller
 {
-    // ✅ NOUVEAU: Injecter le service d'affiliation
     protected $affiliationService;
 
     /**
@@ -28,10 +27,9 @@ class RegisterController extends Controller
         $this->affiliationService = $affiliationService;
     }
 
-    // ── Affiche la page d'inscription ──
+    // ── Affiche la page d'inscription (Web Uniquement) ──
     public function show()
     {
-        // ✅ NOUVEAU: Passer l'info du parrain à la vue
         $referralCode = request()->query('ref');
         $referrer = null;
 
@@ -47,57 +45,74 @@ class RegisterController extends Controller
         ]);
     }
 
-    // ── Traite l'inscription ──
+    // ── Traite l'inscription (Hybride Web & Flutter) ──
     public function register(Request $request)
     {
-        $request->validate([
+        // Si c'est Flutter/API (wantsJson), le last_name devient facultatif
+        $rules = [
             'first_name' => 'required|string|max:255',
-            'last_name'  => 'required|string|max:255',
+            'last_name'  => $request->wantsJson() ? 'nullable|string|max:255' : 'required|string|max:255',
             'email'      => 'required|email|unique:users,email',
-            'password'   => 'required|min:6|confirmed',
-            // ✅ NOUVEAU: Valider le code de parrainage s'il existe
+            'password'   => $request->wantsJson() ? 'required|min:6' : 'required|min:6|confirmed',
             'ref'        => 'nullable|string|exists:users,referral_code',
-        ], [
+        ];
+
+        $messages = [
             'first_name.required' => 'Le prénom est obligatoire.',
             'last_name.required'  => 'Le nom est obligatoire.',
             'email.required'      => 'L\'email est obligatoire.',
-            'email.unique'        => 'Cet email est déjà utilisé.connectez-vous ou changer d\'email.',
+            'email.unique'        => 'Cet email est déjà utilisé.',
             'password.min'        => 'Le mot de passe doit contenir au moins 6 caractères.',
             'password.confirmed'  => 'La confirmation du mot de passe ne correspond pas.',
-            // ✅ NOUVEAU: Message pour code invalide
             'ref.exists'          => 'Ce code de parrainage est invalide.',
-        ]);
+        ];
+
+        if ($request->wantsJson()) {
+            $validator = \Illuminate\Support\Facades\Validator::make($request->all(), $rules, $messages);
+            if ($validator->fails()) {
+                return response()->json([
+                    // On récupère le premier message d'erreur explicite
+                    'message' => $validator->errors()->first(),
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+        } else {
+            $request->validate($rules, $messages);
+        }
 
         $plainPassword = $request->password;
 
-        // ✅ NOUVEAU: Préparer les données pour le service d'affiliation
+        // Gestion propre si l'application mobile envoie un nom complet dans 'first_name'
+        $firstName = $request->first_name;
+        $lastName = $request->last_name ?? '';
+
+        if (empty($lastName) && str_contains($firstName, ' ')) {
+            $parts = explode(' ', $firstName, 2);
+            $firstName = $parts[0];
+            $lastName = $parts[1];
+        }
+
         $userData = [
-            'name'      => $request->first_name . ' ' . $request->last_name,
-            'first_name'=> $request->first_name,
-            'last_name' => $request->last_name,
-            'email'     => $request->email,
-            'password'  => $request->password,
-            'avatar'    => null,
-            'country'   => $request->country   ?? null,
-            'language'  => $request->language  ?? 'fr',
-            'timezone'  => $request->timezone  ?? 'Africa/Douala',
-            'phone'     => $request->phone      ?? null,
+            'name'       => trim($firstName . ' ' . $lastName),
+            'first_name' => $firstName,
+            'last_name'  => $lastName,
+            'email'      => $request->email,
+            'password'   => $request->password,
+            'avatar'     => null,
+            'country'    => $request->country   ?? null,
+            'language'   => $request->language  ?? 'fr',
+            'timezone'   => $request->timezone  ?? 'Africa/Douala',
+            'phone'      => $request->phone     ?? null,
         ];
 
-        // ✅ NOUVEAU: Récupérer le code de parrainage
+        // Récupérer le code de parrainage
         $referralCode = $request->input('ref') ?? request()->query('ref');
 
         try {
-            $user = $this->affiliationService->registerWithAffiliation(
-                $userData,
-                $referralCode
-            );
+            $user = $this->affiliationService->registerWithAffiliation($userData, $referralCode);
 
-            // ✅ NOUVEAU : Notifier le parrain
             if ($referralCode) {
-                // On cherche le propriétaire du code
                 $referrer = User::where('referral_code', $referralCode)->first();
-                
                 if ($referrer) {
                     try {
                         Mail::to($referrer->email)->send(new \App\Mail\NewReferralNotification($referrer, $user));
@@ -106,39 +121,39 @@ class RegisterController extends Controller
                     }
                 }
             }
-
-            Log::info("Utilisateur inscrit avec affiliation", [
-                'user_id' => $user->id,
-                'email' => $user->email,
-                'referral_code' => $referralCode ?? 'none',
-            ]);
         } catch (\Exception $e) {
-            // ✅ NOUVEAU: En cas d'erreur d'affiliation, créer l'utilisateur quand même
             Log::warning("Erreur affiliation, création sans: " . $e->getMessage());
-            
+            $userData['password'] = bcrypt($request->password);
             $user = User::create($userData);
         }
 
-        // ── Assigner le rôle 'student' automatiquement ──
-        // S'assurer que le rôle existe (sécurité)
-        $role = Role::firstOrCreate(
-            ['name' => 'student', 'guard_name' => 'web']
-        );
+        // Assigner le rôle venant de l'application mobile (converti selon tes rôles Spatie)
+        // Flutter envoie 'etudiant' ou 'professeur', Spatie attend 'student' ou 'teacher'
+        $roleName = 'user';
+        $role = Role::firstOrCreate(['name' => $roleName, 'guard_name' => 'web']);
         $user->assignRole($role);
 
-        // ── Email de bienvenue ──
         try {
             Mail::to($user->email)->send(new WelcomeUserMail($user, $plainPassword));
         } catch (\Exception $e) {
-            // Ne pas bloquer l'inscription si l'email échoue
             Log::warning('Email de bienvenue non envoyé : ' . $e->getMessage());
         }
 
-        // ── Connexion automatique ──
-        Auth::login($user);
+        if ($request->wantsJson()) {
+            $token = $user->createToken('visafly_mobile_token')->plainTextToken;
+            return response()->json([
+                'message' => 'Inscription réussie 🎉',
+                'token' => $token,
+                'user' => [
+                    'id' => $user->id,
+                    'first_name' => $user->first_name,
+                    'email' => $user->email,
+                    'role' => $roleName,
+                ]
+            ], 201);
+        }
 
-        // ── Redirection selon le rôle ──
-        // return redirect()->route('home')->with('success', 'Bienvenue sur VisaFly, ' . $user->first_name . ' !');
+        Auth::login($user);
         return redirect()->route('affiliate.dashboard');
     }
 }

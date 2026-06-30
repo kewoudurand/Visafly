@@ -26,34 +26,8 @@ return new class extends Migration
             $table->timestamps();
         });
 
-        // ── 2. Abonnements utilisateurs ──
-        // (si elle n'existe pas encore — sinon adapter)
-        if (!Schema::hasTable('tcf_abonnements')) {
-            Schema::create('tcf_abonnements', function (Blueprint $table) {
-                $table->id();
-                $table->foreignId('user_id')->constrained('users')->onDelete('cascade');
-                $table->foreignId('plan_id')->nullable()
-                      ->constrained('plans_abonnements')->nullOnDelete();
-                $table->string('forfait');               // code du plan
-                $table->decimal('montant', 10, 0);
-                $table->string('devise')->default('XAF');
-                $table->timestamp('debut_at');
-                $table->timestamp('fin_at');
-                $table->boolean('actif')->default(true);
-                $table->string('reference_paiement')->nullable();
-                $table->string('methode_paiement')->nullable(); // mtn_money, orange_money, carte
-                $table->timestamps();
-            });
-        } else {
-            // Ajouter plan_id si table existe déjà
-            Schema::table('tcf_abonnements', function (Blueprint $table) {
-                if (!Schema::hasColumn('tcf_abonnements', 'plan_id')) {
-                    $table->foreignId('plan_id')->nullable()
-                          ->constrained('plans_abonnements')->nullOnDelete()
-                          ->after('user_id');
-                }
-            });
-        }
+
+        
     }
 
     public function down(): void

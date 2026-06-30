@@ -5,9 +5,6 @@
 <div class="container py-5">
     <div class="row justify-content-center">
         <div class="col-lg-5 col-md-7">
-                <a href="{{ route('admin.affiliate.index') }}" class="btn btn-outline-secondary btn-sm">
-        <i class="bi bi-arrow-left"></i>
-    </a>
 
             <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
 

@@ -23,6 +23,8 @@
 .urgbadge{padding:2px 7px;border-radius:6px;font-size:10px;font-weight:700;background:rgba(226,75,74,.1);color:#a32d2d;}
 .fi{border:1.5px solid #e8e8e8;border-radius:8px;padding:7px 11px;font-size:12px;outline:none;transition:border .2s;width:100%;}
 .fi:focus{border-color:#F5A623;}
+.pbar-wrap{height:5px;border-radius:3px;background:#eee;overflow:hidden;margin-top:3px;}
+.pbar{height:100%;border-radius:3px;background:linear-gradient(90deg,#1B3A6B,#F5A623);transition:width .4s;}
 </style>
 @endpush
 
@@ -89,13 +91,24 @@
                 @endforeach
             </select>
         </div>
+        {{-- Filtre consultant --}}
         <div class="col-md-2">
-            <select name="urgent" class="fi">
-                <option value="">Toutes</option>
-                <option value="1" {{ request('urgent')?'selected':'' }}>Urgentes uniquement</option>
+            <select name="consultant_id" class="fi">
+                <option value="">Tous consultants</option>
+                @foreach($consultants as $con)
+                    <option value="{{ $con->id }}" {{ request('consultant_id')==$con->id?'selected':'' }}>
+                        {{ $con->name }}
+                    </option>
+                @endforeach
             </select>
         </div>
-        <div class="col-md-3 d-flex gap-2">
+        <div class="col-md-1">
+            <select name="urgent" class="fi">
+                <option value="">Toutes</option>
+                <option value="1" {{ request('urgent')?'selected':'' }}>Urgentes</option>
+            </select>
+        </div>
+        <div class="col-md-2 d-flex gap-2">
             <button type="submit" class="btn rounded-pill fw-semibold flex-fill"
                     style="background:#1B3A6B;color:#fff;font-size:12px;">
                 <i class="bi bi-search me-1"></i>Filtrer
@@ -117,6 +130,7 @@
                 <th>Date souh.</th>
                 <th>Statut</th>
                 <th>Consultant</th>
+                <th>Paiement</th>
                 <th style="text-align:right;">Actions</th>
             </tr>
         </thead>
@@ -157,16 +171,37 @@
             <td>
                 <span class="bs bs-{{ $c->statut }}">{{ $c->statutLabel() }}</span>
             </td>
-            <td style="font-size:12px;color:#666;">
-                {{ $c->consultant?->name ?? '—' }}
+            <td>
+                @if($c->consultant)
+                    <div style="font-size:12px;color:#1B3A6B;font-weight:600;">{{ $c->consultant->first_name }}</div>
+                @else
+                    <span style="font-size:11px;color:#aaa;font-style:italic;">Non assigné</span>
+                @endif
             </td>
+
+            {{-- Mini barre de paiement --}}
+            <td style="min-width:100px;">
+                @php
+                    $payé  = $c->paiements?->where('statut','recu')->sum('montant') ?? 0;
+                    $total = $c->montant_total ?? 0;
+                    $pct   = $total > 0 ? min(100, round($payé / $total * 100)) : 0;
+                @endphp
+                @if($total > 0)
+                    <div style="font-size:11px;color:#555;">{{ number_format($payé,0,',',' ') }} / {{ number_format($total,0,',',' ') }}</div>
+                    <div class="pbar-wrap"><div class="pbar" style="width:{{ $pct }}%"></div></div>
+                    <div style="font-size:10px;color:#888;">{{ $pct }}%</div>
+                @else
+                    <span style="font-size:11px;color:#aaa;">—</span>
+                @endif
+            </td>
+
             <td>
                 <div class="d-flex gap-1 justify-content-end">
-                    <a href="{{ route('admin.consultations.show', $c) }}"
+                    <a href="{{ route('admin.consultations.show', $c->id) }}"
                        class="ba" title="Voir le dossier complet">
                         <i class="bi bi-eye"></i>
                     </a>
-                    @if($c->peutEtreTraitee())
+                    @if(method_exists($c, 'peutEtreTraitee') && $c->peutEtreTraitee())
                     <a href="{{ route('admin.consultations.show', $c) }}#approuver"
                        class="ba" title="Approuver"
                        style="border-color:rgba(28,200,138,.3);color:#1cc88a;">
@@ -192,7 +227,7 @@
         </tr>
         @empty
         <tr>
-            <td colspan="7" class="text-center py-5" style="color:#aaa;">
+            <td colspan="8" class="text-center py-5" style="color:#aaa;">
                 <i class="bi bi-calendar-x" style="font-size:28px;display:block;margin-bottom:8px;"></i>
                 Aucune consultation trouvée
             </td>

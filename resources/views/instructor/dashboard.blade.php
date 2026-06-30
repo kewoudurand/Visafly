@@ -56,11 +56,11 @@
             <div class="d-flex align-items-center gap-3">
                 <div class="orb">👨‍🏫</div>
                 <div>
-                    <h4 class="fw-bold mb-1">Bonjour, {{ auth()->user()->name }} 👋</h4>
+                    <h4 class="fw-bold mb-1">Bonjour, {{ auth()->user()->first_name }} 👋</h4>
                     <p class="mb-0 opacity-75">Gérez vos cours et leçons depuis votre espace instructeur.</p>
                 </div>
             </div>
-            <a href="{{ route('instructeur.cours.create') }}"
+            <a href="{{ route('instructor.courses.create') }}"
                class="btn fw-bold px-4 py-2" style="background:#F5A623;color:#000">
                 <i class="bi bi-plus-lg me-2"></i>Nouveau cours
             </a>
@@ -124,7 +124,7 @@
                 <div class="card-body p-0">
                     <div class="d-flex justify-content-between align-items-center px-4 pt-4 pb-3 border-bottom">
                         <h6 class="fw-bold mb-0" style="color:#1B3A6B">Mes dernières leçons</h6>
-                        <a href="{{ route('instructeur.cours.index') }}" class="btn btn-sm btn-light">Voir tout</a>
+                        <a href="{{ route('instructor.dashboard') }}" class="btn btn-sm btn-light">Voir tout</a>
                     </div>
                     @php
                         $dernieresLecons = \App\Models\Lesson::deInstructeur(auth()->id())
@@ -175,7 +175,7 @@
                     </div>
                     @php
                         $mesCoursList = \App\Models\Course::deInstructeur(auth()->id())
-                            ->withCount('lessons')
+                            ->withCount('lecons')
                             ->orderBy('ordre')
                             ->take(5)
                             ->get();
@@ -190,7 +190,7 @@
                                 <p class="mb-0 fw-semibold small text-truncate">{{ $c->titre }}</p>
                                 <p class="mb-0 text-muted" style="font-size:.73rem">{{ $c->lessons_count }} leçon(s)</p>
                             </div>
-                            <a href="{{ route('instructeur.cours.lessons.index', $c) }}"
+                            <a href="{{ route('instructor.cours.lessons.index', $c) }}"
                                class="btn btn-sm btn-light py-0 px-2" title="Gérer les leçons">
                                 <i class="bi bi-list-ul"></i>
                             </a>
@@ -200,7 +200,7 @@
                         @endforelse
                         @if($mesCours > 5)
                         <div class="text-center pt-2 pb-1">
-                            <a href="{{ route('instructeur.cours.index') }}" class="btn btn-sm btn-light">
+                            <a href="{{ route('instructor.dashboard') }}" class="btn btn-sm btn-light">
                                 Voir tous mes cours ({{ $mesCours }})
                             </a>
                         </div>

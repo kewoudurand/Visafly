@@ -20,7 +20,7 @@
     @include('shared.lessons._form_lecon', [
         'cours'                 => $cours,
         'lesson'                => null,
-        'routeAction'           => route('instructeur.cours.lessons.store', $cours),
+        'routeAction'           => route('instructor.cours.lessons.store', $cours),
         'method'                => 'POST',
         'showInstructeurSelect' => false,   // ← instructeur ne peut pas changer l'assignation
         'instructeurs'          => collect(),

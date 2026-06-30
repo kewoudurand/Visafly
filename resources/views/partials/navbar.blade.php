@@ -133,9 +133,14 @@
 
             <div class="vf-dd-sep"></div>
 
-            @if(Auth::user()->hasRole(['super-admin', 'admin', 'consultant']))
+            @if(Auth::user()->hasRole(['super-admin', 'admin']))
               <a href="{{ route('admin.users.index') }}" class="vf-dd-item">
                 <i class="bi bi-speedometer2"></i> Administration
+              </a>
+            @endif
+            @if(Auth::user()->hasRole('consultant'))
+              <a href="{{ route('dashboard.index') }}" class="vf-dd-item">
+                <i class="bi bi-speedometer2"></i> Consultation
               </a>
             @endif
             @if(auth()->user()->hasRole('instructor'))
@@ -148,6 +153,11 @@
                 <a href="{{ route('dashboard.index') }}" class="vf-dd-item"><i class="bi bi-speedometer2"></i> Mon Tableau de Bord</a>
                 <a href="{{ route('student.course.index') }}" class="vf-dd-item"><i class="bi bi-book"></i> Catalogue des Cours</a>
                 <a href="{{ route('progression.index') }}" class="vf-dd-item"><i class="bi bi-graph-up"></i> Ma Progression</a>
+            @endif
+            @if(auth()->user()->hasRole('user'))
+              <a href="{{ route('user.create') }}" class="vf-dd-item">
+                <i class="bi bi-plus-circle"></i> Initier mon dossier
+              </a>
             @endif
 
             @can('pass test')

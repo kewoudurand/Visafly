@@ -44,7 +44,7 @@
             <div style="font-size:3.5rem">📚</div>
             <h5 class="mt-3 fw-bold">Aucun cours pour l'instant</h5>
             <p class="text-muted">Créez votre premier cours pour commencer à ajouter des leçons.</p>
-            <a href="{{ route('instructeur.cours.create') }}" class="btn btn-primary px-4">Créer mon premier cours</a>
+            <a href="{{ route('instructor.courses.create') }}" class="btn btn-primary px-4">Créer mon premier cours</a>
         </div>
     @else
         <div class="row g-4">

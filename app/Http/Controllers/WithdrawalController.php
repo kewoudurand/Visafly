@@ -43,7 +43,7 @@ class WithdrawalController extends Controller
             ],
         ], [
             'amount.required' => 'Le montant est obligatoire',
-            'amount.min' => 'Le montant minimum est 1,000 F',
+            'amount.min' => 'Le montant minimum est 10,000 F',
             'amount.max' => 'Vous ne pouvez pas retirer plus que votre solde (' . number_format($wallet->amount, 0) . ' F)',
         ]);
 

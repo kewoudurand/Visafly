@@ -12,14 +12,16 @@ class LessonObserver
      */
     public function created(Lesson $lesson)
     {
-        $cours = $lesson->cours; // Adapter selon votre relation
-        
-        // Notifier l'instructeur
-        NotificationService::lessonCreated(
-            $cours->instructeur,
-            $lesson->titre,
-            $cours->titre,
-            $cours->id
-        );
+        $cours = $lesson->cours;
+
+        // PROTECTION : On vérifie que le cours existe et possède un instructeur
+        if ($cours && $cours->instructor instanceof \App\Models\User) {
+            NotificationService::lessonCreated(
+                $cours->instructor,
+                $lesson->titre,
+                $cours->titre,
+                $cours->id
+            );
+        }
     }
 }

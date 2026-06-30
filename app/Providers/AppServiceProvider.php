@@ -13,6 +13,8 @@ use App\Observers\ReferralObserver;
 use App\Observers\UserObserver;
 use App\Observers\CourseObserver;
 use App\Observers\LessonObserver;
+use App\Models\Consultation;
+use App\Observers\ConsultationObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,6 +26,7 @@ class AppServiceProvider extends ServiceProvider
         User::observe(UserObserver::class);
         Course::observe(CourseObserver::class);
         Lesson::observe(LessonObserver::class);
+        Consultation::observe(ConsultationObserver::class);
     }
 
     public function register()

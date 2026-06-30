@@ -139,7 +139,7 @@
 
             {{-- Formulaire attribution --}}
             <div id="abo-form" class="mt-3 d-none">
-                <form method="POST" action="{{ route('admin.users.toggle-abonnement', $user) }}">
+                <form method="POST" action="{{ url('/admin/users/'.$user->id.'/abonnement') }}">
                     @csrf
                     <div class="row g-2 align-items-end">
                         <div class="col-md-6">

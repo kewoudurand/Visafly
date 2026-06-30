@@ -67,8 +67,6 @@ class RolePermissionSeeder extends Seeder
         ]);
 
         $user->givePermissionTo([
-            'pass test',
-            'view result',
             'book consultation',
         ]);
     }

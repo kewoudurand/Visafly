@@ -108,13 +108,59 @@
             @if($dureeH)<span class="card-stat"><i class="bi bi-clock" style="color:{{ $couleur }}"></i>{{ $dureeH }}</span>@endif
             @if($c->gratuit)<span class="card-stat" style="color:#198754;background:#e8f8f0;border-radius:6px;padding:2px 8px;font-size:.72rem"><i class="bi bi-unlock-fill"></i> Gratuit</span>@endif
         </div>
-        <a href="{{ route('cours.allemand.show', $c->slug) }}" class="card-btn" style="background:{{ $couleur }}">
-            <i class="bi bi-lightning-charge-fill"></i>
-            {{ $pct>0?'Continuer':'Commencer' }}
-        </a>
+        @if($abonnementActif || $c->gratuit)
+
+            <a href="{{ route('cours.allemand.show', $c->slug) }}"
+            class="card-btn"
+            style="background:{{ $couleur }}">
+                <i class="bi bi-lightning-charge-fill"></i>
+                {{ $pct>0?'Continuer':'Commencer' }}
+            </a>
+
+        @else
+
+            <button type="button"
+                    class="card-btn"
+                    style="background:#ccc;color:#555;cursor:pointer"
+                    data-bs-toggle="modal"
+                    data-bs-target="#subscribeModal">
+                <i class="bi bi-lock-fill"></i>
+                Abonnement requis
+            </button>
+
+        @endif
     </div>
     @empty
     <div class="cl-empty"><div style="font-size:3rem;margin-bottom:16px">📭</div><h5 style="color:var(--marine);font-weight:800">Aucun cours disponible</h5><p class="text-muted">Revenez bientôt !</p></div>
     @endforelse
 </div>
+
+@if(auth()->check() && !$abonnementActif)
+
+    <div class="modal fade" id="subscribeModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content rounded-4">
+
+                <div class="modal-body text-center p-4">
+                    <h5 class="fw-bold mb-3">Abonnement requis</h5>
+
+                    <p class="text-muted mb-4">
+                        Vous devez avoir un abonnement actif pour accéder aux cours.
+                    </p>
+
+                    <a href="{{ route('abonnement.index') }}"
+                    class="btn btn-primary w-100 mb-2">
+                        Voir les abonnements
+                    </a>
+
+                    <button class="btn btn-light w-100" data-bs-dismiss="modal">
+                        Fermer
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+@endif
 @endsection
