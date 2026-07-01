@@ -849,6 +849,10 @@ ou
 
 👉 Dis-moi par quoi on continue, et on passe au niveau CTO réel.
 
+php artisan make:migration create_nom_de_la_table_table
+
+php artisan make:migration create_procedures_table
+
 php artisan db:seed --class=RolePermissionSeeder
 
 php artisan db:seed --class=LangueSeeder
@@ -939,3 +943,12 @@ use Illuminate\Support\Facades\Mail;
 Mail::raw('Ça fonctionne parfaitement !', function ($message) {
     $message->to('contact@visaflypro.com')->subject('Test d\'envoi direct depuis Tinker');
 });
+
+//Pour mettre en ligne
+
+git int
+git add .
+git commit -m "message"
+git branch -M main
+git remote add origin https://github.com/kewoudurand/Visafly.git
+git push -u origin main

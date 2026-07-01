@@ -11,6 +11,7 @@
 
   <meta name="keywords" content="visa canada cameroun, immigration canada douala, agence visa cameroun">
   <title>Visafly</title>
+  <link href="assets/img/logo.png" rel="icon">
   <!-- General CSS Files -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <!-- Font Awesome pour les icônes -->
@@ -27,7 +28,6 @@
   <link rel="stylesheet" href="{{asset(('assets/css/components.css'))}}">
   <!-- Custom style CSS -->
   <link rel="stylesheet" href="{{asset(('assets/css/custom.css'))}}">
-  <link rel='shortcut icon' type='image/x-icon' href='assets/img/favicon.ico' />
 
   @yield('styles')
   

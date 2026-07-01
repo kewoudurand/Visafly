@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\AdminProcedureController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\GoogleController;
 use App\Http\Controllers\Auth\RegisterController;
@@ -162,6 +163,19 @@ Route::middleware('auth')->group(function () {
         Route::post('/users/{user}/change-role',[UserController::class, 'changeRole'])->name('users.change-role');
         Route::post('/users/{user}/abonnement',[UserController::class, 'toggleAbonnement'])->name('users.toggle-abonnement');
 
+        // ── Procedures de paiement ──
+        Route::get('/',                                   [AdminProcedureController::class, 'index'])->name('procedures.index');
+        Route::post('/',                                  [AdminProcedureController::class, 'store'])->name('procedures.store');
+        Route::get('/client/{user}/consultation',          [AdminProcedureController::class, 'clientConsultation'])->name('client-consultation');
+        Route::get('/{clientProcedure}',                   [AdminProcedureController::class, 'show'])->name('procedures.show');
+        Route::put('/{clientProcedure}',                   [AdminProcedureController::class, 'update'])->name('procedures.update');
+        Route::delete('/{clientProcedure}',                 [AdminProcedureController::class, 'destroy'])->name('procedures.destroy');
+    
+        Route::post('/{clientProcedure}/paiements',                       [AdminProcedureController::class, 'addPaiement'])->name('procedures.paiements.store');
+        Route::put('/{clientProcedure}/paiements/{paiement}',              [AdminProcedureController::class, 'updatePaiement'])->name('procedures.paiements.update');
+        Route::delete('/{clientProcedure}/paiements/{paiement}',           [AdminProcedureController::class, 'deletePaiement'])->name('procedures.paiements.destroy');
+        
+        
         // ── Rôles ──
         Route::get('/roles',           [RolePermissionController::class, 'rolesIndex'])  ->name('roles.index');
         Route::post('/roles',          [RolePermissionController::class, 'rolesStore'])  ->name('roles.store');

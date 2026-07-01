@@ -26,7 +26,7 @@ class AdminConsultationController extends Controller
     // ══════════════════════════════════
     public function index(Request $request)
     {
-        $this->checkAccess();
+        //$this->checkAccess();
 
         $query = Consultation::with(['user', 'consultant'])->latest();
 

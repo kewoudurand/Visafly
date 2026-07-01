@@ -4,13 +4,13 @@
   <meta charset="UTF-8">
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no" name="viewport">
   <title>Connexion — VisaFly</title>
+  <link href="assets/img/logo.png" rel="icon">
   <link rel="stylesheet" href="{{ asset('assets/css/app.min.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/bundles/bootstrap-social/bootstrap-social.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/components.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/css/custom.css') }}">
   <link rel="stylesheet" href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}">
-  <link rel='shortcut icon' type='image/x-icon' href='{{ asset("assets/img/favicon.ico") }}' />
   <style>
     * { box-sizing: border-box; }
 

@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>@yield('title', 'VisaFly')</title>
+  <link href="assets/img/logo.png" rel="icon">
   <meta name="description" content="@yield('meta_description', 'Agence VisaFly spécialisée en immigration Canada depuis le Cameroun. Accompagnement complet visa et études.')">
 
   <meta name="keywords" content="visa canada cameroun, immigration canada douala, agence visa cameroun">

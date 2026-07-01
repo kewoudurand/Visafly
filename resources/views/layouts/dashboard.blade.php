@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'Dashboard') — VisaFly</title>
+  <link href="assets/img/logo.png" rel="icon">
   <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
   <style>
@@ -214,6 +215,10 @@
           <a href="{{ route('admin.consultations.index') }}"
              class="sidebar-link {{ request()->routeIs('admin.consultations.*') ? 'active' : '' }}">
             <i class="bi bi-calendar-check"></i> Consultations
+          </a>
+          <a href="{{ route('admin.procedures.index') }}"
+             class="sidebar-link {{ request()->routeIs('admin.procedures.*') ? 'active' : '' }}">
+            <i class="bi bi-calendar-check"></i> Procedures paiement
           </a>
           <a href="{{ route('admin.cours.index') }}"
              class="sidebar-link {{ request()->routeIs('admin.cours.index') ? 'active' : '' }}">
