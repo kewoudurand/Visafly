@@ -47,6 +47,39 @@ class User extends Authenticatable
             ->latestOfMany();
     }
 
+    public function paiements()
+    {
+        return $this->hasMany(Paiement::class);
+    }
+
+    // app/Models/User.php — à ajouter dans la classe
+
+    public function abonnementsLangues()
+    {
+        return $this->hasMany(\App\Models\LangueAbonnement::class);
+    }
+
+    /**
+     * Retourne les codes des langues auxquelles l'utilisateur a un accès actif.
+     */
+    public function languesAccessibles(): array
+    {
+        return $this->abonnementsLangues()
+            ->where('statut', 'actif')
+            ->where('fin_at', '>=', now())
+            ->with('langue:id,code')
+            ->get()
+            ->pluck('langue.code')
+            ->filter()
+            ->values()
+            ->toArray();
+    }
+
+    public function aAccesLangue(string $codeLangue): bool
+    {
+        return in_array($codeLangue, $this->languesAccessibles(), true);
+    }
+
     public function hasActiveSubscription()
     {
         return $this->abonnementActif()->exists();

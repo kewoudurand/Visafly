@@ -41,4 +41,11 @@ return [
         'redirect' => env('GOOGLE_REDIRECT_URI'),
     ],
 
+    'notchpay' => [
+        'public_key'  => env('NOTCHPAY_PUBLIC_KEY'),
+        'private_key' => env('NOTCHPAY_PRIVATE_KEY'),
+        'base_url'    => env('NOTCHPAY_BASE_URL', 'https://api.notchpay.co'),
+        'hash_key'    => env('NOTCHPAY_HASH_KEY'), // pour vérifier la signature webhook
+    ],
+
 ];

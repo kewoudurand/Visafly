@@ -26,7 +26,8 @@ class AdminConsultationController extends Controller
     // ══════════════════════════════════
     public function index(Request $request)
     {
-        //$this->checkAccess();
+        //dd('Contrôleur chargé !');
+        $this->checkAccess();
 
         $query = Consultation::with(['user', 'consultant'])->latest();
 

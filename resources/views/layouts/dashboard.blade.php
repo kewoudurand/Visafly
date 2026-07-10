@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>@yield('title', 'Dashboard') — VisaFly</title>
-  <link href="assets/img/logo.png" rel="icon">
+  <link href="{{ asset('assets/img/logo.png') }}" rel="icon">
   <link href="{{ asset('assets/vendor/bootstrap/css/bootstrap.min.css') }}" rel="stylesheet">
   <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
   <style>
@@ -136,6 +136,10 @@
           <a href="{{ route('affiliate.dashboard') }}"
              class="sidebar-link {{ request()->routeIs('affiliate*') ? 'active' : '' }}">
             <i class="bi bi-person-circle"></i> Mes affiliation
+          </a>
+          <a href="{{ route('abonnement.index') }}"
+             class="sidebar-link {{ request()->routeIs('abonnement*') ? 'active' : '' }}">
+            <i class="bi bi-credit-card"></i> Mon abonnement
           </a>
           <a href="{{ route('profil.edit') }}"
              class="sidebar-link {{ request()->routeIs('profil*') ? 'active' : '' }}">

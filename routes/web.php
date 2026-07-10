@@ -32,6 +32,7 @@ use App\Http\Controllers\ProgressionController;
 use App\Http\Controllers\AffiliateController;
 use App\Http\Controllers\WithdrawalController;
 use App\Http\Controllers\ConsultationController;
+use App\Http\Controllers\PaiementController;
 
 
 /*
@@ -86,6 +87,12 @@ Route::prefix('apprendre')->name('student.')->middleware(['auth', 'role:student|
     )->name('cours.lessons.terminer');
 });
 
+// routes/web.php — HORS middleware auth, à la racine du fichier (le webhook n'est pas authentifié par session)
+
+Route::post('/webhooks/notchpay', [\App\Http\Controllers\NotchPayWebhookController::class, 'handle'])
+    ->name('webhook.notchpay')
+    ->withoutMiddleware([\Illuminate\Foundation\Http\Middleware\VerifyCsrfToken::class]);
+
 Route::middleware('auth')->group(function () {
 
     Route::get('/profil', [ProfileController::class, 'edit'])->name('profil.edit');
@@ -103,8 +110,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/langues/{code}/series/{serie}/disciplines/{discipline}/epreuve',[LangueEpreuveController::class, 'epreuve'])->name('langues.epreuve');
     Route::post('/langues/{code}/series/{serie}/disciplines/{discipline}/soumettre',[LangueEpreuveController::class, 'soumettre'])->name('langues.epreuve.soumettre');
 
-    Route::get('/mon-abonnement',[AbonnementController::class, 'index'])->name('abonnement.index');
+    // routes/web.php — dans le middleware('auth') existant
+
+    Route::get('/mon-abonnement', [AbonnementController::class, 'index'])->name('abonnement.index');
     Route::post('/abonnement/{plan}/souscrire', [AbonnementController::class, 'souscrire'])->name('abonnement.souscrire');
+
+    Route::get('/paiement/{abonnement}/initier', [PaiementController::class, 'initier'])->name('paiement.initier');
+    Route::get('/paiement/{paiement}/retour', [PaiementController::class, 'retour'])->name('paiement.retour');// routes/web.php — dans le middleware('auth') existant
+
+    Route::get('/mon-abonnement', [AbonnementController::class, 'index'])->name('abonnement.index');
+    Route::post('/abonnement/{plan}/souscrire', [AbonnementController::class, 'souscrire'])->name('abonnement.souscrire');
+
+    Route::get('/paiement/{abonnement}/initier', [PaiementController::class, 'initier'])->name('paiement.initier');
+    Route::get('/paiement/{paiement}/retour', [PaiementController::class, 'retour'])->name('paiement.retour');
     Route::get('/choose',[CourseController::class, 'choose'])->name('chooses');
 
     Route::get('/mes-affiliation', [AffiliateController::class, 'dashboard'])->name('affiliate.dashboard');
@@ -161,20 +179,7 @@ Route::middleware('auth')->group(function () {
         // ── Utilisateurs ──
         Route::resource('users', UserController::class);
         Route::post('/users/{user}/change-role',[UserController::class, 'changeRole'])->name('users.change-role');
-        Route::post('/users/{user}/abonnement',[UserController::class, 'toggleAbonnement'])->name('users.toggle-abonnement');
-
-        // ── Procedures de paiement ──
-        Route::get('/',                                   [AdminProcedureController::class, 'index'])->name('procedures.index');
-        Route::post('/',                                  [AdminProcedureController::class, 'store'])->name('procedures.store');
-        Route::get('/client/{user}/consultation',          [AdminProcedureController::class, 'clientConsultation'])->name('client-consultation');
-        Route::get('/{clientProcedure}',                   [AdminProcedureController::class, 'show'])->name('procedures.show');
-        Route::put('/{clientProcedure}',                   [AdminProcedureController::class, 'update'])->name('procedures.update');
-        Route::delete('/{clientProcedure}',                 [AdminProcedureController::class, 'destroy'])->name('procedures.destroy');
-    
-        Route::post('/{clientProcedure}/paiements',                       [AdminProcedureController::class, 'addPaiement'])->name('procedures.paiements.store');
-        Route::put('/{clientProcedure}/paiements/{paiement}',              [AdminProcedureController::class, 'updatePaiement'])->name('procedures.paiements.update');
-        Route::delete('/{clientProcedure}/paiements/{paiement}',           [AdminProcedureController::class, 'deletePaiement'])->name('procedures.paiements.destroy');
-        
+        Route::post('/users/{user}/abonnement',[UserController::class, 'toggleAbonnement'])->name('users.toggle-abonnement');  
         
         // ── Rôles ──
         Route::get('/roles',           [RolePermissionController::class, 'rolesIndex'])  ->name('roles.index');
@@ -318,6 +323,18 @@ Route::middleware('auth')->group(function () {
             Route::get('/export', [AffiliateAdminController::class, 'exportStats'])
                 ->name('export');
         });
+
+        // ── Procedures de paiement ──
+        Route::get('/',                                   [AdminProcedureController::class, 'index'])->name('procedures.index');
+        Route::post('/',                                  [AdminProcedureController::class, 'store'])->name('procedures.store');
+        Route::get('/client/{user}/consultation',          [AdminProcedureController::class, 'clientConsultation'])->name('client-consultation');
+        Route::get('/{clientProcedure}',                   [AdminProcedureController::class, 'show'])->name('procedures.show');
+        Route::put('/{clientProcedure}',                   [AdminProcedureController::class, 'update'])->name('procedures.update');
+        Route::delete('/{clientProcedure}',                 [AdminProcedureController::class, 'destroy'])->name('procedures.destroy');
+    
+        Route::post('/{clientProcedure}/paiements',                       [AdminProcedureController::class, 'addPaiement'])->name('procedures.paiements.store');
+        Route::put('/{clientProcedure}/paiements/{paiement}',              [AdminProcedureController::class, 'updatePaiement'])->name('procedures.paiements.update');
+        Route::delete('/{clientProcedure}/paiements/{paiement}',           [AdminProcedureController::class, 'deletePaiement'])->name('procedures.paiements.destroy');
     });
  
 

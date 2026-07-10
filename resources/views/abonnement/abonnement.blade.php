@@ -52,6 +52,15 @@
 .histo-row{display:flex;align-items:center;justify-content:space-between;
            padding:12px 0;border-bottom:1px solid #f5f5f5;font-size:13px;}
 .histo-row:last-child{border-bottom:none;}
+
+/* Modal — choix de langue */
+.modal-langue .form-check-langue{
+    display:flex;align-items:center;gap:8px;padding:12px;
+    border:1.5px solid #eee;border-radius:12px;cursor:pointer;
+    transition:border-color .2s,background .2s;
+}
+.modal-langue .form-check-langue:hover{border-color:#1B3A6B;background:rgba(27,58,107,.03);}
+.modal-langue input[type="radio"]:checked ~ span{font-weight:800;}
 </style>
 @endpush
 
@@ -68,6 +77,13 @@
 <div class="alert rounded-3 mb-3"
      style="background:rgba(28,200,138,.08);border:1px solid rgba(28,200,138,.3);color:#0f6e56;">
     <i class="bi bi-check-circle-fill me-2"></i>{{ session('success') }}
+</div>
+@endif
+
+@if(session('error'))
+<div class="alert rounded-3 mb-3"
+     style="background:rgba(226,75,74,.08);border:1px solid rgba(226,75,74,.3);color:#a32d2d;">
+    <i class="bi bi-exclamation-triangle-fill me-2"></i>{{ session('error') }}
 </div>
 @endif
 
@@ -242,19 +258,77 @@
                 <i class="bi bi-check-circle-fill me-2"></i>Plan actuel
             </button>
             @else
-            <form method="POST" action="{{ route('abonnement.souscrire', $plan) }}">
-                @csrf
-                <button type="submit" class="btn-subscribe"
-                        style="background:{{ $plan->couleur }};color:#fff;">
-                    <i class="bi bi-lightning-charge-fill me-2"></i>S'abonner
-                </button>
-            </form>
+            {{-- Le bouton ouvre une modal définie EN DEHORS de .plan-card,
+                 juste après cette grille .row, pour éviter le conflit
+                 position:fixed / transform qui causait le clignotement. --}}
+            <button type="button" class="btn-subscribe"
+                    style="background:{{ $plan->couleur }};color:#fff;"
+                    data-bs-toggle="modal"
+                    data-bs-target="#modalLangue-{{ $plan->id }}">
+                <i class="bi bi-lightning-charge-fill me-2"></i>S'abonner
+            </button>
             @endif
 
         </div>
     </div>
     @endforeach
 </div>
+
+{{-- ══════════════════════════════════════════════════════════════
+     Modals de choix de langue — volontairement SORTIES de .plan-card.
+     Une modal Bootstrap est en position:fixed ; si elle reste imbriquée
+     dans un élément qui applique un transform au :hover (.plan-card),
+     elle se retrouve positionnée par rapport à cet ancêtre et non plus
+     par rapport à la fenêtre, ce qui provoquait le clignotement et
+     empêchait de cliquer sur les boutons radio.
+     ══════════════════════════════════════════════════════════════ --}}
+@foreach($plans as $plan)
+    @continue($abonnement && $abonnement->forfait === $plan->code)
+    <div class="modal fade modal-langue" id="modalLangue-{{ $plan->id }}" tabindex="-1"
+         aria-labelledby="modalLangueLabel-{{ $plan->id }}" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content" style="border-radius:16px;border:none;">
+                <div class="modal-header" style="border-bottom:1px solid #f0f0f0;">
+                    <h5 class="modal-title" id="modalLangueLabel-{{ $plan->id }}" style="color:#1B3A6B;font-weight:800;">
+                        Choisissez votre langue
+                    </h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
+                </div>
+                <form method="POST" action="{{ route('abonnement.souscrire', $plan) }}">
+                    @csrf
+                    <div class="modal-body">
+                        <p style="font-size:13px;color:#666;margin-bottom:16px;">
+                            Le plan <strong>{{ $plan->nom }}</strong> donne accès à une seule langue.
+                            Sélectionnez celle que vous souhaitez activer.
+                        </p>
+                        <div class="row g-2">
+                            @foreach($langues as $langue)
+                            <div class="col-6">
+                                <label class="form-check-langue">
+                                    <input type="radio" name="langue_id" value="{{ $langue->id }}" required
+                                           style="accent-color:{{ $langue->couleur }};">
+                                    <span style="font-size:13px;font-weight:600;color:#1B3A6B;">
+                                        {{ $langue->nom }}
+                                    </span>
+                                </label>
+                            </div>
+                            @endforeach
+                        </div>
+                        @error('langue_id')
+                        <div style="color:#a32d2d;font-size:12px;margin-top:8px;">{{ $message }}</div>
+                        @enderror
+                    </div>
+                    <div class="modal-footer" style="border-top:1px solid #f0f0f0;">
+                        <button type="button" class="btn btn-light" data-bs-dismiss="modal">Annuler</button>
+                        <button type="submit" class="tarif-btn tarif-btn-primary" style="width:auto;padding:10px 24px;">
+                            Continuer vers le paiement
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+@endforeach
 
 {{-- Historique --}}
 @if($historique->count())
@@ -265,20 +339,36 @@
     @foreach($historique as $h)
     <div class="histo-row">
         <div>
-            <div style="font-size:13px;font-weight:600;color:#1B3A6B;">{{ ucfirst($h->forfait) }}</div>
+            <div style="font-size:13px;font-weight:600;color:#1B3A6B;">
+                {{ $h->plan?->nom ?? ucfirst($h->forfait ?? '—') }}
+            </div>
             <div style="font-size:11px;color:#888;">
-                {{ $h->debut_at->format('d/m/Y') }} → {{ $h->fin_at->format('d/m/Y') }}
+                @if($h->debut_at && $h->fin_at)
+                    {{ $h->debut_at->format('d/m/Y') }} → {{ $h->fin_at->format('d/m/Y') }}
+                @else
+                    Non activé pour le moment
+                @endif
             </div>
         </div>
         <div style="text-align:right;">
             <div style="font-size:13px;font-weight:700;color:#1B3A6B;">
                 {{ number_format($h->montant, 0, ',', ' ') }} {{ $h->devise }}
             </div>
-            @php $actifHisto = $h->actif && $h->fin_at >= now(); @endphp
+            @php
+                $actifHisto = $h->statut === 'actif' && $h->fin_at && $h->fin_at >= now();
+                $labels = [
+                    'actif'      => ['Actif', 'rgba(28,200,138,.1)', '#0f6e56'],
+                    'en_attente' => ['En attente de paiement', 'rgba(245,166,35,.1)', '#633806'],
+                    'expire'     => ['Expiré', '#f0f0f0', '#999'],
+                    'annule'     => ['Annulé', 'rgba(226,75,74,.08)', '#a32d2d'],
+                ];
+                [$label, $bg, $color] = $actifHisto
+                    ? ['Actif', 'rgba(28,200,138,.1)', '#0f6e56']
+                    : ($labels[$h->statut] ?? ['—', '#f0f0f0', '#999']);
+            @endphp
             <span style="font-size:10px;padding:2px 8px;border-radius:8px;
-                         background:{{ $actifHisto ? 'rgba(28,200,138,.1)' : '#f0f0f0' }};
-                         color:{{ $actifHisto ? '#0f6e56' : '#999' }};">
-                {{ $actifHisto ? 'Actif' : 'Expiré' }}
+                         background:{{ $bg }};color:{{ $color }};">
+                {{ $label }}
             </span>
         </div>
     </div>

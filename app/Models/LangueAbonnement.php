@@ -41,12 +41,17 @@ class LangueAbonnement extends Model
 
     public function plan(): BelongsTo
     {
-        return $this->belongsTo(PlanAbonnement::class);
+        return $this->belongsTo(PlanAbonnement::class,'plan_id');
     }
 
     public function langue(): BelongsTo
     {
         return $this->belongsTo(Langue::class);
+    }
+
+    public function paiements()
+    {
+        return $this->hasMany(Paiement::class);
     }
 
     // ════════════════════════════════════════

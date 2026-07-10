@@ -23,6 +23,11 @@ return Application::configure(basePath: dirname(__DIR__))
         'set_locale' => SetLocale::class,
         ]);
     })
+    ->withMiddleware(function (Middleware $middleware) {
+        $middleware->validateCsrfTokens(except: [
+            'webhooks/notchpay',
+        ]);
+    })
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();
