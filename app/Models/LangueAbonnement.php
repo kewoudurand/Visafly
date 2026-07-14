@@ -18,6 +18,7 @@ class LangueAbonnement extends Model
         'devise',
         'debut_at',
         'fin_at',
+        'statut',
         'actif',
         'reference_paiement',
         'methode_paiement',

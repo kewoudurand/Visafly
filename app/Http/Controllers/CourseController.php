@@ -14,9 +14,7 @@ class CourseController extends Controller
     // ── Liste publique des cours ──────────────────────────────────
     public function choose(Request $request)
     {
-        // Les cours (Course) sont spécifiques à l'allemand — adapte le code 'de'
-        // au code réel utilisé dans ta table `langues` (ex: 'de', 'allemand', 'goethe'...)
-        $accesAllemand = auth()->check() ? auth()->user()->aAccesLangue('de') : false;
+        $accesGoethe = auth()->check() ? auth()->user()->aAccesExamen('goethe') : false; // ✅ corrigé
 
         $cours = Course::with('instructor')
             ->withCount(['lecons' => fn($q) => $q->where('publiee', true)])
@@ -25,7 +23,7 @@ class CourseController extends Controller
             ->when($request->filled('niveau'), fn($q) => $q->where('niveau', strtoupper($request->niveau)))
             ->get();
 
-        return view('courses.list', compact('cours', 'accesAllemand'));
+        return view('courses.list', compact('cours', 'accesGoethe'));
     }
 
     // ── Afficher la liste des cours (admin) ───────────────────────

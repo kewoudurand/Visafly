@@ -11,45 +11,56 @@ use Illuminate\Support\Facades\Log;
 class NotchPayWebhookController extends Controller
 {
     public function __construct(private NotchPayService $notchPay) {}
-
     public function handle(Request $request)
     {
         $payload   = $request->getContent();
         $signature = $request->header('x-notch-signature');
 
+        Log::info('NotchPay Webhook — payload brut', ['body' => $payload]);
+
         if (!$this->notchPay->verifierSignatureWebhook($payload, $signature)) {
-            Log::warning('NotchPay Webhook: signature invalide.', ['signature' => $signature]);
+            Log::warning('NotchPay Webhook: signature invalide.');
             return response()->json(['message' => 'Signature invalide'], 403);
         }
 
         $event = json_decode($payload, true);
 
-        // Log complet pour connaître la structure exacte en sandbox — à retirer une fois validé
-        Log::info('NotchPay Webhook reçu', $event ?? []);
-
-        $type      = $event['type'] ?? null; // ex. 'payment.complete', 'payment.failed'
-        $reference = $event['data']['reference'] ?? $event['reference'] ?? null;
-
-        if (!$reference) {
-            Log::warning('NotchPay Webhook: référence manquante.', $event ?? []);
-            return response()->json(['message' => 'Référence manquante'], 400);
+        if (json_last_error() !== JSON_ERROR_NONE) {
+            Log::warning('NotchPay Webhook: JSON invalide.');
+            return response()->json(['message' => 'Payload invalide'], 400);
         }
 
-        $paiement = Paiement::where('reference', $reference)->first();
+        $type        = $event['event'] ?? null;
+        $merchantRef = $event['data']['merchant_reference'] ?? null; // pour retrouver LE paiement en base
+        $notchRef    = $event['data']['reference'] ?? null;          // ✅ pour interroger l'API Notch Pay
+        $statut      = $event['data']['status'] ?? null;
+
+        if (!$merchantRef) {
+            Log::warning('NotchPay Webhook: merchant_reference manquante.', $event ?? []);
+            return response()->json(['message' => 'Référence introuvable, ignoré'], 200);
+        }
+
+        $paiement = Paiement::where('reference', $merchantRef)->first();
 
         if (!$paiement) {
-            Log::warning("NotchPay Webhook: paiement introuvable pour référence {$reference}");
+            Log::warning("NotchPay Webhook: paiement introuvable pour merchant_reference {$merchantRef}");
             return response()->json(['message' => 'Paiement introuvable'], 404);
         }
 
-        // Vérification directe systématique (recommandée par la doc), ne se fie jamais
-        // uniquement au contenu du payload webhook.
+        if (!$paiement->transaction_id && $notchRef) {
+            $paiement->update(['transaction_id' => $notchRef]);
+        }
+
+        // ✅ corrigé — on vérifie avec la référence Notch Pay, pas la nôtre
+        $referencePourVerif = $paiement->transaction_id ?? $notchRef;
+
         try {
-            $verification  = $this->notchPay->verifierPaiement($reference);
-            $statutVerifie = $verification['transaction']['status'] ?? null;
+            $verification  = $this->notchPay->verifierPaiement($referencePourVerif);
+            $statutVerifie = $verification['transaction']['status'] ?? $statut;
+            Log::info('NotchPay Webhook — vérification directe', $verification);
         } catch (\Throwable $e) {
             Log::error("NotchPay Webhook: échec vérification directe — {$e->getMessage()}");
-            $statutVerifie = null;
+            $statutVerifie = $statut; // repli sur le statut fourni dans le webhook lui-même
         }
 
         $paiement->update(['reponse_gateway' => $event]);
@@ -57,7 +68,7 @@ class NotchPayWebhookController extends Controller
         $estConfirme = $type === 'payment.complete' || $statutVerifie === 'complete';
         $estEchec    = $type === 'payment.failed' || in_array($statutVerifie, ['failed', 'canceled', 'expired'], true);
 
-        if ($estConfirme) {
+        if ($estConfirme && $paiement->statut !== 'confirme') {
             $paiement->update(['statut' => 'confirme']);
 
             $abonnement = $paiement->abonnement;
@@ -70,11 +81,13 @@ class NotchPayWebhookController extends Controller
                 ]);
             }
 
-            Log::info("Abonnement {$abonnement->id} activé suite au paiement {$reference}");
+            Log::info("Abonnement {$abonnement->id} activé suite au paiement {$merchantRef}");
         } elseif ($estEchec) {
             $paiement->update(['statut' => 'echec']);
+        } else {
+            Log::info("NotchPay Webhook: événement '{$type}' statut '{$statutVerifie}' — en attente pour {$merchantRef}");
         }
 
-        return response()->json(['message' => 'Webhook received']);
+        return response()->json(['message' => 'OK']);
     }
 }

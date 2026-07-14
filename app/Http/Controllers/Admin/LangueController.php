@@ -11,9 +11,6 @@ use App\Models\LangueReponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
-// ─────────────────────────────────────────────────────────────
-//  FICHIER : app/Http/Controllers/Admin/LangueController.php
-// ─────────────────────────────────────────────────────────────
 
 class LangueController extends Controller
 {

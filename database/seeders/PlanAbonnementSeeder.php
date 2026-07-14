@@ -22,10 +22,10 @@ class PlanAbonnementSeeder extends Seeder
                 'actif'       => true,
                 'ordre'       => 1,
                 'points'      => [
-                    ['icone' => 'bi-check-circle-fill', 'couleur' => '#1cc88a', 'texte' => 'Accès à toutes les séries TCF/TEF'],
+                    ['icone' => 'bi-check-circle-fill', 'couleur' => '#1cc88a', 'texte' => 'Accès à des séries TCF ou TEF ou IELTS ou Goethe'],
                     ['icone' => 'bi-check-circle-fill', 'couleur' => '#1cc88a', 'texte' => 'Correction automatique illimitée'],
                     ['icone' => 'bi-check-circle-fill', 'couleur' => '#1cc88a', 'texte' => 'Statistiques de progression'],
-                    ['icone' => 'bi-x-circle-fill',    'couleur' => '#E24B4A', 'texte' => 'IELTS et Goethe non inclus'],
+                    ['icone' => 'bi-x-circle-fill',    'couleur' => '#E24B4A', 'texte' => 'Accès à des séries IELTS ou Goethe'],
                     ['icone' => 'bi-x-circle-fill',    'couleur' => '#E24B4A', 'texte' => 'Support prioritaire non inclus'],
                 ],
             ],
@@ -42,7 +42,7 @@ class PlanAbonnementSeeder extends Seeder
                 'actif'       => true,
                 'ordre'       => 2,
                 'points'      => [
-                    ['icone' => 'bi-check-circle-fill',  'couleur' => '#1cc88a', 'texte' => 'Accès à tous les examens (TCF, TEF, IELTS, Goethe)'],
+                    ['icone' => 'bi-check-circle-fill',  'couleur' => '#1cc88a', 'texte' => 'Accès à des examens (TCF, TEF, IELTS, Goethe)'],
                     ['icone' => 'bi-check-circle-fill',  'couleur' => '#1cc88a', 'texte' => 'Correction automatique illimitée'],
                     ['icone' => 'bi-check-circle-fill',  'couleur' => '#1cc88a', 'texte' => 'Statistiques avancées'],
                     ['icone' => 'bi-check-circle-fill',  'couleur' => '#1cc88a', 'texte' => 'Téléchargement des résultats PDF'],
@@ -62,7 +62,7 @@ class PlanAbonnementSeeder extends Seeder
                 'actif'       => true,
                 'ordre'       => 3,
                 'points'      => [
-                    ['icone' => 'bi-star-fill',           'couleur' => '#F5A623', 'texte' => 'Accès illimité à tous les examens'],
+                    ['icone' => 'bi-star-fill',           'couleur' => '#F5A623', 'texte' => 'Accès illimité à des examens'],
                     ['icone' => 'bi-star-fill',           'couleur' => '#F5A623', 'texte' => 'Support prioritaire par email'],
                     ['icone' => 'bi-check-circle-fill',   'couleur' => '#1cc88a', 'texte' => 'Statistiques et analyses avancées'],
                     ['icone' => 'bi-check-circle-fill',   'couleur' => '#1cc88a', 'texte' => 'Consultation offerte (1 par an)'],

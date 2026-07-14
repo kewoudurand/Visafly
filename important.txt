@@ -132,3 +132,6 @@ curl -X POST https://api.notchpay.co/payments \
     "description": "Test de dépôt VisaFly",
     "callback": "https://visaflypro.com/notchpay/callback"
 }'
+
+
+NB:Cree les formulaire de creation des different test TCF,Goetgh et ief

@@ -94,7 +94,11 @@ class LangueEpreuveController extends Controller
     public function soumettre(Request $request, string $code, LangueSerie $serie, LangueDiscipline $discipline)
     {
         $langue    = Langue::where('code', $code)->firstOrFail();
-        $reponses  = $request->input('reponses', []); // [question_id => reponse_id]
+        $validated = $request->validate([
+            'reponses'   => 'nullable|array',
+            'reponses.*' => 'nullable|integer',
+        ]);
+        $reponses  = $validated['reponses'] ?? [];
 
         $questions = LangueQuestion::where('serie_id', $serie->id)
             ->with('reponses')->orderBy('ordre')->get();

@@ -22,7 +22,6 @@
            transition:all .25s;cursor:pointer;position:relative;overflow:hidden;}
 .plan-card:hover{border-color:#1B3A6B;box-shadow:0 8px 28px rgba(27,58,107,.12);
                  transform:translateY(-2px);}
-.plan-card.active-plan{border-color:#1B3A6B;}
 .plan-card .popular-badge{position:absolute;top:0;right:0;padding:5px 14px;
                            background:#F5A623;color:#1B3A6B;font-size:10px;
                            font-weight:800;border-bottom-left-radius:10px;}
@@ -61,6 +60,7 @@
 }
 .modal-langue .form-check-langue:hover{border-color:#1B3A6B;background:rgba(27,58,107,.03);}
 .modal-langue input[type="radio"]:checked ~ span{font-weight:800;}
+.modal-langue .form-check-langue.disabled{opacity:.4;cursor:not-allowed;}
 </style>
 @endpush
 
@@ -87,7 +87,13 @@
 </div>
 @endif
 
-{{-- ── Abonnement actuel ── --}}
+@php
+    // ✅ Ensemble des codes d'examens réellement accessibles (calculé une seule fois),
+    // basé sur les abonnements ACTIFS de l'utilisateur — plus de "tout ou rien".
+    $codesAccessibles = $abonnementsActifs->pluck('langue.code')->filter()->values()->toArray();
+@endphp
+
+{{-- ── Abonnement(s) actif(s) ── --}}
 @if($abonnement)
 <div class="abo-current" style="background:{{ $abonnement->plan?->couleur ?? '#1B3A6B' }};">
     <div style="display:flex;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;gap:12px;position:relative;z-index:1;">
@@ -97,7 +103,7 @@
                 <span class="abo-status-dot"></span>Abonnement actif
             </div>
             <div style="font-size:24px;font-weight:800;margin-bottom:4px;">
-                {{ $abonnement->plan?->nom ?? ucfirst($abonnement->forfait) }}
+                {{ $abonnement->plan?->nom ?? '—' }} — {{ $abonnement->langue?->nom ?? '—' }}
             </div>
             <div style="font-size:13px;opacity:.75;">
                 {{ $abonnement->plan?->description }}
@@ -134,7 +140,16 @@
     </div>
 </div>
 
-{{-- Accès aux examens --}}
+@if($abonnementsActifs->count() > 1)
+<div style="font-size:12px;color:#666;margin-bottom:20px;">
+    <i class="bi bi-info-circle me-1"></i>
+    Vous avez {{ $abonnementsActifs->count() }} abonnements actifs simultanés
+    ({{ $abonnementsActifs->pluck('langue.nom')->join(', ') }}).
+</div>
+@endif
+@endif
+
+{{-- ── Accès aux examens — TOUJOURS affiché, avec état par examen ── --}}
 <div class="row g-4 mb-4">
     <div class="col-lg-8">
         <h3 style="font-size:14px;font-weight:700;color:#1B3A6B;margin-bottom:12px;">
@@ -142,30 +157,43 @@
             Mes accès aux examens
         </h3>
         @foreach($langues as $langue)
-        <div class="exam-access">
-            <div class="exam-access-icon" style="background:{{ $langue->couleur }};">
-                {{ strtoupper($langue->code) }}
+            @php
+                // ✅ Vérification INDIVIDUELLE par examen — plus de badge "Accès complet" généralisé
+                $aAcces = in_array($langue->code, $codesAccessibles, true);
+            @endphp
+            <div class="exam-access" @if(!$aAcces) style="opacity:.7;" @endif>
+                <div class="exam-access-icon" style="background:{{ $langue->couleur }};">
+                    {{ strtoupper($langue->code) }}
+                </div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:700;color:#1B3A6B;">{{ $langue->nom }}</div>
+                    <div style="font-size:11px;color:#888;margin-top:2px;">
+                        {{ $aAcces ? ($langue->organisme ?? 'Accès actif') : 'Séries gratuites uniquement' }}
+                    </div>
+                </div>
+                <div>
+                    @if($aAcces)
+                        <span class="access-badge access-full">
+                            <i class="bi bi-check-circle-fill me-1"></i>Accès complet
+                        </span>
+                    @else
+                        <span class="access-badge access-partial">
+                            <i class="bi bi-unlock me-1"></i>Limité
+                        </span>
+                    @endif
+                </div>
+                <a href="{{ route('langues.series', $langue->code) }}"
+                   style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;
+                          background:{{ $langue->couleur }};color:#fff;border-radius:20px;
+                          font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">
+                    Commencer <i class="bi bi-arrow-right"></i>
+                </a>
             </div>
-            <div style="flex:1;">
-                <div style="font-size:13px;font-weight:700;color:#1B3A6B;">{{ $langue->nom }}</div>
-                <div style="font-size:11px;color:#888;margin-top:2px;">{{ $langue->organisme }}</div>
-            </div>
-            <div>
-                <span class="access-badge access-full">
-                    <i class="bi bi-check-circle-fill me-1"></i>Accès complet
-                </span>
-            </div>
-            <a href="{{ route('langues.series', $langue->code) }}"
-               style="display:inline-flex;align-items:center;gap:5px;padding:7px 14px;
-                      background:{{ $langue->couleur }};color:#fff;border-radius:20px;
-                      font-size:12px;font-weight:600;text-decoration:none;white-space:nowrap;">
-                Commencer <i class="bi bi-arrow-right"></i>
-            </a>
-        </div>
         @endforeach
     </div>
 
     <div class="col-lg-4">
+        @if($abonnement)
         {{-- Résumé abonnement --}}
         <div style="background:#fff;border-radius:14px;border:1px solid #eee;padding:20px;">
             <div style="font-size:13px;font-weight:700;color:#1B3A6B;margin-bottom:14px;">
@@ -180,53 +208,31 @@
             </div>
             @endforeach
         </div>
+        @else
+        <div style="background:rgba(245,166,35,.06);border:1.5px solid rgba(245,166,35,.3);
+                    border-radius:16px;padding:24px;text-align:center;">
+            <i class="bi bi-lock-fill" style="font-size:32px;color:#F5A623;display:block;margin-bottom:10px;"></i>
+            <h3 style="font-size:1rem;font-weight:700;color:#1B3A6B;margin-bottom:6px;">
+                Aucun abonnement actif
+            </h3>
+            <p style="font-size:13px;color:#666;margin-bottom:0;">
+                Souscrivez à un plan pour débloquer un examen.
+            </p>
+        </div>
+        @endif
     </div>
 </div>
-
-@else
-{{-- Pas d'abonnement --}}
-<div style="background:rgba(245,166,35,.06);border:1.5px solid rgba(245,166,35,.3);
-            border-radius:16px;padding:24px;margin-bottom:28px;text-align:center;">
-    <i class="bi bi-lock-fill" style="font-size:32px;color:#F5A623;display:block;margin-bottom:10px;"></i>
-    <h3 style="font-size:1.1rem;font-weight:700;color:#1B3A6B;margin-bottom:6px;">
-        Vous n'avez pas d'abonnement actif
-    </h3>
-    <p style="font-size:13px;color:#666;margin-bottom:0;">
-        Souscrivez à un plan pour accéder à toutes les séries d'entraînement.
-    </p>
-</div>
-
-{{-- Accès limités sans abonnement --}}
-<h3 style="font-size:14px;font-weight:700;color:#1B3A6B;margin-bottom:12px;">
-    <i class="bi bi-lock me-2" style="color:#E24B4A;"></i>Accès sans abonnement
-</h3>
-@foreach($langues as $langue)
-<div class="exam-access" style="opacity:.7;">
-    <div class="exam-access-icon" style="background:{{ $langue->couleur }};">
-        {{ strtoupper($langue->code) }}
-    </div>
-    <div style="flex:1;">
-        <div style="font-size:13px;font-weight:700;color:#1B3A6B;">{{ $langue->nom }}</div>
-        <div style="font-size:11px;color:#888;margin-top:2px;">Séries gratuites uniquement</div>
-    </div>
-    <span class="access-badge access-partial">
-        <i class="bi bi-unlock me-1"></i>Limité
-    </span>
-</div>
-@endforeach
-
-@endif
 
 {{-- ── Plans disponibles ── --}}
 <h3 style="font-size:14px;font-weight:700;color:#1B3A6B;margin:28px 0 16px;">
     <i class="bi bi-grid me-2" style="color:#F5A623;"></i>
-    {{ $abonnement ? 'Changer de plan' : 'Choisir un plan' }}
+    Choisir un plan
 </h3>
 
 <div class="row g-3">
     @foreach($plans as $plan)
     <div class="col-md-4">
-        <div class="plan-card {{ $abonnement && $abonnement->forfait === $plan->code ? 'active-plan' : '' }}">
+        <div class="plan-card">
 
             @if($plan->populaire)
             <div class="popular-badge">⭐ Populaire</div>
@@ -252,22 +258,12 @@
             </div>
             @endforeach
 
-            @if($abonnement && $abonnement->forfait === $plan->code)
-            <button class="btn-subscribe"
-                    style="background:rgba(27,58,107,.08);color:#1B3A6B;cursor:default;">
-                <i class="bi bi-check-circle-fill me-2"></i>Plan actuel
-            </button>
-            @else
-            {{-- Le bouton ouvre une modal définie EN DEHORS de .plan-card,
-                 juste après cette grille .row, pour éviter le conflit
-                 position:fixed / transform qui causait le clignotement. --}}
             <button type="button" class="btn-subscribe"
                     style="background:{{ $plan->couleur }};color:#fff;"
                     data-bs-toggle="modal"
                     data-bs-target="#modalLangue-{{ $plan->id }}">
                 <i class="bi bi-lightning-charge-fill me-2"></i>S'abonner
             </button>
-            @endif
 
         </div>
     </div>
@@ -275,22 +271,19 @@
 </div>
 
 {{-- ══════════════════════════════════════════════════════════════
-     Modals de choix de langue — volontairement SORTIES de .plan-card.
-     Une modal Bootstrap est en position:fixed ; si elle reste imbriquée
-     dans un élément qui applique un transform au :hover (.plan-card),
-     elle se retrouve positionnée par rapport à cet ancêtre et non plus
-     par rapport à la fenêtre, ce qui provoquait le clignotement et
-     empêchait de cliquer sur les boutons radio.
+     Modals de choix d'examen — sorties de .plan-card pour éviter
+     le conflit position:fixed / transform (clignotement).
+     Les examens déjà actifs sont désactivés dans le radio pour
+     empêcher un rachat inutile du même examen.
      ══════════════════════════════════════════════════════════════ --}}
 @foreach($plans as $plan)
-    @continue($abonnement && $abonnement->forfait === $plan->code)
     <div class="modal fade modal-langue" id="modalLangue-{{ $plan->id }}" tabindex="-1"
-         aria-labelledby="modalLangueLabel-{{ $plan->id }}" aria-hidden="true">
+        aria-labelledby="modalLangueLabel-{{ $plan->id }}" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content" style="border-radius:16px;border:none;">
                 <div class="modal-header" style="border-bottom:1px solid #f0f0f0;">
                     <h5 class="modal-title" id="modalLangueLabel-{{ $plan->id }}" style="color:#1B3A6B;font-weight:800;">
-                        Choisissez votre langue
+                        Choisissez votre examen
                     </h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fermer"></button>
                 </div>
@@ -298,20 +291,24 @@
                     @csrf
                     <div class="modal-body">
                         <p style="font-size:13px;color:#666;margin-bottom:16px;">
-                            Le plan <strong>{{ $plan->nom }}</strong> donne accès à une seule langue.
-                            Sélectionnez celle que vous souhaitez activer.
+                            Le plan <strong>{{ $plan->nom }}</strong> donne accès à
+                            <strong>un seul examen au choix</strong> parmi TCF, TEF, IELTS et Goethe.
+                            Sélectionnez celui que vous souhaitez préparer.
                         </p>
                         <div class="row g-2">
                             @foreach($langues as $langue)
-                            <div class="col-6">
-                                <label class="form-check-langue">
-                                    <input type="radio" name="langue_id" value="{{ $langue->id }}" required
-                                           style="accent-color:{{ $langue->couleur }};">
-                                    <span style="font-size:13px;font-weight:600;color:#1B3A6B;">
-                                        {{ $langue->nom }}
-                                    </span>
-                                </label>
-                            </div>
+                                @php $dejaActif = in_array($langue->code, $codesAccessibles, true); @endphp
+                                <div class="col-6">
+                                    <label class="form-check-langue {{ $dejaActif ? 'disabled' : '' }}">
+                                        <input type="radio" name="langue_id" value="{{ $langue->id }}"
+                                               {{ $dejaActif ? 'disabled' : 'required' }}
+                                               style="accent-color:{{ $langue->couleur }};">
+                                        <span style="font-size:13px;font-weight:600;color:#1B3A6B;">
+                                            {{ $langue->nom }}
+                                            @if($dejaActif) <small>(déjà actif)</small> @endif
+                                        </span>
+                                    </label>
+                                </div>
                             @endforeach
                         </div>
                         @error('langue_id')
@@ -340,7 +337,7 @@
     <div class="histo-row">
         <div>
             <div style="font-size:13px;font-weight:600;color:#1B3A6B;">
-                {{ $h->plan?->nom ?? ucfirst($h->forfait ?? '—') }}
+                {{ $h->plan?->nom ?? '—' }} — {{ $h->langue?->nom ?? '—' }}
             </div>
             <div style="font-size:11px;color:#888;">
                 @if($h->debut_at && $h->fin_at)

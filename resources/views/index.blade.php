@@ -308,144 +308,104 @@
         <div class="row gy-4 justify-content-center">
 
           @php
-            $user = auth()->user();
-            // Chaque test correspond à un code langue dans ta table `langues`.
-            // Adapte ces codes ('fr', 'en', 'de') aux codes réels stockés en base.
-            $accesFr = $user ? $user->aAccesLangue('fr') : false;
-            $accesEn = $user ? $user->aAccesLangue('en') : false;
-            $accesDe = $user ? $user->aAccesLangue('de') : false;
+              $user = auth()->user();
+              $accesTcf    = $user ? $user->aAccesExamen('tcf')    : false;
+              $accesTef    = $user ? $user->aAccesExamen('tef')    : false;
+              $accesIelts  = $user ? $user->aAccesExamen('ielts')  : false;
+              $accesGoethe = $user ? $user->aAccesExamen('goethe') : false;
           @endphp
 
-          <!-- TCF (Français) -->
+          <!-- TCF -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="150">
-            @if(!$user || $accesFr)
-              <a href="{{ route('langues.series', 'tcf') }}" class="btn-lang btn-lang-or">
-                <div class="btn-lang-icon btn-lang-icon-or">
-                  <i class="bi bi-pencil-square"></i>
-                </div>
-                <div class="btn-lang-text">
-                  <div class="btn-lang-flag">
-                    <img src="https://flagcdn.com/w40/fr.png" alt="France">
-                    <span>Français</span>
-                  </div>
-                  <strong>Commencer le TCF</strong>
-                  <small>Test de Connaissance du Français</small>
-                </div>
-              </a>
-            @else
-              <a href="{{ route('abonnement.index') }}" class="btn-lang btn-lang-or" style="opacity:.6;position:relative;">
-                <div class="btn-lang-icon btn-lang-icon-or">
-                  <i class="bi bi-lock-fill"></i>
-                </div>
-                <div class="btn-lang-text">
-                  <div class="btn-lang-flag">
-                    <img src="https://flagcdn.com/w40/fr.png" alt="France">
-                    <span>Français</span>
-                  </div>
-                  <strong>Abonnement requis</strong>
-                  <small>Souscrivez pour accéder au TCF</small>
-                </div>
-              </a>
-            @endif
+              @if(!$user || $accesTcf)
+                  <a href="{{ route('langues.series', 'tcf') }}" class="btn-lang btn-lang-or">
+                      <div class="btn-lang-icon btn-lang-icon-or"><i class="bi bi-pencil-square"></i></div>
+                      <div class="btn-lang-text">
+                          <div class="btn-lang-flag"><img src="https://flagcdn.com/w40/fr.png" alt="France"><span>Français</span></div>
+                          <strong>Commencer le TCF</strong>
+                          <small>Test de Connaissance du Français</small>
+                      </div>
+                  </a>
+              @else
+                  <a href="{{ route('abonnement.index') }}" class="btn-lang btn-lang-or" style="opacity:.6;">
+                      <div class="btn-lang-icon btn-lang-icon-or"><i class="bi bi-lock-fill"></i></div>
+                      <div class="btn-lang-text">
+                          <div class="btn-lang-flag"><img src="https://flagcdn.com/w40/fr.png" alt="France"><span>Français</span></div>
+                          <strong>Abonnement requis</strong>
+                          <small>Souscrivez pour accéder au TCF</small>
+                      </div>
+                  </a>
+              @endif
           </div>
 
-          <!-- TEF (Français) -->
+          <!-- TEF -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="200">
-            @if(!$user || $accesFr)
-              <a href="{{ route('langues.series', 'tef') }}" class="btn-lang btn-lang-or">
-                <div class="btn-lang-icon btn-lang-icon-or">
-                  <i class="bi bi-pencil-square"></i>
-                </div>
-                <div class="btn-lang-text">
-                  <div class="btn-lang-flag">
-                    <img src="https://flagcdn.com/w40/ca.png" alt="Canada">
-                    <span>Français</span>
-                  </div>
-                  <strong>Commencer le TEF</strong>
-                  <small>Test d'Évaluation du Français</small>
-                </div>
-              </a>
-            @else
-              <a href="{{ route('abonnement.index') }}" class="btn-lang btn-lang-or" style="opacity:.6;">
-                <div class="btn-lang-icon btn-lang-icon-or">
-                  <i class="bi bi-lock-fill"></i>
-                </div>
-                <div class="btn-lang-text">
-                  <div class="btn-lang-flag">
-                    <img src="https://flagcdn.com/w40/ca.png" alt="Canada">
-                    <span>Français</span>
-                  </div>
-                  <strong>Abonnement requis</strong>
-                  <small>Souscrivez pour accéder au TEF</small>
-                </div>
-              </a>
-            @endif
+              @if(!$user || $accesTef)
+                  <a href="{{ route('langues.series', 'tef') }}" class="btn-lang btn-lang-or">
+                      <div class="btn-lang-icon btn-lang-icon-or"><i class="bi bi-pencil-square"></i></div>
+                      <div class="btn-lang-text">
+                          <div class="btn-lang-flag"><img src="https://flagcdn.com/w40/ca.png" alt="Canada"><span>Français</span></div>
+                          <strong>Commencer le TEF</strong>
+                          <small>Test d'Évaluation du Français</small>
+                      </div>
+                  </a>
+              @else
+                  <a href="{{ route('abonnement.index') }}" class="btn-lang btn-lang-or" style="opacity:.6;">
+                      <div class="btn-lang-icon btn-lang-icon-or"><i class="bi bi-lock-fill"></i></div>
+                      <div class="btn-lang-text">
+                          <div class="btn-lang-flag"><img src="https://flagcdn.com/w40/ca.png" alt="Canada"><span>Français</span></div>
+                          <strong>Abonnement requis</strong>
+                          <small>Souscrivez pour accéder au TEF</small>
+                      </div>
+                  </a>
+              @endif
           </div>
 
-          <!-- IELTS (Anglais) -->
+          <!-- IELTS -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="250">
-            @if(!$user || $accesEn)
-              <a href="{{ route('langues.series', 'ielts') }}" class="btn-lang btn-lang-marine">
-                <div class="btn-lang-icon btn-lang-icon-marine">
-                  <i class="bi bi-translate"></i>
-                </div>
-                <div class="btn-lang-text">
-                  <div class="btn-lang-flag">
-                    <img src="https://flagcdn.com/w40/gb.png" alt="UK">
-                    <span>Anglais</span>
-                  </div>
-                  <strong>Passer l'IELTS / TOEFL</strong>
-                  <small>Test de langue anglaise</small>
-                </div>
-              </a>
-            @else
-              <a href="{{ route('abonnement.index') }}" class="btn-lang btn-lang-marine" style="opacity:.6;">
-                <div class="btn-lang-icon btn-lang-icon-marine">
-                  <i class="bi bi-lock-fill"></i>
-                </div>
-                <div class="btn-lang-text">
-                  <div class="btn-lang-flag">
-                    <img src="https://flagcdn.com/w40/gb.png" alt="UK">
-                    <span>Anglais</span>
-                  </div>
-                  <strong>Abonnement requis</strong>
-                  <small>Souscrivez pour accéder à l'IELTS</small>
-                </div>
-              </a>
-            @endif
+              @if(!$user || $accesIelts)
+                  <a href="{{ route('langues.series', 'ielts') }}" class="btn-lang btn-lang-marine">
+                      <div class="btn-lang-icon btn-lang-icon-marine"><i class="bi bi-translate"></i></div>
+                      <div class="btn-lang-text">
+                          <div class="btn-lang-flag"><img src="https://flagcdn.com/w40/gb.png" alt="UK"><span>Anglais</span></div>
+                          <strong>Passer l'IELTS / TOEFL</strong>
+                          <small>Test de langue anglaise</small>
+                      </div>
+                  </a>
+              @else
+                  <a href="{{ route('abonnement.index') }}" class="btn-lang btn-lang-marine" style="opacity:.6;">
+                      <div class="btn-lang-icon btn-lang-icon-marine"><i class="bi bi-lock-fill"></i></div>
+                      <div class="btn-lang-text">
+                          <div class="btn-lang-flag"><img src="https://flagcdn.com/w40/gb.png" alt="UK"><span>Anglais</span></div>
+                          <strong>Abonnement requis</strong>
+                          <small>Souscrivez pour accéder à l'IELTS</small>
+                      </div>
+                  </a>
+              @endif
           </div>
 
-          <!-- TestDaF / Allemand -->
+          <!-- Goethe / Allemand -->
           <div class="col-lg-5 col-md-6" data-aos="fade-up" data-aos-delay="300">
-            @if(!$user || $accesDe)
-              <a href="{{ route('chooses') }}" class="btn-lang btn-lang-marine">
-                <div class="btn-lang-icon btn-lang-icon-marine">
-                  <i class="bi bi-globe-europe-africa"></i>
-                </div>
-                <div class="btn-lang-text">
-                  <div class="btn-lang-flag">
-                    <img src="https://flagcdn.com/w40/de.png" alt="Allemagne">
-                    <span>Allemand</span>
-                  </div>
-                  <strong>Passer le TestDaF / Goethe</strong>
-                  <small>Test de langue allemande</small>
-                </div>
-              </a>
-            @else
-              <a href="{{ route('abonnement.index') }}" class="btn-lang btn-lang-marine" style="opacity:.6;">
-                <div class="btn-lang-icon btn-lang-icon-marine">
-                  <i class="bi bi-lock-fill"></i>
-                </div>
-                <div class="btn-lang-text">
-                  <div class="btn-lang-flag">
-                    <img src="https://flagcdn.com/w40/de.png" alt="Allemagne">
-                    <span>Allemand</span>
-                  </div>
-                  <strong>Abonnement requis</strong>
-                  <small>Souscrivez pour accéder au Goethe</small>
-                </div>
-              </a>
-            @endif
+              @if(!$user || $accesGoethe)
+                  <a href="{{ route('chooses') }}" class="btn-lang btn-lang-marine">
+                      <div class="btn-lang-icon btn-lang-icon-marine"><i class="bi bi-globe-europe-africa"></i></div>
+                      <div class="btn-lang-text">
+                          <div class="btn-lang-flag"><img src="https://flagcdn.com/w40/de.png" alt="Allemagne"><span>Allemand</span></div>
+                          <strong>Passer le TestDaF / Goethe</strong>
+                          <small>Test de langue allemande</small>
+                      </div>
+                  </a>
+              @else
+                  <a href="{{ route('abonnement.index') }}" class="btn-lang btn-lang-marine" style="opacity:.6;">
+                      <div class="btn-lang-icon btn-lang-icon-marine"><i class="bi bi-lock-fill"></i></div>
+                      <div class="btn-lang-text">
+                          <div class="btn-lang-flag"><img src="https://flagcdn.com/w40/de.png" alt="Allemagne"><span>Allemand</span></div>
+                          <strong>Abonnement requis</strong>
+                          <small>Souscrivez pour accéder au Goethe</small>
+                      </div>
+                  </a>
+              @endif
+          </div>
           </div>
 
         </div>

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AdminController;
+use App\Http\Controllers\Admin\AdminTestController;
 use App\Http\Controllers\Admin\AdminProcedureController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\GoogleController;
@@ -173,14 +174,13 @@ Route::middleware('auth')->group(function () {
     Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
 
         Route::get('/analytics/langues', [AnalyticsLangueController::class, 'index'])->name('analytics.langues');
-
         Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
 
         // ── Utilisateurs ──
         Route::resource('users', UserController::class);
         Route::post('/users/{user}/change-role',[UserController::class, 'changeRole'])->name('users.change-role');
-        Route::post('/users/{user}/abonnement',[UserController::class, 'toggleAbonnement'])->name('users.toggle-abonnement');  
-        
+        Route::post('/users/{user}/abonnement',[UserController::class, 'toggleAbonnement'])->name('users.toggle-abonnement');
+
         // ── Rôles ──
         Route::get('/roles',           [RolePermissionController::class, 'rolesIndex'])  ->name('roles.index');
         Route::post('/roles',          [RolePermissionController::class, 'rolesStore'])  ->name('roles.store');
@@ -197,63 +197,64 @@ Route::middleware('auth')->group(function () {
         Route::post('/abonnements', [AbonnementPlanController::class, 'store'])->name('abonnements.store');
 
         // ── Langues, séries, questions ──
-
         Route::get('/langues', [LangueController::class, 'index'])->name('langues.index');
         Route::get('/langues/{langue}',[LangueController::class, 'show'])->name('langues.show');
-    
+
         Route::get('/langues/disciplines/{discipline}/series/create',[LangueController::class, 'createSerie'])->name('series.create');
         Route::post('/langues/disciplines/{discipline}/series',[LangueController::class, 'storeSerie'])->name('series.store');
         Route::get('/langues/series/{serie}',[LangueController::class, 'showSerie'])->name('series.show');
         Route::get('/langues/series/{serie}/edit',[LangueController::class, 'editSerie'])->name('series.edit');
         Route::put('/langues/series/{serie}',[LangueController::class, 'updateSerie'])->name('series.update');
         Route::delete('/langues/series/{serie}',[LangueController::class, 'destroySerie'])->name('series.destroy');
-    
+
         Route::get('/langues/series/{serie}/questions/create',[LangueController::class, 'createQuestion']) ->name('questions.create');
         Route::post('/langues/series/{serie}/questions',[LangueController::class, 'storeQuestion'])  ->name('questions.store');
         Route::get('/langues/questions/{question}/edit',[LangueController::class, 'editQuestion'])   ->name('questions.edit');
         Route::put('/langues/questions/{question}',[LangueController::class, 'updateQuestion']) ->name('questions.update');
         Route::delete('/langues/questions/{question}',[LangueController::class, 'destroyQuestion'])->name('questions.destroy');
 
+        // ✅ DÉPLACÉ ICI — avant tout wildcard à un seul segment (/{consultation}, /{clientProcedure})
+        Route::prefix('tests')->name('tests.')->group(function () {
+            Route::get('/',                         [AdminTestController::class, 'index'])->name('index');
+            Route::get('/create',                   [AdminTestController::class, 'create'])->name('create');
+            Route::post('/',                        [AdminTestController::class, 'store'])->name('store');
+            Route::get('/{serie}/edit',             [AdminTestController::class, 'edit'])->name('edit');
+            Route::put('/{serie}',                  [AdminTestController::class, 'update'])->name('update');
+            Route::delete('/{serie}',               [AdminTestController::class, 'destroy'])->name('destroy');
+
+            Route::post('/{serie}/questions',                    [AdminTestController::class, 'storeQuestion'])->name('questions.store');
+            Route::put('/questions/{question}',                  [AdminTestController::class, 'updateQuestion'])->name('questions.update');
+            Route::delete('/questions/{question}',                [AdminTestController::class, 'destroyQuestion'])->name('questions.destroy');
+        });
+
         // -consultations -
         Route::get('/consultation', [AdminConsultationController::class, 'index'])->name('consultations.index');
         Route::get('/export',   [AdminConsultationController::class, 'export'])->name('consultations.export');
- 
+
         // ── Fiche complète ────────────────────────────────────
         Route::get('/{consultation}', [AdminConsultationController::class, 'show'])->name('consultations.show');
- 
+
         // ── Actions statut ────────────────────────────────────
         Route::post('/{consultation}/en-cours',  [AdminConsultationController::class, 'enCours'])->name('en-cours');
         Route::post('/{consultation}/approuver', [AdminConsultationController::class, 'approuver'])->name('approuver');
         Route::post('/{consultation}/decliner',  [AdminConsultationController::class, 'decliner'])->name('decliner');
         Route::post('/{consultation}/terminer',  [AdminConsultationController::class, 'terminer'])->name('terminer');
         Route::delete('/{consultation}',         [AdminConsultationController::class, 'destroy'])->name('consultations.destroy');
- 
-        // ── Consultant ────────────────────────────────────────
-        // Assigner ou changer de consultant
+
         Route::post('/{consultation}/assigner', [AdminConsultationController::class, 'assigner'])->name('consultations.assigner');
- 
-        // ── Divers ────────────────────────────────────────────
+
         Route::post('/{consultation}/note', [AdminConsultationController::class, 'note'])->name('consultations.note');
         Route::post('/{consultation}/lien-visio',[AdminConsultationController::class, 'lienVisio'])->name('consultations.lien-visio');
         Route::post('/{consultation}/toggle-urgent',[AdminConsultationController::class, 'toggleUrgent'])->name('consultations.toggle-urgent');
- 
-        // ── Montant total ─────────────────────────────────────
+
         Route::post('/{consultation}/montant',[AdminConsultationController::class, 'setMontantTotal'])->name('consultations.montant');
- 
-        // ── Paiements (tranches) ──────────────────────────────
+
         Route::post('/{consultation}/paiements',[AdminConsultationController::class, 'addPaiement'])->name('consultations.paiements.store');
         Route::put('/{consultation}/paiements/{paiement}',[AdminConsultationController::class, 'updatePaiement'])->name('consultations.paiements.update');
         Route::delete('/{consultation}/paiements/{paiement}',[AdminConsultationController::class, 'deletePaiement'])->name('consultations.paiements.destroy');
 
-        Route::get('/analytics', [AnalyticsController::class, 'index'])->name('analytics.index');
-        Route::get('/analytics/langues', [AnalyticsController::class, 'langues'])->name('analytics.langues');
- 
-        // ← NOUVELLE : détail analytique d'un utilisateur
         Route::get('/analytics/users/{user}', [AnalyticsController::class, 'userDetail'])->name('analytics.user');
-    
-        // Analytics spécifique langues (déjà existante)
-        //Route::get('/analytics/langues', [AnalyticsLangueController::class, 'index'])->name('analytics.langues');
-    
+
         // Plans abonnement
         Route::get(    '/abonnements/plans',               [AbonnementPlanController::class, 'index'])  ->name('abonnements.plans.index');
         Route::get(    '/abonnements/plans/create',        [AbonnementPlanController::class, 'create']) ->name('abonnements.plans.create');
@@ -267,71 +268,37 @@ Route::middleware('auth')->group(function () {
         Route::get('/student-progress/{user}',[StudentProgressController::class, 'show'])->name('student-progress.show');
 
         Route::resource('cours',CourseController::class);
- 
-        // Leçons (nested sous cours)
         Route::resource('cours.lessons',LessonAdminController::class);
-    
-        // Réordonner leçons (drag & drop AJAX)
         Route::post('cours/{cours}/lessons/reordonner', [LessonAdminController::class, 'reordonner'])->name('cours.lessons.reordonner');
 
         // ═══ ROUTES D'AFFILIATION ═══
         Route::prefix('affiliate')->name('affiliate.')->group(function () {
-            
-            // Dashboard principal
             Route::get('/', [AffiliateAdminController::class, 'index'])->name('index');
-            
-            // Parrainages
             Route::get('/referrals/pending', [AffiliateAdminController::class, 'pendingReferrals'])->name('referrals.pending');
-            
-            Route::post('/referrals/{referral}/complete', [AffiliateAdminController::class, 'completeReferral'])
-                ->name('referrals.complete');
-            
-            Route::post('/referrals/{referral}/reject', [AffiliateAdminController::class, 'rejectReferral'])
-                ->name('referrals.reject');
-            
-            Route::post('/referrals/complete-all', [AffiliateAdminController::class, 'completeAllPending'])
-                ->name('referrals.complete-all');
-            
-            // Affiliés
-            Route::get('/affiliates', [AffiliateAdminController::class, 'affiliatesList'])
-                ->name('affiliates.list');
-            
-            Route::get('/affiliates/{user}', [AffiliateAdminController::class, 'affiliateDetail'])
-                ->name('affiliates.detail');
-            
-            Route::post('/affiliates/{user}/deactivate', [AffiliateAdminController::class, 'deactivateAffiliate'])
-                ->name('affiliates.deactivate');
-            
-            Route::post('/affiliates/{user}/activate', [AffiliateAdminController::class, 'activateAffiliate'])
-                ->name('affiliates.activate');
-            
-            Route::get('/affiliates/{user}/referrals', [AffiliateAdminController::class, 'manageAffiliateReferrals'])
-                ->name('affiliates.referrals');
-            
-            // Retraits
-            Route::get('/withdrawals', [AffiliateAdminController::class, 'withdrawals'])
-                ->name('withdrawals');
-            
-            Route::post('/withdrawals/approve', [AffiliateAdminController::class, 'approveWithdrawal'])
-                ->name('withdrawals.approve');
-            
-            // Commission manuelle
-            Route::post('/commission/add-manual', [AffiliateAdminController::class, 'addManualCommission'])
-                ->name('commission.manual');
-            
-            // Export
-            Route::get('/export', [AffiliateAdminController::class, 'exportStats'])
-                ->name('export');
+            Route::post('/referrals/{referral}/complete', [AffiliateAdminController::class, 'completeReferral'])->name('referrals.complete');
+            Route::post('/referrals/{referral}/reject', [AffiliateAdminController::class, 'rejectReferral'])->name('referrals.reject');
+            Route::post('/referrals/complete-all', [AffiliateAdminController::class, 'completeAllPending'])->name('referrals.complete-all');
+            Route::get('/affiliates', [AffiliateAdminController::class, 'affiliatesList'])->name('affiliates.list');
+            Route::get('/affiliates/{user}', [AffiliateAdminController::class, 'affiliateDetail'])->name('affiliates.detail');
+            Route::post('/affiliates/{user}/deactivate', [AffiliateAdminController::class, 'deactivateAffiliate'])->name('affiliates.deactivate');
+            Route::post('/affiliates/{user}/activate', [AffiliateAdminController::class, 'activateAffiliate'])->name('affiliates.activate');
+            Route::get('/affiliates/{user}/referrals', [AffiliateAdminController::class, 'manageAffiliateReferrals'])->name('affiliates.referrals');
+            Route::get('/withdrawals', [AffiliateAdminController::class, 'withdrawals'])->name('withdrawals');
+            Route::post('/withdrawals/approve', [AffiliateAdminController::class, 'approveWithdrawal'])->name('withdrawals.approve');
+            Route::post('/commission/add-manual', [AffiliateAdminController::class, 'addManualCommission'])->name('commission.manual');
+            Route::get('/export', [AffiliateAdminController::class, 'exportStats'])->name('export');
         });
 
         // ── Procedures de paiement ──
+        // ⚠️ Toujours en dernier : ces routes utilisent '/' et '/{clientProcedure}' à la racine,
+        // qui absorberaient n'importe quelle route déclarée après elles.
         Route::get('/',                                   [AdminProcedureController::class, 'index'])->name('procedures.index');
         Route::post('/',                                  [AdminProcedureController::class, 'store'])->name('procedures.store');
         Route::get('/client/{user}/consultation',          [AdminProcedureController::class, 'clientConsultation'])->name('client-consultation');
         Route::get('/{clientProcedure}',                   [AdminProcedureController::class, 'show'])->name('procedures.show');
         Route::put('/{clientProcedure}',                   [AdminProcedureController::class, 'update'])->name('procedures.update');
         Route::delete('/{clientProcedure}',                 [AdminProcedureController::class, 'destroy'])->name('procedures.destroy');
-    
+
         Route::post('/{clientProcedure}/paiements',                       [AdminProcedureController::class, 'addPaiement'])->name('procedures.paiements.store');
         Route::put('/{clientProcedure}/paiements/{paiement}',              [AdminProcedureController::class, 'updatePaiement'])->name('procedures.paiements.update');
         Route::delete('/{clientProcedure}/paiements/{paiement}',           [AdminProcedureController::class, 'deletePaiement'])->name('procedures.paiements.destroy');

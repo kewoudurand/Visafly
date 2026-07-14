@@ -52,11 +52,20 @@ class User extends Authenticatable
         return $this->hasMany(Paiement::class);
     }
 
-    // app/Models/User.php — à ajouter dans la classe
 
     public function abonnementsLangues()
     {
         return $this->hasMany(\App\Models\LangueAbonnement::class);
+    }
+
+
+    public function aAccesExamen(string $codeExamen): bool
+    {
+        return $this->abonnementsLangues()
+            ->whereHas('langue', fn($q) => $q->where('code', $codeExamen))
+            ->where('statut', 'actif')
+            ->where('fin_at', '>=', now())
+            ->exists();
     }
 
     /**
@@ -82,7 +91,10 @@ class User extends Authenticatable
 
     public function hasActiveSubscription()
     {
-        return $this->abonnementActif()->exists();
+        return $this->abonnementsLangues()
+        ->where('statut', 'actif')           // ✅ corrigé
+        ->where('fin_at', '>=', now())
+        ->exists();
     }
 
     public function lessonsProgress() {

@@ -91,19 +91,24 @@ class NotchPayService
      */
     public function verifierPaiement(string $reference): array
     {
-        $response = Http::withHeaders($this->headers())
-            ->timeout(30)
-            ->get($this->baseUrl."/payments/{$reference}");
+        $response = Http::withHeaders([
+        'Authorization' => $this->publicKey,
+        'Accept'        => 'application/json',
+    ])->get("{$this->baseUrl}/payments/{$reference}");
 
-        if (! $response->successful()) {
-
-            throw new RuntimeException(
-                'Impossible de vérifier le paiement.'
-            );
-        }
-
-        return $response->json();
+    if ($response->failed()) {
+        Log::error('NotchPay: échec vérification transaction', [
+            'reference' => $reference,
+            'status'    => $response->status(),
+            'body'      => $response->body(), // ✅ ajout — permet de voir la vraie raison
+        ]);
+        throw new \RuntimeException(
+            "Impossible de vérifier la transaction Notch Pay ({$response->status()}): {$response->body()}"
+        );
     }
+
+    return $response->json();
+}
 
     /**
      * Vérification du webhook

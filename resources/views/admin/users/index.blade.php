@@ -117,7 +117,7 @@
             @forelse($users as $user)
             @php
                 $abo = $user->abonnements()
-                    ->where('actif', true)
+                    ->where('statut', 'actif')
                     ->where('fin_at', '>=', now())
                     ->latest()->first();
             @endphp

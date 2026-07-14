@@ -22,8 +22,8 @@ return new class extends Migration
             // Optionnel : ajouter la devise si vous avez la même erreur plus tard
             $table->string('devise', 10)->nullable();
             
-            $table->timestamp('debut_at')->useCurrent();
-            $table->timestamp('fin_at')->nullable();
+            $table->dateTime('debut_at')->nullable()->default(null);
+            $table->dateTime('fin_at')->nullable()->default(null);
             
             $table->enum('statut',[
                 'en_attente',
@@ -39,7 +39,6 @@ return new class extends Migration
             $table->index('plan_id');
             $table->index('langue_id');
             $table->index('statut');
-            $table->index('fin_at');
             
             // Contraintes
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

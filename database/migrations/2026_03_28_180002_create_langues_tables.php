@@ -40,6 +40,7 @@ return new class extends Migration
             $table->boolean('has_audio')->default(false); // supporte upload audio
             $table->boolean('has_image')->default(false); // supporte upload image
             $table->integer('duree_minutes')->default(60);
+            $table->boolean('reponse_libre')->default(false);
             $table->text('consigne')->nullable();
             $table->boolean('actif')->default(true);
             $table->integer('ordre')->default(0);
@@ -73,10 +74,11 @@ return new class extends Migration
             $table->text('enonce');
             $table->enum('type_question', ['qcm','vrai_faux','texte_libre','audio'])
                   ->default('qcm');
-            $table->string('image')->nullable();  // storage/langues/images/...
-            $table->string('audio')->nullable();  // storage/langues/audio/...
+            $table->string('image_path')->nullable();  // storage/langues/images/...
+            $table->string('audio_path')->nullable();  // storage/langues/audio/...
             $table->text('contexte')->nullable(); // texte/transcript affiché avant la question
             $table->tinyInteger('points')->default(1);
+            $table->unsignedInteger('mots_min')->nullable();
             $table->integer('duree_secondes')->default(60);
             $table->text('explication')->nullable(); // explication bonne réponse
             $table->integer('ordre')->default(0);

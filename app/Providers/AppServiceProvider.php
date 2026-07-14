@@ -15,6 +15,7 @@ use App\Observers\CourseObserver;
 use App\Observers\LessonObserver;
 use App\Models\Consultation;
 use App\Observers\ConsultationObserver;
+use Illuminate\Pagination\Paginator;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,6 +28,7 @@ class AppServiceProvider extends ServiceProvider
         Course::observe(CourseObserver::class);
         Lesson::observe(LessonObserver::class);
         Consultation::observe(ConsultationObserver::class);
+        Paginator::useBootstrap();
     }
 
     public function register()

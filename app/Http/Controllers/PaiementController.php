@@ -7,6 +7,8 @@ use App\Models\Paiement;
 use App\Services\NotchPayService;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class PaiementController extends Controller
 {
@@ -69,6 +71,29 @@ class PaiementController extends Controller
     public function retour(Paiement $paiement)
     {
         abort_unless($paiement->user_id === Auth::id(), 403);
+
+        try {
+            // ✅ corrigé — utilise transaction_id (référence Notch Pay), pas $paiement->reference
+            $referencePourVerif = $paiement->transaction_id ?? $paiement->reference;
+
+            $verification  = $this->notchPay->verifierPaiement($referencePourVerif);
+            $statutVerifie = $verification['transaction']['status'] ?? null;
+
+            Log::info('NotchPay retour — vérification transaction', $verification);
+
+            if ($statutVerifie === 'complete' && $paiement->statut !== 'confirme') {
+                $paiement->update(['statut' => 'confirme', 'reponse_gateway' => $verification]);
+
+                $abonnement = $paiement->abonnement;
+                $abonnement->update([
+                    'statut'   => 'actif',
+                    'debut_at' => now(),
+                    'fin_at'   => now()->addDays($abonnement->plan->duree_jours),
+                ]);
+            }
+        } catch (\Throwable $e) {
+            Log::error("NotchPay retour: échec vérification — {$e->getMessage()}");
+        }
 
         $paiement->refresh();
 

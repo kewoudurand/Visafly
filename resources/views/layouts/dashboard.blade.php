@@ -224,6 +224,10 @@
              class="sidebar-link {{ request()->routeIs('admin.procedures.*') ? 'active' : '' }}">
             <i class="bi bi-calendar-check"></i> Procedures paiement
           </a>
+          <a href="{{ route('admin.tests.index') }}"
+            class="sidebar-link {{ request()->routeIs('admin.tests*') ? 'active' : '' }}">
+              <i class="bi bi-file-earmark-text"></i> Créer un test
+          </a>
           <a href="{{ route('admin.cours.index') }}"
              class="sidebar-link {{ request()->routeIs('admin.cours.index') ? 'active' : '' }}">
             <i class="bi bi-book"></i> Mes cours
