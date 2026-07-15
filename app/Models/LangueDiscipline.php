@@ -17,9 +17,10 @@ class LangueDiscipline extends Model
     ];
 
     protected $casts = [
-        'actif'     => 'boolean',
-        'has_audio' => 'boolean',
         'has_image' => 'boolean',
+        'has_audio' => 'boolean',
+        'reponse_libre' => 'boolean',
+        'actif' => 'boolean',
     ];
 
     // ── Relations ──

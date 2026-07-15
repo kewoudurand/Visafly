@@ -118,6 +118,25 @@
     </form>
 </div>
 
+@php
+    $discipline = $serie->discipline;
+    $estRedaction = $discipline->reponse_libre;
+@endphp
+
+{{-- ══ Bandeau info sur le type de contenu attendu ══ --}}
+<div style="background:rgba(27,58,107,.05);border-radius:12px;padding:14px 18px;margin-bottom:20px;
+            font-size:12px;color:#1B3A6B;display:flex;align-items:center;gap:8px;">
+    <i class="bi bi-info-circle-fill" style="color:#F5A623;"></i>
+    Discipline <strong>{{ $discipline->nom }}</strong> —
+    @if($estRedaction)
+        Rédaction libre (l'étudiant écrit sa réponse, pas de QCM)
+    @else
+        Questions à choix multiples (QCM)
+    @endif
+    @if($discipline->has_image) · Image autorisée @endif
+    @if($discipline->has_audio) · Audio autorisé @endif
+</div>
+
 {{-- ══ Questions existantes ══ --}}
 <h3 style="font-size:14px;font-weight:700;color:#1B3A6B;margin-bottom:14px;">
     <i class="bi bi-list-ol me-2" style="color:#F5A623;"></i>
@@ -126,43 +145,95 @@
 
 @foreach($serie->questions as $i => $question)
 <div class="question-card">
-    <form method="POST" action="{{ route('admin.tests.questions.update', $question) }}">
+    <form method="POST" action="{{ route('admin.tests.questions.update', $question) }}" enctype="multipart/form-data">
         @csrf
         @method('PUT')
 
         <div class="d-flex align-items-center mb-2">
             <span class="question-num">{{ $i + 1 }}</span>
             <span style="font-size:12px;color:#888;">{{ $question->points }} point(s) · {{ $question->duree_secondes }}s</span>
+            @if($question->image_path)
+                <span style="font-size:11px;color:#1B3A6B;margin-left:10px;"><i class="bi bi-image"></i> Image</span>
+            @endif
+            @if($question->audio_path)
+                <span style="font-size:11px;color:#1B3A6B;margin-left:6px;"><i class="bi bi-music-note"></i> Audio</span>
+            @endif
             <button type="button" class="btn-icon ms-auto"
                     onclick="document.getElementById('edit-q-{{ $question->id }}').classList.toggle('d-none')">
                 <i class="bi bi-pencil-square"></i>
             </button>
-            <form method="POST" action="{{ route('admin.tests.questions.destroy', $question) }}"
-                  onsubmit="return confirm('Supprimer cette question ?');" class="d-inline">
-                @csrf @method('DELETE')
-                <button type="submit" class="btn-icon"><i class="bi bi-trash"></i></button>
-            </form>
+            <button type="submit" form="delete-q-{{ $question->id }}" class="btn-icon"><i class="bi bi-trash"></i></button>
         </div>
 
         <div id="edit-q-{{ $question->id }}" class="d-none">
+
+            {{-- Contexte / consigne --}}
             <div class="mb-2">
-                <div class="form-label-custom">Contexte (optionnel)</div>
+                <div class="form-label-custom">Contexte (texte de référence, optionnel)</div>
                 <textarea name="contexte" class="form-control-custom" rows="2">{{ $question->contexte }}</textarea>
             </div>
+
+            {{-- Image existante / upload --}}
+            @if($discipline->has_image)
             <div class="mb-2">
-                <div class="form-label-custom">Énoncé</div>
+                <div class="form-label-custom">Image de support</div>
+                @if($question->image_path)
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <img src="{{ $question->imageUrl() }}" style="max-width:120px;border-radius:8px;">
+                        <label style="font-size:12px;color:#a32d2d;">
+                            <input type="checkbox" name="supprimer_image" value="1"> Supprimer cette image
+                        </label>
+                    </div>
+                @endif
+                <input type="file" name="image" class="form-control-custom" accept="image/*">
+            </div>
+            @endif
+
+            {{-- Audio existant / upload --}}
+            @if($discipline->has_audio)
+            <div class="mb-2">
+                <div class="form-label-custom">Fichier audio</div>
+                @if($question->audio_path)
+                    <div class="d-flex align-items-center gap-2 mb-2">
+                        <audio controls src="{{ $question->audioUrl() }}" style="height:32px;"></audio>
+                        <label style="font-size:12px;color:#a32d2d;">
+                            <input type="checkbox" name="supprimer_audio" value="1"> Supprimer cet audio
+                        </label>
+                    </div>
+                @endif
+                <input type="file" name="audio" class="form-control-custom" accept="audio/*">
+            </div>
+            @endif
+
+            {{-- Énoncé / consigne --}}
+            <div class="mb-2">
+                <div class="form-label-custom">{{ $estRedaction ? 'Consigne de rédaction' : 'Énoncé de la question' }}</div>
                 <textarea name="enonce" class="form-control-custom" rows="2" required>{{ $question->enonce }}</textarea>
             </div>
 
-            <div class="form-label-custom">Réponses (cochez la bonne)</div>
-            @foreach($question->reponses as $ri => $reponse)
-            <div class="reponse-row {{ $reponse->correcte ? 'correcte' : '' }}">
-                <input type="radio" name="correcte" value="{{ $ri }}" {{ $reponse->correcte ? 'checked' : '' }} required>
-                <input type="hidden" name="reponses[{{ $ri }}][id]" value="{{ $reponse->id }}">
-                <input type="text" name="reponses[{{ $ri }}][texte]" class="form-control-custom"
-                       value="{{ $reponse->texte }}" required style="border:none;background:transparent;">
-            </div>
-            @endforeach
+            @if($estRedaction)
+                {{-- ══ Mode rédaction libre — pas de QCM ══ --}}
+                <div class="mb-2">
+                    <div class="form-label-custom">Nombre de mots minimum attendu</div>
+                    <input type="number" name="mots_min" class="form-control-custom" min="10" max="2000"
+                           value="{{ $question->mots_min ?? 60 }}">
+                </div>
+                <div style="background:rgba(245,166,35,.06);border-radius:10px;padding:12px 14px;font-size:12px;color:#633806;margin-bottom:12px;">
+                    <i class="bi bi-pencil-square me-1"></i>
+                    L'étudiant rédigera librement sa réponse dans un espace de texte — cette question n'a pas de correction automatique.
+                </div>
+            @else
+                {{-- ══ Mode QCM ══ --}}
+                <div class="form-label-custom">Réponses (cochez la bonne)</div>
+                @foreach($question->reponses as $ri => $reponse)
+                <div class="reponse-row {{ $reponse->correcte ? 'correcte' : '' }}">
+                    <input type="radio" name="correcte" value="{{ $ri }}" {{ $reponse->correcte ? 'checked' : '' }} required>
+                    <input type="hidden" name="reponses[{{ $ri }}][id]" value="{{ $reponse->id }}">
+                    <input type="text" name="reponses[{{ $ri }}][texte]" class="form-control-custom"
+                           value="{{ $reponse->texte }}" required style="border:none;background:transparent;">
+                </div>
+                @endforeach
+            @endif
 
             <div class="row g-2 mt-2 mb-2">
                 <div class="col-md-6">
@@ -171,12 +242,12 @@
                 </div>
                 <div class="col-md-6">
                     <div class="form-label-custom">Durée (secondes)</div>
-                    <input type="number" name="duree_secondes" class="form-control-custom" min="10" max="600" value="{{ $question->duree_secondes }}">
+                    <input type="number" name="duree_secondes" class="form-control-custom" min="10" max="1800" value="{{ $question->duree_secondes }}">
                 </div>
             </div>
 
             <div class="mb-2">
-                <div class="form-label-custom">Explication (affichée après réponse)</div>
+                <div class="form-label-custom">Explication / correction indicative (affichée après réponse)</div>
                 <textarea name="explication" class="form-control-custom" rows="2">{{ $question->explication }}</textarea>
             </div>
 
@@ -186,13 +257,24 @@
             </button>
         </div>
 
-        @if(!request()->has('edit-' . $question->id))
+        @if(true)
         <div style="font-size:13px;color:#333;font-weight:600;">{{ $question->enonce }}</div>
+        @if(!$estRedaction)
         <div style="font-size:12px;color:#888;margin-top:4px;">
             {{ $question->reponses->firstWhere('correcte', true)?->texte }}
             <span style="color:#1cc88a;"><i class="bi bi-check-circle-fill ms-1"></i></span>
         </div>
+        @else
+        <div style="font-size:12px;color:#888;margin-top:4px;">
+            <i class="bi bi-pencil me-1"></i>Rédaction · {{ $question->mots_min ?? 0 }} mots min.
+        </div>
         @endif
+        @endif
+    </form>
+
+    <form id="delete-q-{{ $question->id }}" method="POST" action="{{ route('admin.tests.questions.destroy', $question) }}"
+          onsubmit="return confirm('Supprimer cette question ?');" class="d-none">
+        @csrf @method('DELETE')
     </form>
 </div>
 @endforeach
@@ -202,32 +284,60 @@
     <h3 style="font-size:14px;font-weight:700;color:#1B3A6B;margin-bottom:16px;">
         <i class="bi bi-plus-circle me-2" style="color:#F5A623;"></i>Ajouter une question
     </h3>
-    <form method="POST" action="{{ route('admin.tests.questions.store', $serie) }}" id="new-question-form">
+    <form method="POST" action="{{ route('admin.tests.questions.store', $serie) }}" enctype="multipart/form-data">
         @csrf
 
         <div class="mb-2">
-            <div class="form-label-custom">Contexte (optionnel — texte/audio de référence)</div>
+            <div class="form-label-custom">Contexte (texte de référence, optionnel)</div>
             <textarea name="contexte" class="form-control-custom" rows="2"></textarea>
         </div>
 
+        @if($discipline->has_image)
         <div class="mb-2">
-            <div class="form-label-custom">Énoncé de la question</div>
-            <textarea name="enonce" class="form-control-custom" rows="2" required></textarea>
+            <div class="form-label-custom">Image de support (optionnelle)</div>
+            <input type="file" name="image" class="form-control-custom" accept="image/*">
+        </div>
+        @endif
+
+        @if($discipline->has_audio)
+        <div class="mb-2">
+            <div class="form-label-custom">Fichier audio (optionnel)</div>
+            <input type="file" name="audio" class="form-control-custom" accept="audio/*">
+        </div>
+        @endif
+
+        <div class="mb-2">
+            <div class="form-label-custom">{{ $estRedaction ? 'Consigne de rédaction' : 'Énoncé de la question' }}</div>
+            <textarea name="enonce" class="form-control-custom" rows="2" required
+                      placeholder="{{ $estRedaction ? 'Ex : Rédigez un texte argumentatif sur...' : 'Ex : Quel est le sens de ce mot ?' }}"></textarea>
         </div>
 
-        <div class="form-label-custom">Réponses (cochez la bonne)</div>
-        <div id="reponses-container">
-            @for($i = 0; $i < 4; $i++)
-            <div class="reponse-row">
-                <input type="radio" name="correcte" value="{{ $i }}" {{ $i === 0 ? 'required' : '' }}>
-                <input type="text" name="reponses[]" class="form-control-custom"
-                       placeholder="Réponse {{ $i + 1 }}" required style="border:none;background:transparent;">
+        @if($estRedaction)
+            {{-- ══ Mode rédaction libre ══ --}}
+            <div class="mb-3">
+                <div class="form-label-custom">Nombre de mots minimum attendu</div>
+                <input type="number" name="mots_min" class="form-control-custom" min="10" max="2000" value="60">
             </div>
-            @endfor
-        </div>
-        <button type="button" class="add-reponse-btn mb-3" onclick="ajouterReponse()">
-            <i class="bi bi-plus-lg me-1"></i>Ajouter une réponse
-        </button>
+            <div style="background:rgba(245,166,35,.06);border-radius:10px;padding:12px 14px;font-size:12px;color:#633806;margin-bottom:16px;">
+                <i class="bi bi-pencil-square me-1"></i>
+                L'étudiant rédigera librement sa réponse — pas de correction automatique pour ce type de question.
+            </div>
+        @else
+            {{-- ══ Mode QCM ══ --}}
+            <div class="form-label-custom">Réponses (cochez la bonne)</div>
+            <div id="reponses-container">
+                @for($i = 0; $i < 4; $i++)
+                <div class="reponse-row">
+                    <input type="radio" name="correcte" value="{{ $i }}" {{ $i === 0 ? 'required' : '' }}>
+                    <input type="text" name="reponses[]" class="form-control-custom"
+                           placeholder="Réponse {{ $i + 1 }}" required style="border:none;background:transparent;">
+                </div>
+                @endfor
+            </div>
+            <button type="button" class="add-reponse-btn mb-3" onclick="ajouterReponse()">
+                <i class="bi bi-plus-lg me-1"></i>Ajouter une réponse
+            </button>
+        @endif
 
         <div class="row g-2 mb-2">
             <div class="col-md-6">
@@ -236,12 +346,13 @@
             </div>
             <div class="col-md-6">
                 <div class="form-label-custom">Durée (secondes)</div>
-                <input type="number" name="duree_secondes" class="form-control-custom" min="10" max="600" value="60">
+                <input type="number" name="duree_secondes" class="form-control-custom" min="10" max="1800"
+                       value="{{ $estRedaction ? 900 : 60 }}">
             </div>
         </div>
 
         <div class="mb-3">
-            <div class="form-label-custom">Explication (affichée après réponse)</div>
+            <div class="form-label-custom">Explication / correction indicative (affichée après réponse)</div>
             <textarea name="explication" class="form-control-custom" rows="2"></textarea>
         </div>
 

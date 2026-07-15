@@ -27,17 +27,17 @@ class AbonnementPlanController extends Controller
         $plans = PlanAbonnement::withCount([
             'abonnements as total_abonnements',
             'abonnements as abonnements_actifs' => fn($q) =>
-                $q->where('actif', true)->where('fin_at', '>=', now()),
+                $q->where('statut', 'actif')->where('fin_at', '>=', now()), // ✅ corrigé
         ])->orderBy('ordre')->get();
 
         $stats = [
-            'total_abonnes'  => LangueAbonnement::where('actif', true)
+            'total_abonnes'  => LangueAbonnement::where('statut', 'actif')
                                              ->where('fin_at', '>=', now())->count(),
             'revenus_mois'   => LangueAbonnement::whereMonth('created_at', now()->month)
                                              ->whereYear('created_at', now()->year)
-                                             ->where('statut_paiement', 'confirme')
+                                             ->where('statut', 'actif') // ✅ corrigé
                                              ->sum('montant'),
-            'revenus_total'  => LangueAbonnement::where('statut_paiement', 'confirme')
+            'revenus_total'  => LangueAbonnement::where('statut', 'actif') // ✅ corrigé
                                              ->sum('montant'),
         ];
 
@@ -55,14 +55,12 @@ class AbonnementPlanController extends Controller
     }
 
     // ════════════════════════════════════════
-    //  STORE ✅ CORRIGÉ AVEC TRY-CATCH
+    //  STORE
     // ════════════════════════════════════════
     public function store(Request $request)
     {
-        // 1. On sécurise le code (slug)
         $request->merge(['code' => \Illuminate\Support\Str::slug($request->code)]);
 
-        // 2. Validation
         $validated = $request->validate([
             'nom'         => 'required|string|max:100',
             'code'        => 'required|string|max:50|unique:plans_abonnements,code',
@@ -72,12 +70,11 @@ class AbonnementPlanController extends Controller
             'prix'        => 'required|numeric|min:0',
             'devise'      => 'required|string|in:XAF,EUR,USD,CAD',
             'duree_jours' => 'required|integer|min:1',
-            'populaire'   => 'nullable', // On gère le booléen plus bas
+            'populaire'   => 'nullable',
             'points'      => 'nullable|array',
         ]);
 
         try {
-            // 3. Création
             $plan = PlanAbonnement::create([
                 'nom'         => $validated['nom'],
                 'code'        => $validated['code'],
@@ -87,20 +84,17 @@ class AbonnementPlanController extends Controller
                 'prix'        => $validated['prix'],
                 'devise'      => $validated['devise'],
                 'duree_jours' => $validated['duree_jours'],
-                'populaire'   => $request->has('populaire'), // Capte le "1" du dd()
+                'populaire'   => $request->has('populaire'),
                 'actif'       => true,
                 'ordre'       => (PlanAbonnement::max('ordre') ?? 0) + 1,
-                'points'      => $validated['points'] ?? [], // Directement l'array du validated
+                'points'      => $validated['points'] ?? [],
             ]);
 
             return redirect()->route('admin.abonnements.plans.index')
                 ->with('success', "Le plan {$plan->nom} a été créé.");
 
         } catch (\Exception $e) {
-            // 4. Debugging en cas d'échec SQL
             \Illuminate\Support\Facades\Log::error("Erreur VisaFly : " . $e->getMessage());
-            
-            // Si tu es en développement, utilise dd($e->getMessage()) ici pour voir l'erreur SQL réelle
             return back()->with('error', "Erreur : " . $e->getMessage())->withInput();
         }
     }
@@ -116,7 +110,7 @@ class AbonnementPlanController extends Controller
     }
 
     // ════════════════════════════════════════
-    //  UPDATE ✅ CORRIGÉ
+    //  UPDATE
     // ════════════════════════════════════════
     public function update(Request $request, PlanAbonnement $plan)
     {
@@ -173,8 +167,8 @@ class AbonnementPlanController extends Controller
     {
         $this->check();
 
-        // Vérifier qu'il n'y a pas d'abonnements actifs
-        if ($plan->abonnements()->where('actif', true)->exists()) {
+        // ✅ corrigé
+        if ($plan->abonnements()->where('statut', 'actif')->exists()) {
             return back()->with('error',
                 '❌ Impossible de supprimer : ce plan a des abonnements actifs.'
             );
@@ -187,13 +181,14 @@ class AbonnementPlanController extends Controller
     }
 
     // ════════════════════════════════════════
-    //  TOGGLE actif/inactif
+    //  TOGGLE actif/inactif — reste inchangé
+    //  (porte bien sur PlanAbonnement->actif, PAS sur LangueAbonnement)
     // ════════════════════════════════════════
     public function toggle(PlanAbonnement $plan)
     {
         $this->check();
         $plan->update(['actif' => !$plan->actif]);
-        
+
         return back()->with('success',
             $plan->fresh()->actif
                 ? "✅ Plan activé."
@@ -202,7 +197,7 @@ class AbonnementPlanController extends Controller
     }
 
     // ════════════════════════════════════════
-    //  PRIVATE HELPERS
+    //  PRIVATE HELPERS — inchangés
     // ════════════════════════════════════════
     private function buildPoints(Request $request): array
     {

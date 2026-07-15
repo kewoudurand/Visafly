@@ -11,8 +11,8 @@ class LangueQuestion extends Model
     protected $table = 'langue_questions';
 
     protected $fillable = [
-        'serie_id', 'enonce', 'type_question',
-        'image', 'audio', 'contexte',
+        'serie_id', 'enonce', 'type_question', 'contexte',
+        'image_path', 'audio_path', 'mots_min',
         'points', 'duree_secondes', 'explication', 'ordre',
     ];
 
@@ -44,5 +44,15 @@ class LangueQuestion extends Model
     public function bonneReponse(): ?LangueReponse
     {
         return $this->reponses->firstWhere('correcte', true);
+    }
+
+    public function imageUrl(): ?string
+    {
+        return $this->image_path ? asset('storage/' . $this->image_path) : null;
+    }
+
+    public function audioUrl(): ?string
+    {
+        return $this->audio_path ? asset('storage/' . $this->audio_path) : null;
     }
 }

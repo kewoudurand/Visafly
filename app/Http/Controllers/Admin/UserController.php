@@ -123,7 +123,7 @@ class UserController extends Controller
 
         $user->load('roles', 'permissions');
         $abonnement = LangueAbonnement::where('user_id', $user->id)
-            ->where('actif', true)
+            ->where('statut', 'actif')
             ->where('fin_at', '>=', now())
             ->latest()->first();
 
@@ -212,32 +212,37 @@ class UserController extends Controller
     {
         $this->authorize('manage users');
 
-        // 1. On valide que l'ID existe bien dans la table des forfaits
+        // ✅ ajout de langue_id — ta table exige un examen précis (1 plan = 1 examen)
         $request->validate([
-            'forfait_id' => 'required|exists:plans_abonnements,id', // Remplacez par le nom réel de votre table
+            'forfait_id' => 'required|exists:plans_abonnements,id',
+            'langue_id'  => 'required|exists:langues,id',
         ]);
 
-        // 2. On récupère les infos du forfait directement depuis la BD
-        $forfaitDuree = \App\Models\PlanAbonnement::findOrFail($request->forfait_id);
+        $plan   = \App\Models\PlanAbonnement::findOrFail($request->forfait_id);
+        $langue = Langue::findOrFail($request->langue_id);
 
-        // 3. Désactiver les anciens abonnements
-        LangueAbonnement::where('user_id', $user->id)->update(['actif' => false]);
+        // Annule les anciens abonnements ACTIFS de l'utilisateur pour CETTE langue précise
+        // (on ne touche pas à ses abonnements actifs sur d'autres examens)
+        LangueAbonnement::where('user_id', $user->id)
+            ->where('langue_id', $langue->id)
+            ->where('statut', 'actif')
+            ->update(['statut' => 'annule']);
 
-        // 4. Création du nouvel abonnement avec les données dynamiques
+        // ✅ corrigé — colonnes réelles uniquement (plus de 'code', 'forfait', 'actif', 'reference_paiement')
+        // ✅ corrigé — addDays() au lieu de addMonths(), car duree_jours est bien en JOURS
         LangueAbonnement::create([
             'user_id'   => $user->id,
-            'plan_id'   => $forfaitDuree->id,
-            'forfait'   => $forfaitDuree->nom, // "Mensuel", etc.
-            'montant'   => $forfaitDuree->prix,
-            'code'               => 'SUB-' . strtoupper(Str::random(10)),
-            'devise'    => 'XAF',
+            'plan_id'   => $plan->id,
+            'langue_id' => $langue->id,
+            'montant'   => $plan->prix,
+            'devise'    => $plan->devise,
             'debut_at'  => now(),
-            // On utilise la colonne 'duree_mois' (ou le nom dans votre BD) pour calculer la fin
-            'fin_at'    => now()->addMonths($forfaitDuree->duree_jours), 
-            'actif'     => true,
-            'reference_paiement' => 'ADMIN-'.strtoupper(uniqid()),
+            'fin_at'    => now()->addDays($plan->duree_jours),
+            'statut'    => 'actif',
         ]);
 
-        return back()->with('success', "L'abonnement forfaitaire a été activé avec succès.");
+        return back()->with('success',
+            "Abonnement « {$plan->nom} » activé pour {$langue->nom} avec succès."
+        );
     }
 }

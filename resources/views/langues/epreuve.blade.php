@@ -1,4 +1,3 @@
-{{-- resources/views/langues/epreuve.blade.php --}}
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -6,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="csrf-token" content="{{ csrf_token() }}">
   <title>{{ $langue->nom }} — {{ $serie->titre }} — {{ $discipline->nom }}</title>
+  <link href="{{ asset('assets/img/logo.png') }}" rel="icon">
   <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
   <style>
   *{box-sizing:border-box;margin:0;padding:0;}
@@ -54,7 +54,7 @@
   .q-contexte{background:#fffbf0;border-left:4px solid #F5A623;border-radius:0 10px 10px 0;
               padding:12px 16px;margin-bottom:14px;font-size:13px;color:#555;line-height:1.6;}
 
-  /* Réponses */
+  /* Réponses QCM */
   .reponses-list{display:flex;flex-direction:column;gap:8px;}
   .rep-option{display:flex;align-items:center;gap:12px;padding:14px 16px;
               background:#fff;border:1.5px solid #e8e8e8;border-radius:10px;
@@ -69,6 +69,16 @@
               font-size:13px;font-weight:700;color:#666;flex-shrink:0;transition:all .2s;}
   .rep-option.selected .rep-letter{background:{{ $langue->couleur }};color:#fff;}
   .rep-text{font-size:14px;color:#333;font-weight:500;}
+
+  /* Rédaction libre */
+  .redaction-wrap{background:#fff;border:1.5px solid #e8e8e8;border-radius:12px;padding:18px;}
+  .redaction-textarea{width:100%;min-height:260px;border:1.5px solid #e8e8e8;border-radius:10px;
+                       padding:14px;font-size:14px;font-family:inherit;line-height:1.6;resize:vertical;}
+  .redaction-textarea:focus{outline:none;border-color:{{ $langue->couleur }};}
+  .redaction-footer{display:flex;justify-content:space-between;align-items:center;
+                     margin-top:10px;font-size:12px;color:#888;}
+  .redaction-footer .ok{color:#1cc88a;font-weight:700;}
+  .redaction-footer .low{color:#E24B4A;font-weight:700;}
 
   /* Navigation questions */
   .nav-sidebar{width:130px;background:#fff;border-left:1px solid #e8e8e8;
@@ -131,22 +141,28 @@
       @csrf
 
       @foreach($questions as $idx => $q)
+      @php
+          // ✅ Une question est en rédaction libre si elle n'a aucune réponse QCM associée
+          // (cohérent avec la discipline reponse_libre côté admin).
+          $estRedaction = $q->reponses->isEmpty();
+      @endphp
       <div class="question-panel" id="q-{{ $idx }}"
+           data-redaction="{{ $estRedaction ? '1' : '0' }}"
            style="{{ $idx > 0 ? 'display:none;' : '' }}">
 
-        {{-- Image --}}
-        @if($q->image)
+        {{-- ✅ Image — corrigé : image_path via l'accesseur imageUrl() --}}
+        @if($q->imageUrl())
         <div class="q-image-wrap">
-          <img src="{{ asset('storage/'.$q->image) }}" alt="Image question {{ $idx+1 }}">
+          <img src="{{ $q->imageUrl() }}" alt="Image question {{ $idx+1 }}">
         </div>
         @endif
 
-        {{-- Audio --}}
-        @if($q->audio)
+        {{-- ✅ Audio — corrigé : audio_path via l'accesseur audioUrl() --}}
+        @if($q->audioUrl())
         <div class="q-audio-wrap">
           <div class="q-num-badge">{{ $idx + 1 }}</div>
           <audio controls id="audio-{{ $idx }}" style="flex:1;height:34px;">
-            <source src="{{ asset('storage/'.$q->audio) }}">
+            <source src="{{ $q->audioUrl() }}">
           </audio>
         </div>
         @endif
@@ -156,9 +172,9 @@
         <div class="q-contexte">{{ $q->contexte }}</div>
         @endif
 
-        {{-- Énoncé --}}
+        {{-- Énoncé / consigne --}}
         <div class="q-enonce">
-          @if(!$q->image && !$q->audio)
+          @if(!$q->imageUrl() && !$q->audioUrl())
           <span style="display:inline-flex;align-items:center;justify-content:center;
                        width:26px;height:26px;border-radius:6px;
                        background:{{ $langue->couleur }};color:#fff;
@@ -169,7 +185,22 @@
           {{ $q->enonce }}
         </div>
 
-        {{-- Réponses --}}
+        @if($estRedaction)
+        {{-- ══ Mode rédaction libre ══ --}}
+        <div class="redaction-wrap">
+          <textarea
+            class="redaction-textarea"
+            id="redaction-{{ $idx }}"
+            name="reponses_libres[{{ $q->id }}]"
+            placeholder="Rédigez votre réponse ici..."
+            oninput="onRedactionInput({{ $idx }}, {{ $q->mots_min ?? 0 }})"></textarea>
+          <div class="redaction-footer">
+            <span id="wordcount-{{ $idx }}">0 mot(s)</span>
+            <span>Minimum requis : {{ $q->mots_min ?? 0 }} mot(s)</span>
+          </div>
+        </div>
+        @else
+        {{-- ══ Mode QCM ══ --}}
         <div class="reponses-list">
           @foreach($q->reponses as $ri => $rep)
           <label class="rep-option" id="rep-{{ $idx }}-{{ $ri }}"
@@ -180,6 +211,7 @@
           </label>
           @endforeach
         </div>
+        @endif
 
       </div>
       @endforeach
@@ -269,7 +301,6 @@ const TOTAL_SECONDS = {{ $discipline->duree_minutes * 60 }};
 const TOTAL_QS      = {{ count($questions) }};
 let current         = 0;
 let timeLeft        = TOTAL_SECONDS;
-let answers         = {};   // { qIdx: repId }
 let answered        = new Set();
 
 // ─── Timer ───
@@ -322,14 +353,34 @@ function navigate(dir) {
   goTo(next);
 }
 
-// ─── Sélection réponse ───
+// ─── Sélection réponse QCM ───
 function selectRep(qIdx, repIdx, qId, repId) {
-  // Désélectionner les autres
   document.querySelectorAll(`[id^="rep-${qIdx}-"]`).forEach(el => el.classList.remove('selected'));
   document.getElementById(`rep-${qIdx}-${repIdx}`).classList.add('selected');
   document.querySelector(`#rep-${qIdx}-${repIdx} input`).checked = true;
   answered.add(qIdx);
   document.getElementById('nav-'+qIdx).className = 'nav-btn answered';
+  updateAnsweredCount();
+}
+
+// ─── Saisie rédaction libre ───
+function onRedactionInput(qIdx, motsMin) {
+  const textarea = document.getElementById('redaction-' + qIdx);
+  const texte = textarea.value.trim();
+  const nbMots = texte.length === 0 ? 0 : texte.split(/\s+/).length;
+
+  const counter = document.getElementById('wordcount-' + qIdx);
+  counter.textContent = nbMots + ' mot(s)';
+  counter.className = nbMots >= motsMin ? 'ok' : (nbMots > 0 ? 'low' : '');
+
+  if (nbMots > 0) {
+    answered.add(qIdx);
+    document.getElementById('nav-'+qIdx).className = 'nav-btn answered';
+  } else {
+    answered.delete(qIdx);
+    document.getElementById('nav-'+qIdx).className =
+      'nav-btn ' + (qIdx === current ? 'current' : 'unanswered');
+  }
   updateAnsweredCount();
 }
 
